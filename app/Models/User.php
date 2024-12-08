@@ -10,5 +10,15 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Model
 {
-    
+
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone',
+        'emergency_phone',
+        'legal_paper',
+        'type'
+    ];
 }

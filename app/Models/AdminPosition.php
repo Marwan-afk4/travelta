@@ -9,6 +9,6 @@ class AdminPosition extends Model
 
 
     protected $fillable =[
-        
+        'name'
     ];
 }
