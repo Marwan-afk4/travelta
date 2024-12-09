@@ -21,7 +21,7 @@ class User extends Model
         'phone',
         'emergency_phone',
         'legal_paper',
-        'type'
+        'type',
     ];
 
     protected $hidden = [
