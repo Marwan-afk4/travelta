@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Department extends Model
+class CustomerSource extends Model
 {
     protected $fillable = [
-        'name',
-        'users_count',
+        'source',
+        'status',
     ];
 }

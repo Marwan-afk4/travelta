@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Department extends Model
+class LegalPaper extends Model
 {
     protected $fillable = [
-        'name',
-        'users_count',
+        'image',
+        'agent_id',
+        'user_id',
     ];
 }
