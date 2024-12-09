@@ -21,11 +21,15 @@ class User extends Model
         'phone',
         'emergency_phone',
         'legal_paper',
-        'type',
+        'role'
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    public function bookings(){
+        return $this->hasMany(Booking::class);
+    }
 }
