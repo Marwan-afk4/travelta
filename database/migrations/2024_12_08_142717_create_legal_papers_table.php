@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('legal_papers', function (Blueprint $table) {
             $table->id();
             $table->longText('image');
-            $table->foreignId('agent_id')->constrained()->nullable()->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('user_id')->constrained()->nullable()->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
