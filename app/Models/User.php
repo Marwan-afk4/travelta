@@ -32,4 +32,8 @@ class User extends Model
     public function bookings(){
         return $this->hasMany(Booking::class);
     }
+
+    public function legalpaper(){
+        return $this->hasMany(LegalPaper::class);
+    }
 }

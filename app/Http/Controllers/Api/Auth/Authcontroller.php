@@ -18,7 +18,7 @@ class Authcontroller extends Controller
             'password' => 'required|min:6',
             'phone' => 'nullable',
             'emergency_phone' => 'required',
-            'legal_paper' => 'nullable'
+            'legal_paper' => 'required',
         ]);
         if($validation->fails()){
             return response()->json(['errors' => $validation->errors()], 401);

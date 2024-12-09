@@ -19,7 +19,9 @@ class BookingFactory extends Factory
     {
         return [
             'user_id' => $this->faker->randomElement(User::all())->id,
-            
+            'date' => $this->faker->date(),
+            'type' => $this->faker->randomElement(['in', 'out']),
+            'destanation' => $this->faker->randomElement(['paris', 'tokyo', 'london','new york','singapore','mumbai','sydney']),
         ];
     }
 }

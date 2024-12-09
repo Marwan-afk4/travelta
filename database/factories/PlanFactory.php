@@ -26,7 +26,8 @@ class PlanFactory extends Factory
             'price'=>$this->faker->randomElement([300,400,500,600,700]),
             'discount_type'=>$this->faker->randomElement(['fixed','percentage']),
             'price_after_discount'=>$this->faker->randomElement([200,300]),
-            ''
+            'admin_cost'=>$this->faker->randomElement([200,300]),
+            'branch_cost'=>$this->faker->randomElement([400,500]),
         ];
     }
 }
