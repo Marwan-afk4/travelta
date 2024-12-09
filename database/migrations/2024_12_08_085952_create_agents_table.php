@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('agents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('plan_id')->constrained()->onDelete('cascade');
-            $table->string('name')->notnull();
+            $table->string('f_name')->notnull();
+            $table->string('l_name')->notnull();
+            $table->string('agent')->notnull();
+            $table->string('address')->notnull();
             $table->string('phone')->nullable()->unique();
             $table->string('email')->nullable()->unique();
             $table->string('phone_of_owner')->nullable()->unique();

@@ -13,7 +13,13 @@ class Agent extends Model
     use HasApiTokens,HasFactory, Notifiable;
     protected $fillable = [
         'plan_id',
-        'name',
+        'f_name',
+        'l_name',
+        'agent',
+        'address',
+        'country_id',
+        'city_id',
+        'source_id',
         'phone',
         'email',
         'password',
