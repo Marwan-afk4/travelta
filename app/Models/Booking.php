@@ -15,4 +15,8 @@ class Booking extends Model
         'type',
         'destanation',
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }
