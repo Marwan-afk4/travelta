@@ -10,6 +10,7 @@ class LegalPaper extends Model
         'image',
         'type',
         'agent_id',
+        'affilate_id',
         'user_id',
     ];
 
