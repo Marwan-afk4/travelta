@@ -12,6 +12,10 @@ class AgentAuthController extends Controller
 {
     public function __construct(private Agent $agent){}
 
+    public function signup_affilate(){
+        
+    }
+
     public function login(LoginRequest $request){
         // https://bcknd.food2go.online/api/user/auth/login
         // Keys

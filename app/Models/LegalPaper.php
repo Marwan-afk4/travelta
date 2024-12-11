@@ -8,6 +8,7 @@ class LegalPaper extends Model
 {
     protected $fillable = [
         'image',
+        'type',
         'agent_id',
         'user_id',
     ];

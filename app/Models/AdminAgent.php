@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class AdminPosition extends Model
+class AdminAgent extends Model
 {
     protected $fillable =[
-        'name'
+        'name',
+        'phone',
+        'email',
+        'agent_id',
     ];
 }
