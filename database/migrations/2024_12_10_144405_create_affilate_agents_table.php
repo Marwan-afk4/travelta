@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('legal_papers', function (Blueprint $table) {
+        Schema::create('affilate_agents', function (Blueprint $table) {
             $table->id();
-            $table->longText('image');
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade')->onUpdate('cascade');
+            $table->string('f_name');
+            $table->string('l_name');
+            $table->string('email')->unique();
+            $table->string('phone');
+            $table->string('password');
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('legal_papers');
+        Schema::dropIfExists('affilate_agents');
     }
 };

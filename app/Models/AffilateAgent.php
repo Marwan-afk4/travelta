@@ -5,32 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Testing\Fluent\Concerns\Has;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\HasApiTokens;
 
-class Agent extends Model
+class AffilateAgent extends Model
 {
     use HasApiTokens,HasFactory, Notifiable;
-
-    protected $fillable = [
-        'plan_id',
-        'name',
-        'phone',
+    protected $fillable =[
+        'f_name',
+        'l_name',
         'email',
-        'address',
+        'phone',
         'password',
-        'total_booking',
-        'total_commission',
-        'start_date',
-        'end_date',
-        'price_cycle',
         'role',
-        'country_id',
-        'city_id',
-        'source_id',
-        'owner_name',
-        'owner_phone',
-        'owner_email',
     ];
 
     protected $hidden = [
@@ -45,6 +32,6 @@ class Agent extends Model
     }
 
     public function legal_papers(){
-        return $this->hasMany(LegalPaper::class);
+        return $this->hasMany(LegalPaper::class, 'affilate_id');
     }
 }

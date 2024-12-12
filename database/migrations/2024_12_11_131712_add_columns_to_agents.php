@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('legal_papers', function (Blueprint $table) {
-            $table->id();
-            $table->longText('image');
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade')->onUpdate('cascade');
-            $table->timestamps();
+        Schema::table('agents', function (Blueprint $table) {
+            $table->string('services')->nullable();
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('legal_papers');
+        Schema::table('agents', function (Blueprint $table) {
+            //
+        });
     }
 };
