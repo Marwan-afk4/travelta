@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\Authcontroller;
+use App\Http\Controllers\Api\SuperAdmin\PlanController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,5 +17,13 @@ use Illuminate\Support\Facades\Route;
         Route::post('/super/user/add',[UserController::class,'adduser']);
 
         Route::delete('/super/user/delete/{id}',[UserController::class,'deleteuser']);
+
+///////////////////////////////////////// Plans //////////////////////////////////////////////////
+
+        Route::get('/super/plans',[PlanController::class,'plans']);
+
+        Route::post('/super/plan/add',[PlanController::class,'addplan']);
+
+        Route::delete('/super/plan/delete/{id}',[PlanController::class,'deletePlan']);
     });
 

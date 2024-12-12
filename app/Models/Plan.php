@@ -21,5 +21,7 @@ class Plan extends Model
         'price_after_discount',
         'admin_cost',
         'branch_cost',
+        'type',
+        'discount_value'
     ];
 }
