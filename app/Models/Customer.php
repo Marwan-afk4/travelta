@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Country extends Model
-{ 
+class Customer extends Model
+{
     protected $fillable =[
         'name',
+        'phone',
+        'email',
+        'gender',
     ];
 }
