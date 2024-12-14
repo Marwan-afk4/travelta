@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
             $table->string('name')->notnull();
-            $table->integer('users_count')->notnull()->default(0);
+            $table->string('phone')->notnull()->unique();
+            $table->string('email')->notnull()->unique();
+            $table->string('whatsapp_number')->notnull()->unique();
             $table->timestamps();
         });
     }

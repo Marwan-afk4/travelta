@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\Authcontroller;
+use App\Http\Controllers\Api\SuperAdmin\CurrancyController;
+use App\Http\Controllers\Api\SuperAdmin\DepartmentController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use Illuminate\Http\Request;
@@ -25,5 +27,23 @@ use Illuminate\Support\Facades\Route;
         Route::post('/super/plan/add',[PlanController::class,'addplan']);
 
         Route::delete('/super/plan/delete/{id}',[PlanController::class,'deletePlan']);
+
+/////////////////////////////////////////// Currancy ///////////////////////////////////////////////////
+
+        Route::get('/super/currancy',[CurrancyController::class,'currancy']);
+
+        Route::post('/super/currancy/add',[CurrancyController::class,'addCurrancy']);
+
+        Route::delete('/super/currancy/delete/{id}',[CurrancyController::class,'deleteCurrancy']);
+
+/////////////////////////////////////////// Department /////////////////////////////////////////////////
+
+        Route::get('/super/departments',[DepartmentController::class,'departments']);
+
+        Route::post('/super/department/add',[DepartmentController::class,'addDepartment']);
+
+        Route::delete('/super/department/delete/{id}',[DepartmentController::class,'deleteDepartment']);
+
+        Route::put('/super/department/update/{id}',[DepartmentController::class,'updateDepartment']);
     });
 
