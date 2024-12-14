@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Department extends Model
+class Currancy extends Model
 {
 
 
     protected $fillable = [
-        'name',
-        'phone',
-        'email',
-        'whatsapp_number'
+        'currancy_name',
+        'currancy_symbol',
+        'currancy_code',
     ];
 }
