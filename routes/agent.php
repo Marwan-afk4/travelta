@@ -5,7 +5,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\Auth\AgentAuthController;
+
 use App\Http\Controllers\Api\Agent\lead\LeadController;
+
+use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
 Route::controller(AgentAuthController::class)->group(function(){
     Route::post('signupAffilate', 'signup_affilate');
@@ -21,5 +24,9 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('add_lead', 'add_lead');
         Route::post('add', 'create');
         Route::delete('delete', 'delete');
+    });
+
+    Route::controller(DepartmentController::class)->prefix('department')->group(function(){
+        Route::get('/', 'view');
     });
 });
