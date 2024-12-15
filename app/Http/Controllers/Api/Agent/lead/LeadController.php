@@ -23,17 +23,26 @@ class LeadController extends Controller
 
     public function view(Request $request){
         // /leads/leads
-        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+        // Keys
+        // agent_id, role
+        $validation = Validator::make($request->all(), [ 
+            'agent_id' => 'required|numeric',
+            'role' => 'required|in:affilate,freelancer,agent,supplier'
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->role == 'affilate' || $request->role == 'freelancer') {    
             $leads = $this->customer_data
             ->where('type', 'lead')
-            ->where('affilate_id', $request->user()->id)
+            ->where('affilate_id', $request->agent_id)
             ->with('customer')
             ->get();
         } 
         else {
             $leads = $this->customer_data
             ->where('type', 'lead')
-            ->where('agent_id', $request->user()->id)
+            ->where('agent_id', $request->agent_id)
             ->with('customer')
             ->get();
         }

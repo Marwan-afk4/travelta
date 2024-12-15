@@ -11,5 +11,15 @@ class SupplierAgent extends Model
         'admin_name',
         'admin_phone',
         'admin_email',
+        'emails',
+        'phones',
+        'affilate_id',
+        'agent_id',
     ];
+
+    public function services(){
+        return $this->belongsToMany(Service::class, 'supplier_agent_service', 'supplier_agent_id', 'service_id');
+    }
+
+ 
 }
