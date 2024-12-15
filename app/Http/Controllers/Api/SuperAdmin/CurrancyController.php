@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CurrancyController extends Controller
 {
-
+    protected $updatecurrancy = ['currancy_name','currancy_symbol','currancy_code'];
 
     public function currancy(){
         $currancy = Currancy::all();
@@ -43,6 +43,15 @@ class CurrancyController extends Controller
         $currancy->delete();
         return response()->json([
             'message' => 'Currancy deleted successfully',
+        ]);
+    }
+
+
+    public function updateCurrancy(Request $request,$id){
+        $currancy=Currancy::find($id);
+        $currancy->update($request->only($this->updatecurrancy));
+        return response()->json([
+            'message' => 'Currancy updated successfully',
         ]);
     }
 }

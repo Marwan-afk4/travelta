@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Auth\Authcontroller;
 use App\Http\Controllers\Api\SuperAdmin\CurrancyController;
 use App\Http\Controllers\Api\SuperAdmin\DepartmentController;
+use App\Http\Controllers\Api\SuperAdmin\HotelController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use Illuminate\Http\Request;
@@ -45,5 +46,15 @@ use Illuminate\Support\Facades\Route;
         Route::delete('/super/department/delete/{id}',[DepartmentController::class,'deleteDepartment']);
 
         Route::put('/super/department/update/{id}',[DepartmentController::class,'updateDepartment']);
+
+//////////////////////////////////////////////// Hotels ///////////////////////////////////////////////////////////
+
+        Route::get('/super/hotels', [HotelController::class, 'Hotels']);
+
+        Route::post('/super/hotel/add', [HotelController::class, 'AddHotel']);
+
+        Route::delete('/super/hotel/delete/{id}', [HotelController::class, 'DeleteHotel']);
+
+        Route::put('/super/hotel/update/{id}',[HotelController::class,'UpdateHotel']);
     });
 
