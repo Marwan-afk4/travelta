@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AgentAuthController;
 
 use App\Http\Controllers\Api\Agent\lead\LeadController;
+use App\Http\Controllers\Api\Agent\customer\CustomerController;
 
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
@@ -27,6 +28,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){
+        Route::get('/', 'view');
+    });
+
+    Route::controller(CustomerController::class)->prefix('customer')->group(function(){
         Route::get('/', 'view');
     });
 });
