@@ -16,7 +16,8 @@ class AgentMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role == 'agent') {
+        if (Auth::user()->role == 'affilate' || Auth::user()->role == 'freelancer'
+        || Auth::user()->role == 'agent' || Auth::user()->role == 'supplier') {
             return $next($request);
         } else {
             return response()->json(['error' => 'Unauthorized ,you are not agent'], 401);

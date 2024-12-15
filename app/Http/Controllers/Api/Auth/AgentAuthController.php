@@ -11,11 +11,12 @@ use App\Http\Requests\api\auth\agent\SginUpAgentRequest;
 use App\Models\Agent;
 use App\Models\LegalPaper;
 use App\Models\AffilateAgent;
+use App\Models\Plan;
 
 class AgentAuthController extends Controller
 {
     public function __construct(private Agent $agent, private AffilateAgent $affilate,
-    private LegalPaper $legal_paper){}
+    private LegalPaper $legal_paper, private Plan $plans){}
 
     public function signup_affilate(SginUpAffilateRequest $request){
         $affilateRequest = $request->validated();
@@ -45,12 +46,26 @@ class AgentAuthController extends Controller
         }
         $affilate->token = $affilate->createToken($affilate->role)->plainTextToken;
         
-        return response()->json([
-            'success' => 'You signup success',
-            'user' => $affilate,
-            'token' => $affilate->token,
-            'legal_papers' => $affilate->legal_papers
-        ]);
+        if ($affilate->role == 'freelancer') {
+            $plans = $this->plans
+            ->where('type', 'freelancer')
+            ->get();
+            return response()->json([
+                'success' => 'You signup success',
+                'user' => $affilate,
+                'token' => $affilate->token,
+                'legal_papers' => $affilate->legal_papers,
+                'plans' => $plans
+            ]);
+        } 
+        else {
+            return response()->json([
+                'success' => 'You signup success',
+                'user' => $affilate,
+                'token' => $affilate->token,
+                'legal_papers' => $affilate->legal_papers
+            ]);
+        }
     }
 
     public function signup_agent(SginUpAgentRequest $request){
@@ -85,12 +100,30 @@ class AgentAuthController extends Controller
         ]);
         $agent->token = $agent->createToken($agent->role)->plainTextToken;
         
-        return response()->json([
-            'success' => 'You signup success',
-            'user' => $agent,
-            'token' => $agent->token,
-            'legal_papers' => $agent->legal_papers
-        ]);
+        if ($agent->role == 'agent') {
+            $plans = $this->plans
+            ->where('type', 'agency')
+            ->get();
+            return response()->json([
+                'success' => 'You signup success',
+                'user' => $agent,
+                'token' => $agent->token,
+                'legal_papers' => $agent->legal_papers,
+                'plans' => $plans,
+            ]);
+        } 
+        else {
+            $plans = $this->plans
+            ->where('type', 'suplier')
+            ->get();
+            return response()->json([
+                'success' => 'You signup success',
+                'user' => $agent,
+                'token' => $agent->token,
+                'legal_papers' => $agent->legal_papers,
+                'plans' => $plans,
+            ]);
+        }
     }
 
     public function login(LoginRequest $request){
@@ -109,10 +142,45 @@ class AgentAuthController extends Controller
         
         if (password_verify($request->input('password'), $user->password)) {
             $user->token = $user->createToken($user->role)->plainTextToken;
-            return response()->json([
-                'user' => $user,
-                'token' => $user->token,
-            ], 200);
+            if ((!empty($user->end_date) && $user->end_date > date('Y-m-d')) || 
+            $user->role == 'affilate') {
+                return response()->json([
+                    'user' => $user,
+                    'token' => $user->token,
+                ], 200);
+            }
+            else{
+                if ($user->role == 'freelancer') {
+                    $plans = $this->plans
+                    ->where('type', 'freelancer')
+                    ->get();
+                    return response()->json([
+                        'user' => $user,
+                        'token' => $user->token,
+                        'plans' => $plans,
+                    ], 200);
+                } 
+                elseif ($user->role == 'agent') {
+                    $plans = $this->plans
+                    ->where('type', 'agency')
+                    ->get();
+                    return response()->json([
+                        'user' => $user,
+                        'token' => $user->token,
+                        'plans' => $plans,
+                    ], 200);
+                }
+                elseif ($user->role == 'supplier') {
+                    $plans = $this->plans
+                    ->where('type', 'suplier')
+                    ->get(); 
+                    return response()->json([
+                        'user' => $user,
+                        'token' => $user->token,
+                        'plans' => $plans,
+                    ], 200);
+                }
+            }
         }
         else { 
             return response()->json(['faield'=>'creational not Valid'],403);
