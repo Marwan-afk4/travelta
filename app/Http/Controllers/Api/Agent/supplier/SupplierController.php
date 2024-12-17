@@ -66,11 +66,37 @@ class SupplierController extends Controller
         
         return response()->json([
             'supplier_agent' => $supplier_agent
-        ]); 
+        ]);
     }
 
     public function modify(SupplierRequest $request, $id){
-
+        $supplierRequest = $request->only($this->supplierRequest);
+        if ($request->role == 'affilate' || $request->role == 'freelancer') {
+            $supplier_agent = $this->supplier_agent
+            ->where('affilate_id', $request->agent_id)
+            ->where('id', $id)
+            ->first();
+        } 
+        else {
+            $supplier_agent = $this->supplier_agent
+            ->where('agent_id', $request->agent_id)
+            ->where('id', $id)
+            ->first();
+        }
+        if (empty($supplier_agent)) {
+            return response()->json([
+                'faild' => 'Supplier not found'
+            ], 400);
+        }
+        $supplier_agent->update($supplierRequest);
+        if ($request->services) {
+            $services = json_decode($request->services); 
+            $supplier_agent->services()->sync($services); 
+        }
+        
+        return response()->json([
+            'supplier_agent' => $supplier_agent
+        ]);
     }
 
     public function delete($id){
