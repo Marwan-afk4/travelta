@@ -18,6 +18,7 @@ class AffilateAgent extends Model
         'phone',
         'password',
         'role',
+        'status',
     ];
 
     protected $hidden = [
