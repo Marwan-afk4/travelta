@@ -31,6 +31,7 @@ class Agent extends Model
         'owner_name',
         'owner_phone',
         'owner_email',
+        'status',
     ];
 
     protected $hidden = [

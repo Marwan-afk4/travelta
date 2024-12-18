@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('supplier_agents', function (Blueprint $table) {
+        Schema::create('supplier_agent_service', function (Blueprint $table) {
             $table->id();
-            $table->string('agent');
-            $table->string('admin_name');
-            $table->string('admin_phone');
-            $table->string('admin_email');
-            $table->string('emails', 500);
-            $table->string('phones');
+            $table->foreignId(column: 'supplier_agent_id')->nullable()->constrained('supplier_agents')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId(column: 'service_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('supplier_agents');
+        Schema::dropIfExists('supplier_agent_service');
     }
 };
