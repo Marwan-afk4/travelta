@@ -101,7 +101,7 @@ use Illuminate\Support\Facades\Route;
         Route::put('/super/zone/update/{id}',[ZoneController::class,'updateZone']);
 
 ///////////////////////////////////////////////// Agent ///////////////////////////////////////////////////////////
-
+ 
         Route::get('/super/agents', [AgencyController::class, 'getAgency']);
 
         Route::delete('/super/agent/delete/{id}', [AgencyController::class, 'deleteAgency']);
