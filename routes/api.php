@@ -103,5 +103,9 @@ use Illuminate\Support\Facades\Route;
 /////////////////////////////////////////////// Agent ///////////////////////////////////////////////////////////
 
         Route::get('/super/agents', [AgencyController::class, 'getAgency']);
+
+        Route::delete('/super/agent/delete/{id}', [AgencyController::class, 'deleteAgency']);
+
+        Route::put('/super/agent/update/{id}',[AgencyController::class,'updateAgency']);
 });
 
