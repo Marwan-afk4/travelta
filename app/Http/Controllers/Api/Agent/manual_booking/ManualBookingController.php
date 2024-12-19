@@ -8,8 +8,6 @@ use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\City;
-use App\Models\Country;
 use App\Models\CustomerData;
 use App\Models\SupplierAgent;
 use App\Models\Service;
@@ -89,18 +87,18 @@ class ManualBookingController extends Controller
         }
         else{
             $agent_id = $request->user()->id;
-        } 
+        }
 
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $service = $this->services
             ->where('id', $request->service_id)
             ->with(['suppliers' => function($query) use($agent_id){
                 $query->where('affilate_id', $agent_id);
-            }]) 
+            }])
             ->first();
         }
         else{
-            $service = $this->services 
+            $service = $this->services
             ->where('id', $request->service_id)
             ->with(['suppliers' => function($query) use($agent_id){
                 $query->where('agent_id', $agent_id);
