@@ -13,31 +13,30 @@ class CustomerController extends Controller
     public function __construct( private CustomerData $customer_data){}
 
     public function view(Request $request){
-        // customer   
-        // Keys
-        // agent_id, role
-        $validation = Validator::make($request->all(), [ 
-            'agent_id' => 'required|numeric',
-            'role' => 'required|in:affilate,freelancer,agent,supplier'
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
         }
-        if ($request->role == 'affilate' || $request->role == 'freelancer') {    
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
             $customers = $this->customer_data
             ->where('type', 'customer')
-            ->where('affilate_id', $request->agent_id)
+            ->where('affilate_id', $agent_id)
             ->with('customer')
             ->get();
         } 
         else {
             $customers = $this->customer_data
             ->where('type', 'customer')
-            ->where('agent_id', $request->agent_id)
+            ->where('agent_id', $agent_id)
             ->with('customer')
             ->get();
         }
-        
+
         return response()->json([
             'customers' => $customers->pluck('customer')
         ]);

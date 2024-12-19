@@ -30,8 +30,6 @@ class SupplierRequest extends FormRequest
             'admin_email' => ['required', 'email'],
             'emails' => ['required'],
             'phones' => ['required'],
-            'role' => ['required', 'in:affilate,freelancer,agent,supplier'],
-            'agent_id' => ['required', 'numeric'],
         ];
     }
 

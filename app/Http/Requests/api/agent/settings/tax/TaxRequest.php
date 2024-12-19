@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\api\agent\lead;
+namespace App\Http\Requests\api\agent\settings\tax;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class LeadRequest extends FormRequest
+class TaxRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +25,9 @@ class LeadRequest extends FormRequest
     {
         return [
             'name' => ['required'],
-            'phone' => ['required', 'unique:customers,phone'],
-            'email' => ['required', 'email', 'unique:customers,email'],
-            'gender' => ['required', 'in:male,female'],
+            'country_id' => ['required', 'exists:countries,id'],
+            'type' => ['required', 'in:precentage,value'],
+            'amount' => ['required', 'numeric']
         ];
     }
 

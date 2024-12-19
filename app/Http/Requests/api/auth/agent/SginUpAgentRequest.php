@@ -56,6 +56,9 @@ class SginUpAgentRequest extends FormRequest
                 'owner_name' => ['required'],
                 'owner_phone' => ['required', 'unique:agents'],
                 'owner_email' => ['required', 'email', 'unique:agents'],
+                'tax_card_image' => ['required'],
+                'tourism_license_image' => ['required'],
+                'commercial_register_image' => ['required'],
                 'services' => ['required', 'array'],
                 'services.*' => ['in:hotels,tours,flight,visas,service,umrah,activities']
             ];
