@@ -27,6 +27,7 @@ class Agent extends Model
         'role',
         'country_id',
         'city_id',
+        'zone_id',
         'source_id',
         'owner_name',
         'owner_phone',
@@ -35,17 +36,33 @@ class Agent extends Model
     ];
 
     protected $hidden = [
-        'password', 
+        'password',
     ];
 
     protected function casts(): array
     {
-        return [ 
+        return [
             'password' => 'hashed',
         ];
     }
 
     public function legal_papers(){
         return $this->hasMany(LegalPaper::class);
+    }
+
+    public function plan(){
+        return $this->belongsTo(Plan::class);
+    }
+
+    public function country(){
+        return $this->belongsTo(Country::class);
+    }
+
+    public function city(){
+        return $this->belongsTo(City::class);
+    }
+
+    public function zone(){
+        return $this->belongsTo(Zone::class);
     }
 }

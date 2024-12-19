@@ -13,4 +13,16 @@ class Zone extends Model
         'city_id',
         'country_id',
     ];
+
+    public function city(){
+        return $this->belongsTo(City::class);
+    }
+
+    public function country(){
+        return $this->belongsTo(Country::class);
+    }
+
+    public function hotels(){
+        return $this->hasMany(Hotel::class);
+    }
 }

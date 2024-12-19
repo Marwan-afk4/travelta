@@ -12,4 +12,12 @@ class City extends Model
         'name',
         'country_id'
     ];
+
+    public function country(){
+        return $this->belongsTo(Country::class);
+    }
+
+    public function hotels(){
+        return $this->hasMany(Hotel::class);
+    }
 }

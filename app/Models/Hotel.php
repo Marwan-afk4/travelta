@@ -17,4 +17,14 @@ class Hotel extends Model
         'rating',
         'image',
     ];
+
+    public function country(){
+        return $this->belongsTo(Country::class);
+    }
+    public function city(){
+        return $this->belongsTo(City::class);
+    }
+    public function zone(){
+        return $this->belongsTo(Zone::class);
+    }
 }
