@@ -12,7 +12,12 @@ use App\Http\Controllers\Api\Agent\supplier\SupplierController;
 
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
+use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
+
+use App\Http\Controllers\Api\Agent\settings\TaxController;
+
 Route::controller(AgentAuthController::class)->group(function(){
+    Route::get('signupLists', 'lists');
     Route::post('signupAffilate', 'signup_affilate');
     Route::post('signupAgent', 'signup_agent');
     Route::post('login', 'login');
@@ -34,6 +39,11 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('update/{id}', 'modify');
         Route::delete('delete/{id}', 'delete');
     });
+    
+    Route::controller(ManualBookingController::class)->prefix('manual_booking')->group(function(){
+        Route::get('/supplier_customer', 'to_b2_filter'); 
+        Route::get('/service_supplier', 'from_supplier'); 
+    });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){
         Route::get('/', 'view');
@@ -41,5 +51,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::controller(CustomerController::class)->prefix('customer')->group(function(){
         Route::get('/', 'view');
+    });
+    
+    Route::prefix('/settings')->group(function(){
+        Route::controller(TaxController::class)->prefix('tax')->group(function(){
+            Route::get('/', 'view');
+            Route::post('add', 'create');
+            Route::post('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
+        });
     });
 });

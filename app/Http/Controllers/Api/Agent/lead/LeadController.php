@@ -22,27 +22,27 @@ class LeadController extends Controller
     ];
 
     public function view(Request $request){
-        // /leads/leads
-        // Keys
-        // agent_id, role
-        $validation = Validator::make($request->all(), [ 
-            'agent_id' => 'required|numeric',
-            'role' => 'required|in:affilate,freelancer,agent,supplier'
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
+        // /leads
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
         }
-        if ($request->role == 'affilate' || $request->role == 'freelancer') {    
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
             $leads = $this->customer_data
             ->where('type', 'lead')
-            ->where('affilate_id', $request->agent_id)
+            ->where('affilate_id', $agent_id)
             ->with('customer')
             ->get();
         } 
         else {
             $leads = $this->customer_data
             ->where('type', 'lead')
-            ->where('agent_id', $request->agent_id)
+            ->where('agent_id', $agent_id)
             ->with('customer')
             ->get();
         }
@@ -67,26 +67,33 @@ class LeadController extends Controller
     public function add_lead(Request $request){
         // /leads/add_lead
         // Keys
-        // customer_id, agent_id, role
+        // customer_id
         $validation = Validator::make($request->all(), [
             'customer_id' => 'required|exists:customers,id',
-            'agent_id' => 'required|numeric',
-            'role' => 'required|in:affilate,freelancer,agent,supplier'
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
         }
 
-        if ($request->role == 'affilate' || $request->role == 'freelancer') {        
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
             $customer_data = $this->customer_data
             ->where('customer_id', $request->customer_id)
-            ->where('affilate_id', $request->agent_id)
+            ->where('affilate_id', $agent_id)
             ->first();
         } 
         else {
             $customer_data = $this->customer_data
             ->where('customer_id', $request->customer_id)
-            ->where('agent_id', $request->agent_id)
+            ->where('agent_id', $agent_id)
             ->first();
         }
         if (!empty($customer_data)) {
@@ -95,18 +102,18 @@ class LeadController extends Controller
             ], 400);
         }
         
-        if ($request->role == 'affilate' || $request->role == 'freelancer') {        
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
             $this->customer_data
             ->create([
                 'customer_id' => $request->customer_id,
-                'affilate_id' => $request->agent_id,
+                'affilate_id' => $agent_id,
             ]);
         } 
         else {
             $this->customer_data
             ->create([
                 'customer_id' => $request->customer_id,
-                'agent_id' => $request->agent_id,
+                'agent_id' => $agent_id,
             ]);
         }
 
@@ -119,23 +126,32 @@ class LeadController extends Controller
         // مفيش edit احنا بنديله رسالة تأكيد بالمعلومات 
         // /leads/add
         // Keys
-        // name, phone, email, gender, role, agent_id => من token
+        // name, phone, email, gender
         $leadRequest = $request->only($this->leadRequest);
         $customer = $this->customer
         ->create($leadRequest);
         
-        if ($request->role == 'affilate' || $request->role == 'freelancer') {        
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
             $this->customer_data
             ->create([
                 'customer_id' => $customer->id,
-                'affilate_id' => $request->agent_id,
+                'affilate_id' => $agent_id,
             ]);
         } 
         else {
             $this->customer_data
             ->create([
                 'customer_id' => $customer->id,
-                'agent_id' => $request->agent_id,
+                'agent_id' => $agent_id,
             ]);
         }
         
@@ -147,26 +163,33 @@ class LeadController extends Controller
     public function delete(Request $request){
         // /leads/delete
         // Keys
-        // customer_id, agent_id, role
+        // customer_id
         $validation = Validator::make($request->all(), [
             'customer_id' => 'required|exists:customers,id',
-            'agent_id' => 'required|numeric',
-            'role' => 'required|in:affilate,freelancer,agent,supplier'
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
         }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
 
-        if ($request->role == 'affilate' || $request->role == 'freelancer') {        
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
             $this->customer_data
             ->where('customer_id', $request->customer_id)
-            ->where('affilate_id', $request->agent_id)
+            ->where('affilate_id', $agent_id)
             ->delete();
         } 
         else {
             $this->customer_data
             ->where('customer_id', $request->customer_id)
-            ->where('agent_id', $request->agent_id)
+            ->where('agent_id', $agent_id)
             ->delete();
         }
 

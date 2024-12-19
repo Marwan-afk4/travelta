@@ -12,13 +12,35 @@ use App\Models\Agent;
 use App\Models\LegalPaper;
 use App\Models\AffilateAgent;
 use App\Models\Plan;
+use App\Models\CustomerSource;
+use App\Models\City;
+use App\Models\Country;
 
 class AgentAuthController extends Controller
 {
     public function __construct(private Agent $agent, private AffilateAgent $affilate,
-    private LegalPaper $legal_paper, private Plan $plans){}
+    private LegalPaper $legal_paper, private Plan $plans, private CustomerSource $sources,
+    private City $cities, private Country $countries){}
+
+    public function lists(){
+        $sources = $this->sources
+        ->get();
+        $cities = $this->cities
+        ->get();
+        $countries = $this->countries
+        ->get();
+
+        return response()->json([
+            'sources' => $sources,
+            'cities' => $cities,
+            'countries' => $countries,
+        ]);
+    }
 
     public function signup_affilate(SginUpAffilateRequest $request){
+        // Keys
+        // f_name, l_name, email, phone, password, image_type => [passport, national], 
+        // passport_image OR national_image1, national_image2, role => [affilate, freelancer]
         $affilateRequest = $request->validated();
         $affilate = $this->affilate
         ->create($affilateRequest);
@@ -69,6 +91,11 @@ class AgentAuthController extends Controller
     }
 
     public function signup_agent(SginUpAgentRequest $request){
+        // Keys
+        // name, phone, email, address, password, role => [agent, supplier],
+        // country_id, city_id, source_id, owner_name, owner_phone, owner_email,
+        // tax_card_image, tourism_license_image, commercial_register_image
+        // services => [hotels,tours,flight,visas,service,umrah,activities]
         $agentRequest = $request->validated();
         if ($request->role == 'agent') {
             $agent = $this->agent

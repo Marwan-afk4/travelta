@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Subscription extends Model
+class Tax extends Model
 {
     protected $fillable = [
-        'plan_id',
+        'name',
+        'country_id',
+        'type',
+        'amount',
         'agent_id',
-        'start_date',
-        'renual_date',
+        'affilate_id',
     ];
 }

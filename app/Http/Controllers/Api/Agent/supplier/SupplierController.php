@@ -22,22 +22,25 @@ class SupplierController extends Controller
     ];
 
     public function view(Request $request){
-        $validation = Validator::make($request->all(), [ 
-            'agent_id' => 'required|numeric',
-            'role' => 'required|in:affilate,freelancer,agent,supplier'
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
+        // supplier
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
         }
-        if ($request->role == 'affilate' || $request->role == 'freelancer') {    
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
             $supplier_agent = $this->supplier_agent 
-            ->where('affilate_id', $request->agent_id)
+            ->where('affilate_id', $agent_id)
             ->with('services')
             ->get();
         } 
         else {
             $supplier_agent = $this->supplier_agent 
-            ->where('agent_id', $request->agent_id)
+            ->where('agent_id', $agent_id)
             ->with('services')
             ->get();
         }
@@ -48,12 +51,22 @@ class SupplierController extends Controller
     }
 
     public function create(SupplierRequest $request){
+        // supplier/add
         $supplierRequest = $request->only($this->supplierRequest);
-        if ($request->role == 'affilate' || $request->role == 'freelancer') {    
-            $supplierRequest['affilate_id'] = $request->agent_id;
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $supplierRequest['affilate_id'] = $agent_id;
         } 
         else {
-            $supplierRequest['agent_id'] = $request->agent_id;
+            $supplierRequest['agent_id'] = $agent_id;
         }
         $supplier_agent = $this->supplier_agent
         ->create($supplierRequest);
@@ -70,16 +83,26 @@ class SupplierController extends Controller
     }
 
     public function modify(SupplierRequest $request, $id){
+        // supplier/update/{id}
         $supplierRequest = $request->only($this->supplierRequest);
-        if ($request->role == 'affilate' || $request->role == 'freelancer') {
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $supplier_agent = $this->supplier_agent
-            ->where('affilate_id', $request->agent_id)
+            ->where('affilate_id', $agent_id)
             ->where('id', $id)
             ->first();
         } 
         else {
             $supplier_agent = $this->supplier_agent
-            ->where('agent_id', $request->agent_id)
+            ->where('agent_id', $agent_id)
             ->where('id', $id)
             ->first();
         }
@@ -99,10 +122,29 @@ class SupplierController extends Controller
         ]);
     }
 
-    public function delete($id){
-        $this->supplier_agent
-        ->where('id', $id)
-        ->delete();
+    public function delete(Request $request, $id){
+        // supplier/delete/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $this->supplier_agent
+            ->where('id', $id)
+            ->where('affilate_id', $agent_id)
+            ->delete();
+        }
+        else{
+            $this->supplier_agent
+            ->where('id', $id)
+            ->where('agent_id', $agent_id)
+            ->delete();
+        }
 
         return response()->json([
             'success' => 'You delete data success'
