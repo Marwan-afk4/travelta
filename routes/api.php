@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\Authcontroller;
+use App\Http\Controllers\Api\SuperAdmin\CityController;
+use App\Http\Controllers\Api\SuperAdmin\CountryController;
 use App\Http\Controllers\Api\SuperAdmin\CurrancyController;
 use App\Http\Controllers\Api\SuperAdmin\DepartmentController;
 use App\Http\Controllers\Api\SuperAdmin\HotelController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
+use App\Http\Controllers\Api\SuperAdmin\ServicesController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
+use App\Http\Controllers\Api\SuperAdmin\ZoneController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -56,5 +60,43 @@ use Illuminate\Support\Facades\Route;
         Route::delete('/super/hotel/delete/{id}', [HotelController::class, 'DeleteHotel']);
 
         Route::put('/super/hotel/update/{id}',[HotelController::class,'UpdateHotel']);
+
+//////////////////////////////////////////////// Services ///////////////////////////////////////////////////////////
+
+        Route::get('/super/services', [ServicesController::class, 'services']);
+
+        Route::post('/super/service/add', [ServicesController::class, 'addService']);
+
+        Route::delete('/super/service/delete/{id}', [ServicesController::class, 'deleteService']);
+
+//////////////////////////////////////////////// Country ///////////////////////////////////////////////////////////
+
+        Route::get('/super/countries', [CountryController::class, 'getCountries']);
+
+        Route::post('/super/country/add', [CountryController::class, 'addContry']);
+
+        Route::delete('/super/country/delete/{id}', [CountryController::class, 'deleteCountry']);
+
+        Route::put('/super/country/update/{id}',[CountryController::class,'updateCountry']);
+
+//////////////////////////////////////////////// City ///////////////////////////////////////////////////////////
+
+        Route::get('/super/cities', [CityController::class, 'getCity']);
+
+        Route::post('/super/city/add', [CityController::class, 'addCity']);
+
+        Route::delete('/super/city/delete/{id}', [CityController::class, 'deleteCity']);
+
+        Route::put('/super/city/update/{id}',[CityController::class,'updateCity']);
+
+//////////////////////////////////////////////// Zone ///////////////////////////////////////////////////////////
+
+        Route::get('/super/zones', [ZoneController::class, 'getZone']);
+
+        Route::post('/super/zone/add', [ZoneController::class, 'addZone']);
+
+        Route::delete('/super/zone/delete/{id}', [ZoneController::class, 'deleteZone']);
+
+        Route::put('/super/zone/update/{id}',[ZoneController::class,'updateZone']);
     });
 
