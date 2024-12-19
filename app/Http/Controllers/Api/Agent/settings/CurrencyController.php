@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Api\Agent\settings;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\api\agent\settings\tax\TaxRequest;
 use Illuminate\Http\Request;
+use App\Http\Requests\api\agent\settings\currency\CurrencyRequest;
 
-use App\Models\Tax;
-use App\Models\Country;
+use App\Models\Currancy;
+use App\Models\CurrencyAgent;
 
-class TaxController extends Controller
+class CurrencyController extends Controller
 {
-    public function __construct(private Tax $tax, private Country $countries){}
+    public function __construct(private Currancy $currency, 
+    private CurrencyAgent $currency_agent){}
 
     public function view(Request $request){
-        // /settings/tax
+        // /settings/currency
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -26,28 +26,30 @@ class TaxController extends Controller
             $agent_id = $request->user()->id;
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
-            $tax = $this->tax
+            $currency_agent = $this->currency_agent
             ->where('affilate_id', $agent_id)
             ->with('country')
             ->get();
         } 
         else {
-            $tax = $this->tax
+            $currency_agent = $this->currency_agent
             ->with('country')
             ->where('agent_id', $agent_id)
             ->get();
         } 
-        $countries = $this->countries
+        $currency = $this->currency
+        ->select('id', 'currancy_symbol')
         ->get();
 
         return response()->json([
-            'tax' => $tax,
-            'countries' => $countries,
+            'currency_agent' => $currency_agent,
+            'currencies' => $currency,
         ]);
     }
 
-    public function create(TaxRequest $request){
-        $taxRequest = $request->validated();
+    public function create(CurrencyRequest $request){
+        // /settings/currency/add
+        $currencyRequest = $request->validated();
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -57,24 +59,25 @@ class TaxController extends Controller
         else{
             $agent_id = $request->user()->id;
         }
-        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') { 
-            $taxRequest['affilate_id']  = $agent_id; 
-            $tax = $this->tax
-            ->create($taxRequest);
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $currencyRequest['affilate_id'] = $agent_id;
+            $currency_agent = $this->currency_agent
+            ->create($currencyRequest);
         } 
         else {
-            $taxRequest['agent_id']  = $agent_id; 
-            $tax = $this->tax
-            ->create($taxRequest); 
+            $currencyRequest['agent_id'] = $agent_id;
+            $currency_agent = $this->currency_agent
+            ->create($currencyRequest);
         }
 
         return response()->json([
-            'success' => 'You add data success'
+            'success' => $currency_agent
         ]);
     }
 
-    public function modify(TaxRequest $request, $id){
-        $taxRequest = $request->validated(); 
+    public function modify(CurrencyRequest $request, $id){
+        // /settings/currency/update/{id}
+        $currencyRequest = $request->validated();
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -84,25 +87,28 @@ class TaxController extends Controller
         else{
             $agent_id = $request->user()->id;
         }
-        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') { 
-            $tax = $this->tax
-            ->where('id', $id)
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $currency_agent = $this->currency_agent
             ->where('affilate_id', $agent_id)
-            ->update($taxRequest);
-        } 
-        else { 
-            $tax = $this->tax
             ->where('id', $id)
+            ->first();
+            $currency_agent->update($currencyRequest);
+        } 
+        else {
+            $currency_agent = $this->currency_agent
             ->where('agent_id', $agent_id)
-            ->update($taxRequest); 
+            ->where('id', $id)
+            ->first();
+            $currency_agent->update($currencyRequest);
         }
 
         return response()->json([
-            'success' => 'You update data success'
+            'success' => $currency_agent
         ]);
     }
 
     public function delete(Request $request, $id){
+        // /settings/currency/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -112,16 +118,16 @@ class TaxController extends Controller
         else{
             $agent_id = $request->user()->id;
         }
-        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') { 
-            $tax = $this->tax
-            ->where('id', $id)
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $currency_agent = $this->currency_agent
             ->where('affilate_id', $agent_id)
-            ->delete();
-        } 
-        else { 
-            $tax = $this->tax
             ->where('id', $id)
+            ->delete(); 
+        } 
+        else {
+            $currency_agent = $this->currency_agent
             ->where('agent_id', $agent_id)
+            ->where('id', $id)
             ->delete(); 
         }
 
