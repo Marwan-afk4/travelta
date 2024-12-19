@@ -14,15 +14,30 @@ class HotelController extends Controller
 {
     protected $updateHotel = ['hotel_name', 'country_id', 'city_id', 'zone_id', 'email', 'phone_number', 'rating', 'image'];
 
-    public function Hotels(){
-        $hotels = Hotel::all();
-        $data = [
-            'hotels' => $hotels
-        ];
-        return response()->json($data);
+    public function Hotels()
+    {
+        $hotels = Hotel::with('country', 'city', 'zone')->get();
+        $data = $hotels->map(function ($hotel) {
+            return [
+                'hotel_id' => $hotel->id,
+                'country_id' => $hotel->country_id,
+                'country_name' => $hotel->country->name,
+                'city_id' => $hotel->city_id,
+                'city_name' => $hotel->city->name,
+                'zone_id' => $hotel->zone_id,
+                'zone_name' => $hotel->zone->name,
+                'hotel_name' => $hotel->hotel_name,
+                'email' => $hotel->email,
+                'phone_number' => $hotel->phone_number,
+                'rating' => $hotel->rating,
+                'image' => $hotel->image
+            ];
+        });
+        return response()->json(['hotels' => $data]);
     }
 
-    public function getCountries(){
+    public function getCountries()
+    {
         $Countrys = Country::all();
         $Citys = City::all();
         $zones = Zone::all();
@@ -34,7 +49,8 @@ class HotelController extends Controller
         return response()->json($data);
     }
 
-    public function AddHotel(Request $request){
+    public function AddHotel(Request $request)
+    {
         $validation = Validator::make($request->all(), [
             'hotel_name' => 'required',
             'country_id' => 'required|exists:countries,id',
@@ -45,7 +61,7 @@ class HotelController extends Controller
             'rating' => 'nullable',
             'image' => 'nullable|array',
         ]);
-        if($validation->fails()){
+        if ($validation->fails()) {
             return response()->json(['errors' => $validation->errors()], 401);
         }
         $hotel = Hotel::create([
@@ -63,19 +79,20 @@ class HotelController extends Controller
         ]);
     }
 
-    public function DeleteHotel($id){
-        $hotel=Hotel::find($id);
+    public function DeleteHotel($id)
+    {
+        $hotel = Hotel::find($id);
         $hotel->delete();
         return response()->json([
             'message' => 'Hotel deleted successfully',
         ]);
     }
- public function UpdateHotel(Request $request,$id){
-        $hotel=Hotel::find($id);
+    public function UpdateHotel(Request $request, $id)
+    {
+        $hotel = Hotel::find($id);
         $hotel->update($request->only($this->updateHotel));
         return response()->json([
             'message' => 'Hotel updated successfully',
         ]);
     }
-
 }

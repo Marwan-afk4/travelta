@@ -24,4 +24,8 @@ class Plan extends Model
         'type',
         'discount_value'
     ];
+
+    public function agents(){
+        return $this->hasMany(Agent::class);
+    }
 }

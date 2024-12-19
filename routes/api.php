@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\Authcontroller;
+use App\Http\Controllers\Api\SuperAdmin\AgencyController;
 use App\Http\Controllers\Api\SuperAdmin\CityController;
 use App\Http\Controllers\Api\SuperAdmin\CountryController;
 use App\Http\Controllers\Api\SuperAdmin\CurrancyController;
@@ -98,5 +99,9 @@ use Illuminate\Support\Facades\Route;
         Route::delete('/super/zone/delete/{id}', [ZoneController::class, 'deleteZone']);
 
         Route::put('/super/zone/update/{id}',[ZoneController::class,'updateZone']);
-    });
+
+/////////////////////////////////////////////// Agent ///////////////////////////////////////////////////////////
+
+        Route::get('/super/agents', [AgencyController::class, 'getAgency']);
+});
 
