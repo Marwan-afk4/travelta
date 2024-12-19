@@ -107,5 +107,9 @@ use Illuminate\Support\Facades\Route;
         Route::delete('/super/agent/delete/{id}', [AgencyController::class, 'deleteAgency']);
 
         Route::put('/super/agent/update/{id}',[AgencyController::class,'updateAgency']);
+
+////////////////////////////////////////////// Approve Signup Request ///////////////////////////////////////////////////
+
+
 });
 
