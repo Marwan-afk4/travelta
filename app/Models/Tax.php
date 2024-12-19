@@ -14,4 +14,8 @@ class Tax extends Model
         'agent_id',
         'affilate_id',
     ];
+
+    public function country(){
+        return $this->belongsTo(Country::class);
+    }
 }
