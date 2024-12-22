@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\SuperAdmin\DepartmentController;
 use App\Http\Controllers\Api\SuperAdmin\HotelController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
 use App\Http\Controllers\Api\SuperAdmin\ServicesController;
+use App\Http\Controllers\Api\SuperAdmin\SignupApproveController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
 use Illuminate\Http\Request;
@@ -101,7 +102,7 @@ use Illuminate\Support\Facades\Route;
         Route::put('/super/zone/update/{id}',[ZoneController::class,'updateZone']);
 
 ///////////////////////////////////////////////// Agent ///////////////////////////////////////////////////////////
- 
+
         Route::get('/super/agents', [AgencyController::class, 'getAgency']);
 
         Route::delete('/super/agent/delete/{id}', [AgencyController::class, 'deleteAgency']);
@@ -110,6 +111,15 @@ use Illuminate\Support\Facades\Route;
 
 ////////////////////////////////////////////// Approve Signup Request ///////////////////////////////////////////////////
 
+        Route::get('/super/signupLists', [SignupApproveController::class, 'getrequests']);
+
+        Route::put('/super/agent/approve/{id}',[SignupApproveController::class,'approveAgentSuplier']);
+
+        Route::put('/super/agent/reject/{id}',[SignupApproveController::class,'rejectAgentSuplier']);
+
+        Route::put('/super/affilate/approve/{id}',[SignupApproveController::class,'approveAffilate']);
+
+        Route::put('/super/affilate/reject/{id}',[SignupApproveController::class,'rejectAffilate']);
 
 });
 
