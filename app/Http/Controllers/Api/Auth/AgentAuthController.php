@@ -29,6 +29,29 @@ class AgentAuthController extends Controller
         ->get();
         $countries = $this->countries
         ->get();
+        $services = [
+            [
+                'name' => 'hotels'
+            ],
+            [
+                'name' => 'tours'
+            ],
+            [
+                'name' => 'flight'
+            ],
+            [
+                'name' => 'visas'
+            ],
+            [
+                'name' => 'service'
+            ],
+            [
+                'name' => 'umrah'
+            ],
+            [
+                'name' => 'activities'
+            ],
+        ];
 
         return response()->json([
             'sources' => $sources,
