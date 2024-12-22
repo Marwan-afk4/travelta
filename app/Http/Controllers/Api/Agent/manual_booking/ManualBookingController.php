@@ -16,9 +16,10 @@ class ManualBookingController extends Controller
 {
     public function __construct(private City $cities, private Country $contries,
     private CustomerData $customer_data, private SupplierAgent $supplier_agent,
-    private Service $services){}
+    private Service $services, private Tax $taxes){}
 
     public function lists(){
+        // https://travelta.online/agent/manual_booking/lists
         $cities = $this->cities
         ->get();
         $contries = $this->contries
@@ -34,6 +35,7 @@ class ManualBookingController extends Controller
     }
 
     public function to_b2_filter(Request $request){
+        // https://travelta.online/agent/manual_booking/supplier_customer
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -73,6 +75,7 @@ class ManualBookingController extends Controller
     }
 
     public function from_supplier(Request $request){
+        // https://travelta.online/agent/manual_booking/service_supplier
         $validation = Validator::make($request->all(), [
             'service_id' => 'required|exists:services,id',
         ]);
@@ -105,10 +108,27 @@ class ManualBookingController extends Controller
             }])
             ->first();
         }
-        $service = $service->suppliers->select('id', 'agent');
+        $supplier = $service->suppliers->select('id', 'agent');
 
         return response()->json([
-            'service' => $service,
+            'supplier' => $supplier,
+        ]);
+    }
+
+    public function from_taxes(Request $request){
+        // https://travelta.online/agent/manual_booking/taxes
+        $validation = Validator::make($request->all(), [
+            'country_id' => 'required|exists:countries,id',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        $taxes = $this->taxes
+        ->where('country_id', $request->country_id)
+        ->get();
+
+        return response()->json([
+            'taxes' => $taxes
         ]);
     }
 }
