@@ -18,6 +18,8 @@ return new class extends Migration
             $table->date('travel_date');
             $table->date('appointment_date');
             $table->string('notes')->nullable();
+            $table->integer('number');
+            $table->string('customers', 1000);
             $table->timestamps();
         });
     }

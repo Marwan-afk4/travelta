@@ -11,6 +11,8 @@ class ManuelVisa extends Model
         'travel_date',
         'appointment_date',
         'notes',
-        'manuel_booking_id', 
+        'manuel_booking_id',
+        'number',
+        'customers'
     ];
 }
