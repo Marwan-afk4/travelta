@@ -57,6 +57,7 @@ class AgentAuthController extends Controller
             'sources' => $sources,
             'cities' => $cities,
             'countries' => $countries,
+            'services' => $services,
         ]);
     }
 
