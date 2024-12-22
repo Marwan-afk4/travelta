@@ -154,6 +154,7 @@ class AgentAuthController extends Controller
     }
 
     public function login(LoginRequest $request){
+        // https://travelta.online/agent/login
         // Keys
         // email, password
         $user = $this->agent

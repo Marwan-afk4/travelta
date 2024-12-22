@@ -76,6 +76,8 @@ class ManualBookingController extends Controller
 
     public function from_supplier(Request $request){
         // https://travelta.online/agent/manual_booking/service_supplier
+        // Keys
+        // service_id
         $validation = Validator::make($request->all(), [
             'service_id' => 'required|exists:services,id',
         ]);
@@ -117,6 +119,8 @@ class ManualBookingController extends Controller
 
     public function from_taxes(Request $request){
         // https://travelta.online/agent/manual_booking/taxes
+        // Keys
+        // country_id
         $validation = Validator::make($request->all(), [
             'country_id' => 'required|exists:countries,id',
         ]);
