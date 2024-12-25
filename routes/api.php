@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\SuperAdmin\CountryController;
 use App\Http\Controllers\Api\SuperAdmin\CurrancyController;
 use App\Http\Controllers\Api\SuperAdmin\DepartmentController;
 use App\Http\Controllers\Api\SuperAdmin\HotelController;
+use App\Http\Controllers\Api\SuperAdmin\PaymentController;
+use App\Http\Controllers\Api\SuperAdmin\PaymentMethodController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
 use App\Http\Controllers\Api\SuperAdmin\ServicesController;
 use App\Http\Controllers\Api\SuperAdmin\SignupApproveController;
@@ -122,9 +124,21 @@ use Illuminate\Support\Facades\Route;
 
         Route::put('/super/affilate/reject/{id}',[SignupApproveController::class,'rejectAffilate']);
 
-///////////////////////////////////////////////// Booking /////////////////////////////////////////////////////////
+///////////////////////////////////////////////// Payment Method /////////////////////////////////////////////////////////
 
-        Route::get('/super/bookings', [BookingController::class, 'getBookings']);
+        Route::get('/super/paymentMethods', [PaymentMethodController::class, 'getPaymentMethods']);
+
+        Route::post('/super/paymentMethod/add', [PaymentMethodController::class, 'addPaymentMethod']);
+
+        Route::delete('/super/paymentMethod/delete/{id}', [PaymentMethodController::class, 'deletePaymentMethod']);
+
+//////////////////////////////////////////////// Pending Payments ///////////////////////////////////////////////////////////
+
+        Route::get('/super/pendingPayments', [PaymentController::class, 'getPyamnts']);
+
+        Route::put('/super/payment/approve/{id}',[PaymentController::class,'approvePayment']);
+
+        Route::put('/super/payment/reject/{id}',[PaymentController::class,'rejectPayment']);
 
 });
 
