@@ -160,7 +160,7 @@ class LeadController extends Controller
         ]);
     }
 
-    public function delete($id){
+    public function delete(Request $request, $id){
         // /leads/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
