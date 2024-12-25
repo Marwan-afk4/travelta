@@ -31,7 +31,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('leads_search', 'leads_search');
         Route::post('add_lead', 'add_lead');
         Route::post('add', 'create');
-        Route::delete('delete', 'delete');
+        Route::delete('delete/{id}', 'delete');
     });
     
     Route::controller(SupplierController::class)->prefix('supplier')->group(function(){
