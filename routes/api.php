@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\Authcontroller;
 use App\Http\Controllers\Api\SuperAdmin\AgencyController;
+use App\Http\Controllers\Api\SuperAdmin\BookingController;
 use App\Http\Controllers\Api\SuperAdmin\CityController;
 use App\Http\Controllers\Api\SuperAdmin\CountryController;
 use App\Http\Controllers\Api\SuperAdmin\CurrancyController;
@@ -120,6 +121,10 @@ use Illuminate\Support\Facades\Route;
         Route::put('/super/affilate/approve/{id}',[SignupApproveController::class,'approveAffilate']);
 
         Route::put('/super/affilate/reject/{id}',[SignupApproveController::class,'rejectAffilate']);
+
+///////////////////////////////////////////////// Booking /////////////////////////////////////////////////////////
+
+        Route::get('/super/bookings', [BookingController::class, 'getBookings']);
 
 });
 

@@ -12,10 +12,18 @@ class SignupApproveController extends Controller
 
 
     public function getrequests(){
-        $affilates = AffilateAgent::where('role', 'affilate')->get();
-        $freelancers = AffilateAgent::where('role', 'freelancer')->get();
-        $agency = Agent::where('role', 'agent')->get();
-        $supplier = Agent::where('role', 'supplier')->get();
+        $affilates = AffilateAgent::where('role', 'affilate')
+        ->where('status', 'pending')
+        ->get();
+        $freelancers = AffilateAgent::where('role', 'freelancer')
+        ->where('status', 'pending')
+        ->get();
+        $agency = Agent::where('role', 'agent')
+        ->where('status', 'pending')
+        ->get();
+        $supplier = Agent::where('role', 'supplier')
+        ->where('status', 'pending')
+        ->get();
 
         return response()->json([
             'affilates' => $affilates,
