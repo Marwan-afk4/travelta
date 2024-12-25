@@ -36,6 +36,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     
     Route::controller(SupplierController::class)->prefix('supplier')->group(function(){
         Route::get('/', 'view');
+        Route::get('item/{id}', 'supplier');
         Route::post('add', 'create');
         Route::post('update/{id}', 'modify');
         Route::delete('delete/{id}', 'delete');
