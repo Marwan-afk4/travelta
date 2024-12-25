@@ -13,6 +13,7 @@ class CustomerController extends Controller
     public function __construct( private CustomerData $customer_data){}
 
     public function view(Request $request){
+        // customer
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
