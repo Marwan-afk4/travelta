@@ -19,6 +19,8 @@ use App\Models\ManuelFlight;
 use App\Models\ManuelHotel;
 use App\Models\ManuelTour;
 use App\Models\ManuelVisa;
+use App\Models\ManuelTourBus;
+use App\Models\ManuelTourHotel;
 
 class ManualBookingController extends Controller
 {
@@ -205,13 +207,16 @@ class ManualBookingController extends Controller
     }
 
     public function booking(ManuelBookingRequest $request){
+        // Hotel => "success": {"to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","check_in": "2024-05-05","check_out": "2024-07-07","nights": "3","hotel_name": "Hilton","room_type": "2","room_quantity": "10","adults": "25","childreen": "10"}
+       // Bus => "success": {"to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","from": "Alex","to": "Sharm","departure": "2024-05-05 11:30:00","arrival": "2024-07-07 11:30:00","adults": "2","childreen": "10","adult_price": "250","child_price": "100","bus": "Travelta","bus_number": "12345","driver_phone": "01234566"}
+
         $manuelRequest = $request->validated();
         $manuel_booking = $this->manuel_booking
         ->create($manuelRequest);
         $service = $this->services
         ->where('id', $request->from_service_id)
         ->first()->service_name;
-        if ($service == 'hotel' || $service == 'Hotel') {
+        if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
             $validation = Validator::make($request->all(), [
                 'check_in' => 'required|date',
                 'check_out' => 'required|date',
@@ -229,50 +234,6 @@ class ManualBookingController extends Controller
             $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
             $manuel_hotel = $this->manuel_hotel
             ->create($hotelRequest);
-        }
-        elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-            $validation = Validator::make($request->all(), [
-                'from' => 'required',
-                'to' => 'required',
-                'departure' => 'required|date',
-                'arrival' => 'required|date',
-                'adults' => 'required|numeric',
-                'childreen' => 'required|numeric',
-                'adult_price' => 'required|numeric',
-                'child_price' => 'required|numeric',
-                'bus' => 'required',
-                'bus_number' => 'required',
-                'driver_phone' => 'required',
-            ]);
-            if($validation->fails()){
-                return response()->json(['errors'=>$validation->errors()], 401);
-            }
-            $busRequest = $request->only($this->busRequest);
-            $busRequest['manuel_booking_id'] = $manuel_booking->id;
-            $manuel_bus = $this->manuel_bus
-            ->create($busRequest);
-        }
-        elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-            $validation = Validator::make($request->all(), [
-                'from' => 'required',
-                'to' => 'required',
-                'departure' => 'required|date',
-                'arrival' => 'required|date',
-                'adults' => 'required|numeric',
-                'childreen' => 'required|numeric',
-                'adult_price' => 'required|numeric',
-                'child_price' => 'required|numeric',
-                'bus' => 'required',
-                'bus_number' => 'required',
-                'driver_phone' => 'required',
-            ]);
-            if($validation->fails()){
-                return response()->json(['errors'=>$validation->errors()], 401);
-            }
-            $busRequest = $request->only($this->busRequest);
-            $busRequest['manuel_booking_id'] = $manuel_booking->id;
-            $manuel_bus = $this->manuel_bus
-            ->create($busRequest);
         }
         elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
             $validation = Validator::make($request->all(), [

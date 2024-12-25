@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\api\agent\supplier\SupplierRequest;
 
 use App\Models\SupplierAgent;
+use App\Models\Service;
 
 class SupplierController extends Controller
 {
-    public function __construct(private SupplierAgent $supplier_agent){}
+    public function __construct(private SupplierAgent $supplier_agent,
+    private Service $services){}
     protected $supplierRequest = [
         'agent',
         'admin_name',
@@ -44,14 +46,19 @@ class SupplierController extends Controller
             ->with('services')
             ->get();
         }
+        $services = $this->services
+        ->get();
         
         return response()->json([
-            'supplier_agent' => $supplier_agent
+            'supplier_agent' => $supplier_agent,
+            'services' => $services
         ]); 
     }
 
     public function create(SupplierRequest $request){
         // supplier/add
+        // Keys
+        // agent,admin_name,admin_phone,admin_email,emails,phones,services[],
         $supplierRequest = $request->only($this->supplierRequest);
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
