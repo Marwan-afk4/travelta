@@ -65,4 +65,8 @@ class Agent extends Model
     public function zone(){
         return $this->belongsTo(Zone::class);
     }
+
+    public function manualpayment(){
+        return $this->hasMany(ManualPayment::class);
+    }
 }

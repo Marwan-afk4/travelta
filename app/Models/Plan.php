@@ -28,4 +28,8 @@ class Plan extends Model
     public function agents(){
         return $this->hasMany(Agent::class);
     }
+
+    public function manualpayment(){
+        return $this->hasMany(ManualPayment::class);
+    }
 }
