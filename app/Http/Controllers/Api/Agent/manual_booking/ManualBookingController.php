@@ -313,6 +313,7 @@ class ManualBookingController extends Controller
             ->create($tourRequest);
             $manuel_tour_bus = is_array($request->tour_buses) ?? json_decode($request->tour_buses);
             $manuel_tour_hotel = is_array($request->tour_hotels) ?? json_decode($request->tour_hotels);
+           // return $manuel_tour_bus;
             foreach ($manuel_tour_bus as $item) {
                 $this->manuel_tour_bus
                 ->create([

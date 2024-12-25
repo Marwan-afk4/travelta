@@ -81,8 +81,8 @@ class SupplierController extends Controller
             ->first();
         } 
         
-        return response()->json([ 
-            'service' => $services
+        return response()->json([
+            'supplier_agent' => $supplier_agent,
         ]); 
     }
 
