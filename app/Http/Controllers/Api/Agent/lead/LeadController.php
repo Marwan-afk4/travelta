@@ -160,16 +160,8 @@ class LeadController extends Controller
         ]);
     }
 
-    public function delete(Request $request){
-        // /leads/delete
-        // Keys
-        // customer_id
-        $validation = Validator::make($request->all(), [
-            'customer_id' => 'required|exists:customers,id',
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
-        }
+    public function delete(Request $request, $id){
+        // /leads/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -182,13 +174,13 @@ class LeadController extends Controller
 
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
             $this->customer_data
-            ->where('customer_id', $request->customer_id)
+            ->where('customer_id', $id)
             ->where('affilate_id', $agent_id)
             ->delete();
         } 
         else {
             $this->customer_data
-            ->where('customer_id', $request->customer_id)
+            ->where('customer_id', $id)
             ->where('agent_id', $agent_id)
             ->delete();
         }

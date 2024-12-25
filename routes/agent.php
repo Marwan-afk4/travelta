@@ -31,7 +31,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('leads_search', 'leads_search');
         Route::post('add_lead', 'add_lead');
         Route::post('add', 'create');
-        Route::delete('delete', 'delete');
+        Route::delete('delete/{id}', 'delete');
     });
     
     Route::controller(SupplierController::class)->prefix('supplier')->group(function(){
@@ -42,10 +42,11 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
     
     Route::controller(ManualBookingController::class)->prefix('manual_booking')->group(function(){
+        Route::post('/', 'booking');
         Route::get('/supplier_customer', 'to_b2_filter'); 
         Route::get('/service_supplier', 'from_supplier'); 
         Route::get('/taxes', 'from_taxes'); 
-        Route::get('/lists', 'lists'); 
+        Route::get('/lists', 'lists');
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){

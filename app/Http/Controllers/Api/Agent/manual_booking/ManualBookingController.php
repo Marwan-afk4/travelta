@@ -3,20 +3,90 @@
 namespace App\Http\Controllers\Api\Agent\manual_booking;
 
 use App\Http\Controllers\Controller;
-use App\Models\City;
-use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\api\agent\manuel_booking\ManuelBookingRequest;
 
 use App\Models\CustomerData;
 use App\Models\SupplierAgent;
 use App\Models\Service;
+use App\Models\City;
+use App\Models\Country;
+use App\Models\Tax;
+use App\Models\ManuelBooking;
+use App\Models\ManuelBus;
+use App\Models\ManuelFlight;
+use App\Models\ManuelHotel;
+use App\Models\ManuelTour;
+use App\Models\ManuelVisa;
+use App\Models\ManuelTourBus;
+use App\Models\ManuelTourHotel;
 
 class ManualBookingController extends Controller
 {
     public function __construct(private City $cities, private Country $contries,
     private CustomerData $customer_data, private SupplierAgent $supplier_agent,
-    private Service $services, private Tax $taxes){}
+    private Service $services, private Tax $taxes, private ManuelBooking $manuel_booking,
+    private ManuelBus $manuel_bus, private ManuelFlight $manuel_flight, 
+    private ManuelHotel $manuel_hotel, private ManuelTour $manuel_tour, 
+    private ManuelVisa $manuel_visa, private ManuelTourBus $manuel_tour_bus,
+    private ManuelTourHotel $manuel_tour_hotel){}
+    
+    protected $hotelRequest = [
+        'check_in',
+        'check_out',
+        'nights',
+        'hotel_name',
+        'room_type',
+        'room_quantity',
+        'adults',
+        'childreen',
+    ];
+    protected $busRequest = [
+        'from',
+        'to',
+        'departure',
+        'arrival',
+        'adults',
+        'childreen',
+        'adult_price',
+        'child_price',
+        'bus',
+        'bus_number',
+        'driver_phone'
+    ];
+    protected $visaRequest = [
+        'country',
+        'travel_date',
+        'appointment_date',
+        'notes',
+        'number',
+        'customers',
+    ];
+    protected $flightRequest = [
+        'type',
+        'direction',
+        'from_to',
+        'departure',
+        'arrival',
+        'class',
+        'adults',
+        'childreen',
+        'infants',
+        'airline',
+        'ticket_number',
+        'adult_price',
+        'child_price',
+        'ref_pnr',
+    ];
+    protected $tourRequest = [
+        'tour',
+        'type',
+        'adult_price',
+        'child_price',
+        'adults',
+        'childreen',
+    ];
 
     public function lists(){
         // https://travelta.online/agent/manual_booking/lists
@@ -133,6 +203,138 @@ class ManualBookingController extends Controller
 
         return response()->json([
             'taxes' => $taxes
+        ]);
+    }
+
+    public function booking(ManuelBookingRequest $request){
+        // Hotel => "success": {"to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","check_in": "2024-05-05","check_out": "2024-07-07","nights": "3","hotel_name": "Hilton","room_type": "2","room_quantity": "10","adults": "25","childreen": "10"}
+       // Bus => "success": {"to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","from": "Alex","to": "Sharm","departure": "2024-05-05 11:30:00","arrival": "2024-07-07 11:30:00","adults": "2","childreen": "10","adult_price": "250","child_price": "100","bus": "Travelta","bus_number": "12345","driver_phone": "01234566"}
+
+        $manuelRequest = $request->validated();
+        $manuel_booking = $this->manuel_booking
+        ->create($manuelRequest);
+        $service = $this->services
+        ->where('id', $request->from_service_id)
+        ->first()->service_name;
+        if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
+            $validation = Validator::make($request->all(), [
+                'check_in' => 'required|date',
+                'check_out' => 'required|date',
+                'nights' => 'required|numeric',
+                'hotel_name' => 'required',
+                'room_type' => 'required',
+                'room_quantity' => 'required|numeric',
+                'adults' => 'required|numeric',
+                'childreen' => 'required|numeric',
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            }
+            $hotelRequest = $request->only($this->hotelRequest);
+            $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
+            $manuel_hotel = $this->manuel_hotel
+            ->create($hotelRequest);
+        }
+        elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
+            $validation = Validator::make($request->all(), [
+                'from' => 'required',
+                'to' => 'required',
+                'departure' => 'required|date',
+                'arrival' => 'required|date',
+                'adults' => 'required|numeric',
+                'childreen' => 'required|numeric',
+                'adult_price' => 'required|numeric',
+                'child_price' => 'required|numeric',
+                'bus' => 'required',
+                'bus_number' => 'required',
+                'driver_phone' => 'required',
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            }
+            $busRequest = $request->only($this->busRequest);
+            $busRequest['manuel_booking_id'] = $manuel_booking->id;
+            $manuel_bus = $this->manuel_bus
+            ->create($busRequest);
+        }
+        elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
+            $validation = Validator::make($request->all(), [
+                'country' => 'required',
+                'travel_date' => 'required|date', 
+                'appointment_date' => 'date',
+                'number' => 'required|numeric', 
+                'customers' => 'required', 
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            }
+            $visaRequest = $request->only($this->visaRequest);
+            $visaRequest['manuel_booking_id'] = $manuel_booking->id;
+            $manuel_visa = $this->manuel_visa
+            ->create($visaRequest);
+        }
+        elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
+            $validation = Validator::make($request->all(), [
+                'type' => 'in:domestic,international',
+                'direction' => 'in:one_way,round_trip,multi_city',
+                'departure' => 'date',
+                'arrival' => 'date',
+                'adults' => 'numeric',
+                'childreen' => 'numeric',
+                'infants' => 'numeric',
+                'adult_price' => 'numeric',
+                'child_price' => 'numeric',
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            }
+            $flightRequest = $request->only($this->flightRequest);
+            $flightRequest['manuel_booking_id'] = $manuel_booking->id;
+            $manuel_flight = $this->manuel_flight
+            ->create($flightRequest);
+        }
+        elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
+            $validation = Validator::make($request->all(), [
+                'tour' => 'required',
+                'type' => 'required|in:domestic,international',
+                'adult_price' => 'numeric',
+                'child_price' => 'numeric',
+                'adults' => 'numeric',
+                'childreen' => 'numeric', 
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            }
+            $tourRequest = $request->only($this->tourRequest);
+            $tourRequest['manuel_booking_id'] = $manuel_booking->id;
+            $manuel_tour = $this->manuel_tour
+            ->create($tourRequest);
+            $manuel_tour_bus = is_array($request->tour_buses) ?? json_decode($request->tour_buses);
+            $manuel_tour_hotel = is_array($request->tour_hotels) ?? json_decode($request->tour_hotels);
+            foreach ($manuel_tour_bus as $item) {
+                $this->manuel_tour_bus
+                ->create([
+                    'transportation' => $item['transportation'],
+                    'manuel_tour_id' => $manuel_tour->id,
+                    'seats' => $item['seats'],
+                ]);
+            }
+            foreach ($manuel_tour_hotel as $item) {
+                $this->manuel_tour_hotel
+                ->create([
+                    'destination' => $item['destination'],
+                    'manuel_tour_id' => $manuel_tour->id,
+                    'hotel_name' => $item['hotel_name'],
+                    'room_type' => $item['room_type'],
+                    'check_in' => $item['check_in'],
+                    'check_out' => $item['check_out'],
+                    'nights' => $item['nights'],
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => $request->all(),
         ]);
     }
 }

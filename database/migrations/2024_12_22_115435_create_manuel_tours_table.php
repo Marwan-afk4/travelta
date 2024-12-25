@@ -16,18 +16,10 @@ return new class extends Migration
             $table->string('tour');
             $table->enum('type', ['domestic', 'international']);
             $table->foreignId(column: 'manuel_booking_id')->nullable()->constrained('manuel_bookings')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('destination');
-            $table->string('hotel_name');
-            $table->string('room_type');
-            $table->date('check_in');
-            $table->date('check_out'); 
-            $table->string('nights');
-            $table->integer('adults');
-            $table->integer('childreen'); 
             $table->float('adult_price');
             $table->float('child_price');
-            $table->enum('transportation', ['Flight', 'Bus']);
-            $table->integer('seats');
+            $table->integer('adults');
+            $table->integer('childreen');
             $table->timestamps();
         });
     }
