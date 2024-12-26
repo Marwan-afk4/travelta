@@ -41,6 +41,7 @@ Route::controller(PlanController::class)->prefix('plan')->group(function(){
 });
 
 Route::controller(PaymentController::class)->prefix('payment')->group(function(){
+    Route::get('/payment_methods', 'getPaymentMethods');
     Route::post('/make_payment', 'makePayment');
 });
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ManualPayment;
+use App\Models\PaymentMethod;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -104,5 +105,13 @@ class PaymentController extends Controller
         $payment->end_date = now()->addDays($plan->period_in_days);
         $payment->save();
         return response()->json(['message' => 'payment accepted successfually']);
+    }
+
+    public function getPaymentMethods(){
+        $paymentMethods = PaymentMethod::all();
+        $data = [
+            'Payment_Methods' => $paymentMethods
+        ];
+        return response()->json($data);
     }
 }
