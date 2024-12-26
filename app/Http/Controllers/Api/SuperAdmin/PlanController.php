@@ -22,7 +22,6 @@ class PlanController extends Controller
             'agencyPlans' => $agencyPlans,
             'suplierPlans' => $suplierPlans,
         ]);
-
     }
 
     public function addplan(Request $request){

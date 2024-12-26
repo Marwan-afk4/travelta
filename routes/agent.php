@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
+use App\Http\Controllers\Api\SuperAdmin\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
 
 Route::controller(AgentAuthController::class)->group(function(){
@@ -34,9 +35,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('add', 'create');
         Route::delete('delete/{id}', 'delete');
     });
-
+//marwan
 Route::controller(PlanController::class)->prefix('plan')->group(function(){
     Route::get('/', 'plans');
+});
+
+Route::controller(PaymentController::class)->prefix('payment')->group(function(){
+    Route::post('/make_payment', 'makePayment');
 });
 
     Route::controller(SupplierController::class)->prefix('supplier')->group(function(){
