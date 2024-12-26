@@ -12,11 +12,17 @@ class PlanController extends Controller
 
 
     public function plans(){
-        $plan=Plan::all();
-        $data = [
-            'plans' => $plan
-        ];
-        return response()->json($data);
+        $affilatePlans=Plan::where('type','affiliate')->get();
+        $freelancerPlans=Plan::where('type','freelancer')->get();
+        $agencyPlans=Plan::where('type','agency')->get();
+        $suplierPlans=Plan::where('type','suplier')->get();
+        return response()->json([
+            'affilatePlans' => $affilatePlans,
+            'freelancerPlans' => $freelancerPlans,
+            'agencyPlans' => $agencyPlans,
+            'suplierPlans' => $suplierPlans,
+        ]);
+
     }
 
     public function addplan(Request $request){
@@ -73,4 +79,7 @@ class PlanController extends Controller
             'message' => 'Plan deleted successfully',
         ]);
     }
+
+
+
 }

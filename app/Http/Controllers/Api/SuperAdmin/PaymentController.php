@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ManualPayment;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller

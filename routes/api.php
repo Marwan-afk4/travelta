@@ -140,5 +140,7 @@ use Illuminate\Support\Facades\Route;
 
         Route::put('/super/payment/reject/{id}',[PaymentController::class,'rejectPayment']);
 
+////////////////////////////////////////////// Plans to
+
 });
 

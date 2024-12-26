@@ -32,4 +32,8 @@ class Plan extends Model
     public function manualpayment(){
         return $this->hasMany(ManualPayment::class);
     }
+
+    public function affilateagents(){
+        return $this->belongsTo(AffilateAgent::class);
+    }
 }
