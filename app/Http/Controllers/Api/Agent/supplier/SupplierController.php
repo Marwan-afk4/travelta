@@ -55,6 +55,37 @@ class SupplierController extends Controller
         ]); 
     }
 
+    public function supplier(Request $request, $id){
+        // supplier
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $supplier_agent = $this->supplier_agent 
+            ->where('affilate_id', $agent_id)
+            ->where('id', $id)
+            ->with('services')
+            ->first();
+        } 
+        else {
+            $supplier_agent = $this->supplier_agent 
+            ->where('agent_id', $agent_id)
+            ->where('id', $id)
+            ->with('services')
+            ->first();
+        } 
+        
+        return response()->json([
+            'supplier_agent' => $supplier_agent,
+        ]); 
+    }
+
     public function create(SupplierRequest $request){
         // supplier/add
         // Keys
