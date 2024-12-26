@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
+use App\Http\Controllers\Api\SuperAdmin\PlanController;
 
 Route::controller(AgentAuthController::class)->group(function(){
     Route::get('signupLists', 'lists');
@@ -33,7 +34,11 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('add', 'create');
         Route::delete('delete/{id}', 'delete');
     });
-    
+
+Route::controller(PlanController::class)->prefix('plan')->group(function(){
+    Route::get('/', 'plans');
+});
+
     Route::controller(SupplierController::class)->prefix('supplier')->group(function(){
         Route::get('/', 'view');
         Route::get('item/{id}', 'supplier');
@@ -41,12 +46,12 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('update/{id}', 'modify');
         Route::delete('delete/{id}', 'delete');
     });
-    
+
     Route::controller(ManualBookingController::class)->prefix('manual_booking')->group(function(){
         Route::post('/', 'booking');
-        Route::get('/supplier_customer', 'to_b2_filter'); 
-        Route::get('/service_supplier', 'from_supplier'); 
-        Route::get('/taxes', 'from_taxes'); 
+        Route::get('/supplier_customer', 'to_b2_filter');
+        Route::get('/service_supplier', 'from_supplier');
+        Route::get('/taxes', 'from_taxes');
         Route::get('/lists', 'lists');
     });
 
@@ -57,7 +62,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::controller(CustomerController::class)->prefix('customer')->group(function(){
         Route::get('/', 'view');
     });
-    
+
     Route::prefix('/settings')->group(function(){
         Route::controller(TaxController::class)->prefix('tax')->group(function(){
             Route::get('/', 'view');
