@@ -21,6 +21,7 @@ use App\Models\ManuelTour;
 use App\Models\ManuelVisa;
 use App\Models\ManuelTourBus;
 use App\Models\ManuelTourHotel;
+use App\Models\CurrencyAgent;
 
 class ManualBookingController extends Controller
 {
@@ -30,7 +31,7 @@ class ManualBookingController extends Controller
     private ManuelBus $manuel_bus, private ManuelFlight $manuel_flight, 
     private ManuelHotel $manuel_hotel, private ManuelTour $manuel_tour, 
     private ManuelVisa $manuel_visa, private ManuelTourBus $manuel_tour_bus,
-    private ManuelTourHotel $manuel_tour_hotel){}
+    private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency){}
     
     protected $hotelRequest = [
         'check_in',
@@ -88,19 +89,39 @@ class ManualBookingController extends Controller
         'childreen',
     ];
 
-    public function lists(){
+    public function lists(Request $request){
         // https://travelta.online/agent/manual_booking/lists
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
         $cities = $this->cities
         ->get();
         $contries = $this->contries
         ->get();
         $services = $this->services
         ->get();
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $currencies = $this->currency
+            ->where('affilate_id', $agent_id)
+            ->get();
+        } 
+        else {
+            $currencies = $this->currency
+            ->where('agent_id', $agent_id)
+            ->get();
+        }
 
         return response()->json([
             'cities' => $cities,
             'contries' => $contries,
             'services' => $services,
+            'currencies' => $currencies
         ]);
     }
 

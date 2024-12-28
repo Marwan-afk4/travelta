@@ -56,7 +56,7 @@ class SupplierController extends Controller
     }
 
     public function supplier(Request $request, $id){
-        // supplier
+        // supplier/item/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
