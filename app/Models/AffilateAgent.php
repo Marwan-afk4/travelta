@@ -39,4 +39,8 @@ class AffilateAgent extends Model
     public function manualpayment(){
         return $this->hasMany(ManualPayment::class, 'affilate_agent_id');
     }
+
+    public function plans(){
+        return $this->hasMany(Plan::class);
+    }
 }

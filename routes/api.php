@@ -136,9 +136,11 @@ use Illuminate\Support\Facades\Route;
 
         Route::get('/super/pendingPayments', [PaymentController::class, 'getPyamnts']);
 
-        Route::put('/super/payment/approve/{id}',[PaymentController::class,'approvePayment']);
+        Route::put('/super/accept-payment/{plan_id}/{id}',[PaymentController::class,'acceptPayment']);
 
         Route::put('/super/payment/reject/{id}',[PaymentController::class,'rejectPayment']);
 
+
+        Route::post('/super/make-payment',[PaymentController::class , 'makePayment']);
 });
 
