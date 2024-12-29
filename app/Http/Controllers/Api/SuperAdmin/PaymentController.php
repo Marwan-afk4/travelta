@@ -22,7 +22,9 @@ class PaymentController extends Controller
                 'payment_method_id' => $payment->payment_method_id,
                 'payment_method_name' => $payment->paymentMethod->name,
                 'affilate_agent_id' => $payment->affilate_agent_id ?? null,
-                'affilate_agent_name' => $payment->affilate_agent->f_name . ' ' . $payment->affilate_agent->l_name ?? null,
+                'affilate_agent_name' => $payment->affilate_agent
+            ? $payment->affilate_agent->f_name . ' ' . $payment->affilate_agent->l_name
+            : null,
                 'affilate_agent_email' => $payment->affilate_agent->email ?? null,
                 'affilate_agent_phone' => $payment->affilate_agent->phone ?? null,
                 'agent_id' => $payment->agency_id ?? null,
