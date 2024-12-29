@@ -25,7 +25,7 @@ class ManualPayment extends Model
     }
 
     public function agent(){
-        return $this->belongsTo(Agent::class);
+        return $this->belongsTo(Agent::class,'agency_id');
     }
 
     public function plan(){
