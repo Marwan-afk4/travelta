@@ -20,6 +20,8 @@ class ManuelBooking extends Model
         'city_id',
         'mark_up',
         'mark_up_type',
+        'affilate_id',
+        'agent_id',
     ];
 
     public function taxes(){

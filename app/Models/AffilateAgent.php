@@ -19,6 +19,10 @@ class AffilateAgent extends Model
         'password',
         'role',
         'status',
+        'plan_id',
+        'start_date',
+        'end_date',
+        'price_cycle',
     ];
 
     protected $hidden = [
