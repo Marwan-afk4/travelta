@@ -47,7 +47,7 @@ class Agent extends Model
     }
 
     public function legal_papers(){
-        return $this->hasMany(LegalPaper::class);
+        return $this->hasMany(LegalPaper::class,'agent_id');
     }
 
     public function plan(){

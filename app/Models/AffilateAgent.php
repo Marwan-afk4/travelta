@@ -33,9 +33,8 @@ class AffilateAgent extends Model
     }
 
     public function legal_papers(){
-        return $this->hasMany(LegalPaper::class, 'affilate_id');
+        return $this->hasMany(LegalPaper::class,'affilate_id');
     }
-
     public function manualpayment(){
         return $this->hasMany(ManualPayment::class, 'affilate_agent_id');
     }
