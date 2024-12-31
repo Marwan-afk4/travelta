@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
 use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
+use App\Http\Controllers\Api\Agent\booking\BookingController;
+
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
 
@@ -60,6 +62,12 @@ Route::controller(PaymentController::class)->prefix('payment')->group(function()
         Route::get('/service_supplier', 'from_supplier');
         Route::get('/taxes', 'from_taxes');
         Route::get('/lists', 'lists');
+    });
+
+    Route::controller(BookingController::class)->prefix('booking')->group(function(){
+        Route::get('/upcoming', 'upcoming');
+        Route::get('/current', 'current');
+        Route::get('/past', 'past');
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){

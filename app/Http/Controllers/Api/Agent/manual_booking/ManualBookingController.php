@@ -356,26 +356,30 @@ class ManualBookingController extends Controller
             $manuel_tour_bus = is_string($request->tour_buses) ? json_decode($request->tour_buses) : $request->taxes;
             $manuel_tour_hotel = is_string($request->tour_hotels) ? json_decode($request->tour_hotels) : $request->taxes; 
            // return $manuel_tour_bus;
-            foreach ($manuel_tour_bus as $item) {
-                $this->manuel_tour_bus
-                ->create([
-                    'transportation' => $item['transportation'],
-                    'manuel_tour_id' => $manuel_tour->id,
-                    'seats' => $item['seats'],
-                ]);
-            }
-            foreach ($manuel_tour_hotel as $item) {
-                $this->manuel_tour_hotel
-                ->create([
-                    'destination' => $item['destination'],
-                    'manuel_tour_id' => $manuel_tour->id,
-                    'hotel_name' => $item['hotel_name'],
-                    'room_type' => $item['room_type'],
-                    'check_in' => $item['check_in'],
-                    'check_out' => $item['check_out'],
-                    'nights' => $item['nights'],
-                ]);
-            }
+           if ($manuel_tour_bus) {
+                foreach ($manuel_tour_bus as $item) {
+                    $this->manuel_tour_bus
+                    ->create([
+                        'transportation' => $item['transportation'],
+                        'manuel_tour_id' => $manuel_tour->id,
+                        'seats' => $item['seats'],
+                    ]);
+                }
+           }
+           if ($manuel_tour_hotel) {
+                foreach ($manuel_tour_hotel as $item) {
+                    $this->manuel_tour_hotel
+                    ->create([
+                        'destination' => $item['destination'],
+                        'manuel_tour_id' => $manuel_tour->id,
+                        'hotel_name' => $item['hotel_name'],
+                        'room_type' => $item['room_type'],
+                        'check_in' => $item['check_in'],
+                        'check_out' => $item['check_out'],
+                        'nights' => $item['nights'],
+                    ]);
+                }
+           }
         }
 
         return response()->json([

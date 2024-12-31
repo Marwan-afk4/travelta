@@ -22,142 +22,222 @@ class BookingController extends Controller
         ]);
     }
 
-    public function upcoming($id){
-        $service = $this->services
-        ->where('id', $id)
-        ->first()->service_name;
-        $manuel_booking = [];
-        if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'hotel'])
-            ->where('from_service_id', $id)
-            ->whereHas('hotel', function($query){
-                $query->where('check_in', '>', date('Y-m-d'));
-            })
-            ->get();
+    public function upcoming(Request $request){    
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
         }
-        elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'bus'])
-            ->where('from_service_id', $id)
-            ->whereHas('bus', function($query){
-                $query->where('departure', '>', date('Y-m-d'));
-            })
-            ->get();
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
         }
-        elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'visa'])
-            ->where('from_service_id', $id)
-            ->whereHas('visa', function($query){
-                $query->where('travel_date', '>', date('Y-m-d'));
-            })
-            ->get();
+        else{
+            $agent_id = $request->user()->id;
         }
-        elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'flight'])
-            ->where('from_service_id', $id)
-            ->whereHas('flight', function($query){
-                $query->where('departure', '>', date('Y-m-d'));
-            })
-            ->get();
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
         }
-        elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'tour'])
-            ->where('from_service_id', $id)
-            ->whereNotHas('tour.hotel', function($query){
-                $query->where('check_in', '<=', date('Y-m-d'));
-            })
-            ->get();
+        else{
+            $agent_type = 'agent_id';
         }
+        $hotel = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'hotel'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('hotel', function($query){
+            $query->where('check_in', '>', date('Y-m-d'));
+        })
+        ->get();
+        $bus = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'bus'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('bus', function($query){
+            $query->where('departure', '>', date('Y-m-d'));
+        })
+        ->get();
+        $visa = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'visa'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('visa', function($query){
+            $query->where('travel_date', '>', date('Y-m-d'));
+        })
+        ->get();
+        $flight = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'flight'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('flight', function($query){
+            $query->where('departure', '>', date('Y-m-d'));
+        })
+        ->get();
+       $tour = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'tour'])
+        ->whereHas('tour.hotel')
+        ->where($agent_type, $agent_id)
+        ->whereDoesntHave('tour.hotel', function($query){
+            $query->where('check_in', '<=', date('Y-m-d'));
+        })
+        ->get();
 
         return response()->json([
-            'manuel_booking' => $manuel_booking
+            'hotel' => $hotel,
+            'bus' => $bus,
+            'visa' => $visa,
+            'flight' => $flight,
+            'tour' => $tour,
         ]);
     }
 
-    public function current($id){
-        $service = $this->services
-        ->where('id', $id)
-        ->first()->service_name;
-        $manuel_booking = [];
-        if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'hotel'])
-            ->where('from_service_id', $id)
-            ->whereHas('hotel', function($query){
-                $query->whereDate('check_in', '<=', date('Y-m-d'))
-                ->whereDate('check_out', '>=', date('Y-m-d'));
-            })
-            ->get();
+    public function current(Request $request){ 
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
         }
-        elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'bus'])
-            ->where('from_service_id', $id)
-            ->whereHas('bus', function($query){
-                $query->whereDate('departure', date('Y-m-d'));
-            })
-            ->get();
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
         }
-        elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'visa'])
-            ->where('from_service_id', $id)
-            ->whereHas('visa', function($query){
-                $query->whereDate('travel_date', date('Y-m-d'));
-            })
-            ->get();
+        else{
+            $agent_id = $request->user()->id;
         }
-        elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'flight'])
-            ->where('from_service_id', $id)
-            ->whereHas('flight', function($query){
-                $query->whereDate('departure', date('Y-m-d'));
-            })
-            ->get();
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
         }
-        elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
-            $manuel_booking = $this->manuel_booking
-            ->with(['from_supplier' => function($query){
-                $query->select('agent');
-            }, 'tour'])
-            ->where('from_service_id', $id)
-            ->whereNotHas('tour.hotel', function($query){
-                $query->whereDate('check_in', date('Y-m-d'));
-            })
-            ->get();
+        else{
+            $agent_type = 'agent_id';
         }
+        $hotel = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'hotel'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('hotel', function($query){
+            $query->whereDate('check_in', '<=', date('Y-m-d'))
+            ->whereDate('check_out', '>=', date('Y-m-d'));
+        })
+        ->get(); 
+        $bus = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'bus'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('bus', function($query){
+            $query->whereDate('departure', '<=', date('Y-m-d'))
+            ->whereDate('arrival', '>=', date('Y-m-d'));
+        })
+        ->get();
+        $visa = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'visa'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('visa', function($query){
+            $query->whereDate('travel_date', date('Y-m-d'));
+        })
+        ->get(); 
+        $flight = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'flight'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('flight', function($query){
+            $query->whereDate('departure', '<=', date('Y-m-d'))
+            ->whereDate('arrival', '>=', date('Y-m-d'));
+        })
+        ->get(); 
+        $tour = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'tour'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('tour.hotel', function($query){
+            $query->whereDate('check_in', '<=', date('Y-m-d'))
+            ->whereDate('check_out', '>=', date('Y-m-d'));
+        })
+        ->get(); 
 
         return response()->json([
-            'manuel_booking' => $manuel_booking
+            'hotel' => $hotel,
+            'bus' => $bus,
+            'visa' => $visa,
+            'flight' => $flight,
+            'tour' => $tour,
         ]);
     }
 
-    public function past($id){
-        $service = $this->services
-        ->where('id', $id)
-        ->first()->service_name;
+    public function past(Request $request){
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
+        }
+        else{
+            $agent_type = 'agent_id';
+        }
+        $hotel = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'hotel'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('hotel', function($query){
+            $query->where('check_out', '<', date('Y-m-d'));
+        })
+        ->get();
+         $bus = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'bus'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('bus', function($query){
+            $query->where('arrival', '<', date('Y-m-d'));
+        })
+        ->get();
+        $visa = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'visa'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('visa', function($query){
+            $query->where('travel_date', '<', date('Y-m-d'));
+        })
+        ->get();
+        $flight = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'flight'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('flight', function($query){
+            $query->where('arrival', '<', date('Y-m-d'));
+        })
+        ->get();
+        $tour = $this->manuel_booking
+        ->with(['from_supplier' => function($query){
+            $query->select('agent');
+        }, 'tour'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('tour.hotel')
+        ->whereDoesntHave('tour.hotel', function($query){
+            $query->where('check_out', '>=', date('Y-m-d'));
+        })
+        ->get();
+
+        return response()->json([
+            'hotel' => $hotel,
+            'bus' => $bus,
+            'visa' => $visa,
+            'flight' => $flight,
+            'tour' => $tour,
+        ]);
     }
 }
