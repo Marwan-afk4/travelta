@@ -11,27 +11,29 @@ class SignupApproveController extends Controller
 {
 
 
-    public function getrequests(){
-        $affilates = AffilateAgent::where('role', 'affilate')
-        ->where('status', 'pending')
-        ->get();
-        $freelancers = AffilateAgent::where('role', 'freelancer')
-        ->where('status', 'pending')
-        ->get();
-        $agency = Agent::where('role', 'agent')
-        ->where('status', 'pending')
-        ->get();
-        $supplier = Agent::where('role', 'supplier')
-        ->where('status', 'pending')
-        ->get();
+    public function getRequests() {
+        $roles = ['affilate', 'freelancer'];
+        $affilatesAndFreelancers = AffilateAgent::whereIn('role', $roles)
+            ->where('status', 'pending')
+            ->with('legal_papers')
+            ->get()
+            ->groupBy('role');
+
+        $roles = ['agent', 'supplier'];
+        $agenciesAndSuppliers = Agent::whereIn('role', $roles)
+            ->where('status', 'pending')
+            ->with('legal_papers')
+            ->get()
+            ->groupBy('role');
 
         return response()->json([
-            'affilates' => $affilates,
-            'freelancers' => $freelancers,
-            'agency' => $agency,
-            'supplier' => $supplier
+            'affilates' => $affilatesAndFreelancers->get('affilate', []),
+            'freelancers' => $affilatesAndFreelancers->get('freelancer', []),
+            'agency' => $agenciesAndSuppliers->get('agent', []),
+            'supplier' => $agenciesAndSuppliers->get('supplier', [])
         ]);
     }
+
 
     public function approveAgentSuplier($id){
         $agent = Agent::find($id);
