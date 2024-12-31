@@ -15,4 +15,8 @@ class ManuelTour extends Model
         'adults',
         'childreen', 
     ];
+
+    public function hotel(){
+        return $this->hasMany(ManuelTourHotel::class, 'manuel_tour_id');
+    }
 }

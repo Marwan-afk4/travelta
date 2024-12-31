@@ -228,11 +228,14 @@ class ManualBookingController extends Controller
     }
 
     public function booking(ManuelBookingRequest $request){
-        // Hotel => "success": {"to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","check_in": "2024-05-05","check_out": "2024-07-07","nights": "3","hotel_name": "Hilton","room_type": "2","room_quantity": "10","adults": "25","childreen": "10"}
-        // Bus => "success": {"to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","from": "Alex","to": "Sharm","departure": "2024-05-05 11:30:00","arrival": "2024-07-07 11:30:00","adults": "2","childreen": "10","adult_price": "250","child_price": "100","bus": "Travelta","bus_number": "12345","driver_phone": "01234566"}
-        // Visa => "success": {"to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","country": "Alex","travel_date": "2024-12-30","appointment_date": "2024-12-28","number": "10","customers": "['Ahmed', 'Mohamed']","notes": "Hello"}
-        // Flight => "success": {"to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","type": "international","direction": "multi_city","departure": "2024-12-28 11:30:00","arrival": "2024-12-31 11:30:00","customers": "['Ahmed', 'Mohamed']","childreen": "10","adults": "25","infants": "10","adult_price": "2000","child_price": "1000","from_to": "[{'from':'Alex', 'to':'America'}, {'from':'America', 'to':'Italy'}]","class": "first","airline": "El Nile","ticket_number": "123122345","ref_pnr": "675"}
-         
+        // Hotel => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","check_in": "2024-05-05","check_out": "2024-07-07","nights": "3","hotel_name": "Hilton","room_type": "2","room_quantity": "10","adults": "25","childreen": "10"}
+        // Bus => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","from": "Alex","to": "Sharm","departure": "2024-05-05 11:30:00","arrival": "2024-07-07 11:30:00","adults": "2","childreen": "10","adult_price": "250","child_price": "100","bus": "Travelta","bus_number": "12345","driver_phone": "01234566"}
+        // Visa => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","country": "Alex","travel_date": "2024-12-30","appointment_date": "2024-12-28","number": "10","customers": "['Ahmed', 'Mohamed']","notes": "Hello"}
+        // Flight => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","type": "international","direction": "multi_city","departure": "2024-12-28 11:30:00","arrival": "2024-12-31 11:30:00","customers": "['Ahmed', 'Mohamed']","childreen": "10","adults": "25","infants": "10","adult_price": "2000","child_price": "1000","from_to": "[{'from':'Alex', 'to':'America'}, {'from':'America', 'to':'Italy'}]","class": "first","airline": "El Nile","ticket_number": "123122345","ref_pnr": "675"}
+         // Tour => 
+        // tour, type, adult_price, child_price, adults, childreen
+        // tour_buses [{transportation, seats}],
+        // tour_hotels[{destination, hotel_name, room_type, check_in, check_out, nights}] 
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -252,7 +255,7 @@ class ManualBookingController extends Controller
         }
         $manuel_booking = $this->manuel_booking
         ->create($manuelRequest);
-        $taxes = !is_string($request->taxes) ?? json_decode($request->taxes);
+        $taxes = is_string($request->taxes) ? json_decode($request->taxes) : $request->taxes;
         $manuel_booking->taxes()->attach($taxes);
         $service = $this->services
         ->where('id', $request->from_service_id)
@@ -350,8 +353,8 @@ class ManualBookingController extends Controller
             $tourRequest['manuel_booking_id'] = $manuel_booking->id;
             $manuel_tour = $this->manuel_tour
             ->create($tourRequest);
-            $manuel_tour_bus = is_array($request->tour_buses) ?? json_decode($request->tour_buses);
-            $manuel_tour_hotel = is_array($request->tour_hotels) ?? json_decode($request->tour_hotels);
+            $manuel_tour_bus = is_string($request->tour_buses) ? json_decode($request->tour_buses) : $request->taxes;
+            $manuel_tour_hotel = is_string($request->tour_hotels) ? json_decode($request->tour_hotels) : $request->taxes; 
            // return $manuel_tour_bus;
             foreach ($manuel_tour_bus as $item) {
                 $this->manuel_tour_bus
