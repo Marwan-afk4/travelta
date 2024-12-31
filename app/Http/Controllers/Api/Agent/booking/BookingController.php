@@ -22,7 +22,8 @@ class BookingController extends Controller
         ]);
     }
 
-    public function upcoming(Request $request){    
+    public function upcoming(Request $request){
+        // https://travelta.online/agent/booking/upcoming 
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -94,7 +95,8 @@ class BookingController extends Controller
         ]);
     }
 
-    public function current(Request $request){ 
+    public function current(Request $request){
+        // https://travelta.online/agent/booking/current
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -170,6 +172,7 @@ class BookingController extends Controller
     }
 
     public function past(Request $request){
+        // https://travelta.online/agent/booking/past 
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
