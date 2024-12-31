@@ -11,5 +11,22 @@ class Customer extends Model
         'phone',
         'email',
         'gender',
+        'emergency_phone',
+        'password',
     ];
+    protected $appends = ['role'];
+
+    public function getRoleAttribute(){
+        return 'user';
+    }
+
+    protected $hidden = [
+        'password',
+    ];
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
 }

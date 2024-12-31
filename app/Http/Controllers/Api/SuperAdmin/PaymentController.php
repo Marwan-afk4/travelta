@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\ManualPayment;
 use App\Models\PaymentMethod;
+use App\Models\AffilateAgent;
+use App\Models\Agent;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +14,6 @@ use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
-
     public function getPyamnts()
     {
         $payments = ManualPayment::where('status', 'pending')->get();
@@ -106,6 +107,27 @@ class PaymentController extends Controller
         $payment->start_date = now();
         $payment->end_date = now()->addDays($plan->period_in_days);
         $payment->save();
+        if (!empty($payment->affilate_agent_id)) {
+            $affilate = AffilateAgent::
+            where('id', $payment->affilate_agent_id)
+            ->update([
+                'plan_id' => $payment->plan_id,
+                'start_date' => $payment->start_date,
+                'end_date' => $payment->end_date,
+                'price_cycle' => $plan->period_in_days,
+            ]);
+        } 
+        elseif (!empty($payment->agency_id)) {
+            $affilate = Agent::
+            where('id', $payment->agency_id)
+            ->update([
+                'plan_id' => $payment->plan_id,
+                'start_date' => $payment->start_date,
+                'end_date' => $payment->end_date,
+                'price_cycle' => $plan->period_in_days,
+            ]);
+        }
+        
         return response()->json(['message' => 'payment accepted successfually']);
     }
 
