@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('manuel_tour_buses', function (Blueprint $table) {
             $table->id();
             $table->foreignId(column: 'manuel_tour_id')->nullable()->constrained('manuel_tours')->onUpdate('cascade')->onDelete('cascade');
-            $table->enum('transportation', ['Flight', 'Bus']);
+            $table->string('transportation');
             $table->integer('seats');
             $table->timestamps();
         });
