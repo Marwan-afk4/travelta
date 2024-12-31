@@ -356,10 +356,6 @@ class ManualBookingController extends Controller
             $manuel_tour_bus = is_string($request->tour_buses) ? json_decode($request->tour_buses) : $request->taxes;
             $manuel_tour_hotel = is_string($request->tour_hotels) ? json_decode($request->tour_hotels) : $request->taxes; 
            // return $manuel_tour_bus;
-           return response()->json([
-            'manuel_tour_bus' => $manuel_tour_bus,
-            'manuel_tour_hotel' => $manuel_tour_hotel,
-           ]);
            if ($manuel_tour_bus) {
                 foreach ($manuel_tour_bus as $item) {
                     $this->manuel_tour_bus
