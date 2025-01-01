@@ -33,11 +33,10 @@ class ManuelBooking extends Model
     }
 
     public function to_client(){
-        if (empty($this->belongsTo(SupplierAgent::class, 'to_supplier_id'))) {
-            return $this->belongsTo(Customer::class, 'to_customer_id');
-        } else {
-            return $this->belongsTo(SupplierAgent::class, 'to_supplier_id');
+        if ($this->attributes['to_supplier_id']) {
+            return $this->belongsTo(SupplierAgent::class, 'to_supplier_id')->first();
         }
+        return $this->belongsTo(Customer::class, 'to_customer_id')->first();
     }
 
     public function hotel(){
