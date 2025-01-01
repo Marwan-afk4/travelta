@@ -22,6 +22,8 @@ use App\Models\ManuelVisa;
 use App\Models\ManuelTourBus;
 use App\Models\ManuelTourHotel;
 use App\Models\CurrencyAgent;
+use App\Models\Adult;
+use App\Models\Child;
 
 class ManualBookingController extends Controller
 {
@@ -31,7 +33,8 @@ class ManualBookingController extends Controller
     private ManuelBus $manuel_bus, private ManuelFlight $manuel_flight, 
     private ManuelHotel $manuel_hotel, private ManuelTour $manuel_tour, 
     private ManuelVisa $manuel_visa, private ManuelTourBus $manuel_tour_bus,
-    private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency){}
+    private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency,
+    private Adult $adults, private Child $child){}
     
     protected $hotelRequest = [
         'check_in',
@@ -380,6 +383,11 @@ class ManualBookingController extends Controller
                     ]);
                 }
            }
+        }
+        if ($request->adults) {
+            foreach ($request->adults as $item) {
+                # code...
+            }
         }
 
         return response()->json([
