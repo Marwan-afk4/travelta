@@ -115,9 +115,7 @@ class BookingController extends Controller
         $hotel = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'hotel', 'taxes', 'from_supplier', 'to_client' => function($query){
-            $query->select('name');
-        }])
+        }, 'hotel', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
             $query->whereDate('check_in', '<=', date('Y-m-d'))
