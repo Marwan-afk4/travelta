@@ -22,6 +22,8 @@ use App\Models\ManuelVisa;
 use App\Models\ManuelTourBus;
 use App\Models\ManuelTourHotel;
 use App\Models\CurrencyAgent;
+use App\Models\Adult;
+use App\Models\Child;
 
 class ManualBookingController extends Controller
 {
@@ -31,7 +33,8 @@ class ManualBookingController extends Controller
     private ManuelBus $manuel_bus, private ManuelFlight $manuel_flight, 
     private ManuelHotel $manuel_hotel, private ManuelTour $manuel_tour, 
     private ManuelVisa $manuel_visa, private ManuelTourBus $manuel_tour_bus,
-    private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency){}
+    private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency,
+    private Adult $adults, private Child $child){}
     
     protected $hotelRequest = [
         'check_in',
@@ -106,6 +109,11 @@ class ManualBookingController extends Controller
         ->get();
         $services = $this->services
         ->get();
+        $adult_title = [
+            'MR',
+            'MISS',
+            'MRS',
+        ];
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $currencies = $this->currency
             ->where('affilate_id', $agent_id)
@@ -121,7 +129,8 @@ class ManualBookingController extends Controller
             'cities' => $cities,
             'contries' => $contries,
             'services' => $services,
-            'currencies' => $currencies
+            'currencies' => $currencies,
+            'adult_title' => $adult_title
         ]);
     }
 
@@ -255,135 +264,163 @@ class ManualBookingController extends Controller
         }
         $manuel_booking = $this->manuel_booking
         ->create($manuelRequest);
-        $taxes = is_string($request->taxes) ? json_decode($request->taxes) : $request->taxes;
-        $manuel_booking->taxes()->attach($taxes);
-        $service = $this->services
-        ->where('id', $request->from_service_id)
-        ->first()->service_name;
-        if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
-            $validation = Validator::make($request->all(), [
-                'check_in' => 'required|date',
-                'check_out' => 'required|date',
-                'nights' => 'required|numeric',
-                'hotel_name' => 'required',
-                'room_type' => 'required',
-                'room_quantity' => 'required|numeric',
-                'adults' => 'required|numeric',
-                'childreen' => 'required|numeric',
-            ]);
-            if($validation->fails()){
-                return response()->json(['errors'=>$validation->errors()], 401);
+        try {
+            $taxes = is_string($request->taxes) ? json_decode($request->taxes) : $request->taxes;
+            $manuel_booking->taxes()->attach($taxes);
+            $service = $this->services
+            ->where('id', $request->from_service_id)
+            ->first()->service_name;
+            if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
+                $validation = Validator::make($request->all(), [
+                    'check_in' => 'required|date',
+                    'check_out' => 'required|date',
+                    'nights' => 'required|numeric',
+                    'hotel_name' => 'required',
+                    'room_type' => 'required',
+                    'room_quantity' => 'required|numeric',
+                    'adults' => 'required|numeric',
+                    'childreen' => 'required|numeric',
+                ]);
+                if($validation->fails()){
+                    return response()->json(['errors'=>$validation->errors()], 401);
+                }
+                $hotelRequest = $request->only($this->hotelRequest);
+                $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
+                $manuel_hotel = $this->manuel_hotel
+                ->create($hotelRequest);
             }
-            $hotelRequest = $request->only($this->hotelRequest);
-            $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
-            $manuel_hotel = $this->manuel_hotel
-            ->create($hotelRequest);
-        }
-        elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-            $validation = Validator::make($request->all(), [
-                'from' => 'required',
-                'to' => 'required',
-                'departure' => 'required|date',
-                'arrival' => 'required|date',
-                'adults' => 'required|numeric',
-                'childreen' => 'required|numeric',
-                'adult_price' => 'required|numeric',
-                'child_price' => 'required|numeric',
-                'bus' => 'required',
-                'bus_number' => 'required',
-                'driver_phone' => 'required',
-            ]);
-            if($validation->fails()){
-                return response()->json(['errors'=>$validation->errors()], 401);
+            elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
+                $validation = Validator::make($request->all(), [
+                    'from' => 'required',
+                    'to' => 'required',
+                    'departure' => 'required|date',
+                    'arrival' => 'required|date',
+                    'adults' => 'required|numeric',
+                    'childreen' => 'required|numeric',
+                    'adult_price' => 'required|numeric',
+                    'child_price' => 'required|numeric',
+                    'bus' => 'required',
+                    'bus_number' => 'required',
+                    'driver_phone' => 'required',
+                ]);
+                if($validation->fails()){
+                    return response()->json(['errors'=>$validation->errors()], 401);
+                }
+                $busRequest = $request->only($this->busRequest);
+                $busRequest['manuel_booking_id'] = $manuel_booking->id;
+                $manuel_bus = $this->manuel_bus
+                ->create($busRequest);
             }
-            $busRequest = $request->only($this->busRequest);
-            $busRequest['manuel_booking_id'] = $manuel_booking->id;
-            $manuel_bus = $this->manuel_bus
-            ->create($busRequest);
-        }
-        elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
-            $validation = Validator::make($request->all(), [
-                'country' => 'required',
-                'travel_date' => 'required|date', 
-                'appointment_date' => 'date',
-                'number' => 'required|numeric', 
-                'customers' => 'required', 
-            ]);
-            if($validation->fails()){
-                return response()->json(['errors'=>$validation->errors()], 401);
+            elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
+                $validation = Validator::make($request->all(), [
+                    'country' => 'required',
+                    'travel_date' => 'required|date', 
+                    'appointment_date' => 'date',
+                    'number' => 'required|numeric', 
+                    'customers' => 'required', 
+                ]);
+                if($validation->fails()){
+                    return response()->json(['errors'=>$validation->errors()], 401);
+                }
+                $visaRequest = $request->only($this->visaRequest);
+                $visaRequest['manuel_booking_id'] = $manuel_booking->id;
+                $manuel_visa = $this->manuel_visa
+                ->create($visaRequest);
             }
-            $visaRequest = $request->only($this->visaRequest);
-            $visaRequest['manuel_booking_id'] = $manuel_booking->id;
-            $manuel_visa = $this->manuel_visa
-            ->create($visaRequest);
-        }
-        elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
-            $validation = Validator::make($request->all(), [
-                'type' => 'in:domestic,international',
-                'direction' => 'in:one_way,round_trip,multi_city',
-                'departure' => 'date',
-                'arrival' => 'date',
-                'adults' => 'numeric',
-                'childreen' => 'numeric',
-                'infants' => 'numeric',
-                'adult_price' => 'numeric',
-                'child_price' => 'numeric',
-            ]);
-            if($validation->fails()){
-                return response()->json(['errors'=>$validation->errors()], 401);
+            elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
+                $validation = Validator::make($request->all(), [
+                    'type' => 'in:domestic,international',
+                    'direction' => 'in:one_way,round_trip,multi_city',
+                    'departure' => 'date',
+                    'arrival' => 'date',
+                    'adults' => 'numeric',
+                    'childreen' => 'numeric',
+                    'infants' => 'numeric',
+                    'adult_price' => 'numeric',
+                    'child_price' => 'numeric',
+                ]);
+                if($validation->fails()){
+                    return response()->json(['errors'=>$validation->errors()], 401);
+                }
+                $flightRequest = $request->only($this->flightRequest);
+                $flightRequest['manuel_booking_id'] = $manuel_booking->id;
+                $manuel_flight = $this->manuel_flight
+                ->create($flightRequest);
             }
-            $flightRequest = $request->only($this->flightRequest);
-            $flightRequest['manuel_booking_id'] = $manuel_booking->id;
-            $manuel_flight = $this->manuel_flight
-            ->create($flightRequest);
-        }
-        elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
-            $validation = Validator::make($request->all(), [
-                'tour' => 'required',
-                'type' => 'required|in:domestic,international',
-                'adult_price' => 'numeric',
-                'child_price' => 'numeric',
-                'adults' => 'numeric',
-                'childreen' => 'numeric', 
-            ]);
-            if($validation->fails()){
-                return response()->json(['errors'=>$validation->errors()], 401);
+            elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
+                $validation = Validator::make($request->all(), [
+                    'tour' => 'required',
+                    'type' => 'required|in:domestic,international',
+                    'adult_price' => 'numeric',
+                    'child_price' => 'numeric',
+                    'adults' => 'numeric',
+                    'childreen' => 'numeric', 
+                ]);
+                if($validation->fails()){
+                    return response()->json(['errors'=>$validation->errors()], 401);
+                }
+                $tourRequest = $request->only($this->tourRequest);
+                $tourRequest['manuel_booking_id'] = $manuel_booking->id;
+                $manuel_tour = $this->manuel_tour
+                ->create($tourRequest);
+                $manuel_tour_bus = is_string($request->tour_buses) ? json_decode($request->tour_buses) : $request->taxes;
+                $manuel_tour_hotel = is_string($request->tour_hotels) ? json_decode($request->tour_hotels) : $request->taxes; 
+            // return $manuel_tour_bus;
+            if ($manuel_tour_bus) {
+                    foreach ($manuel_tour_bus as $item) {
+                        $this->manuel_tour_bus
+                        ->create([
+                            'transportation' => $item->transportation,
+                            'manuel_tour_id' => $manuel_tour->id,
+                            'seats' => $item->seats,
+                        ]);
+                    }
             }
-            $tourRequest = $request->only($this->tourRequest);
-            $tourRequest['manuel_booking_id'] = $manuel_booking->id;
-            $manuel_tour = $this->manuel_tour
-            ->create($tourRequest);
-            $manuel_tour_bus = is_string($request->tour_buses) ? json_decode($request->tour_buses) : $request->taxes;
-            $manuel_tour_hotel = is_string($request->tour_hotels) ? json_decode($request->tour_hotels) : $request->taxes; 
-           // return $manuel_tour_bus;
-           if ($manuel_tour_bus) {
-                foreach ($manuel_tour_bus as $item) {
-                    $this->manuel_tour_bus
+            if ($manuel_tour_hotel) {
+                    foreach ($manuel_tour_hotel as $item) {
+                        $this->manuel_tour_hotel
+                        ->create([
+                            'destination' => $item->destination,
+                            'manuel_tour_id' => $manuel_tour->id,
+                            'hotel_name' => $item->hotel_name,
+                            'room_type' => $item->room_type,
+                            'check_in' => $item->check_in,
+                            'check_out' => $item->check_out,
+                            'nights' => $item->nights,
+                        ]);
+                    }
+            }
+            }
+            if (isset($request->adults_data) && !empty($request->adults_data)) {
+                $adults = is_string($request->adults_data) ?json_decode($request->adults_data) :$request->adults_data;
+                foreach ($adults as $item) {
+                    $this->adults
                     ->create([
-                        'transportation' => $item['transportation'],
-                        'manuel_tour_id' => $manuel_tour->id,
-                        'seats' => $item['seats'],
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name,
                     ]);
                 }
-           }
-           if ($manuel_tour_hotel) {
-                foreach ($manuel_tour_hotel as $item) {
-                    $this->manuel_tour_hotel
+            }
+            if (isset($request->child_data) && !empty($request->child_data)) {
+                $child = is_string($request->child_data) ?json_decode($request->child_data) :$request->child_data;
+                foreach ($child as $item) {
+                    $this->child
                     ->create([
-                        'destination' => $item['destination'],
-                        'manuel_tour_id' => $manuel_tour->id,
-                        'hotel_name' => $item['hotel_name'],
-                        'room_type' => $item['room_type'],
-                        'check_in' => $item['check_in'],
-                        'check_out' => $item['check_out'],
-                        'nights' => $item['nights'],
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name,
                     ]);
                 }
-           }
+            } 
+            return response()->json([
+                'success' => $request->all(),
+            ]);
+        } catch (\Throwable $th) {
+            $manuel_booking->delete();
+            return response()->json([
+                'faild' => 'something wrong',
+            ], 400);
         }
-
-        return response()->json([
-            'success' => $request->all(),
-        ]);
     }
 }

@@ -5,19 +5,30 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\LegalPaper;
-use App\Models\User;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\trait\image;
 
 class UserController extends Controller
 {
-
+    use image;
     public function users(){
-        $user = User::with('bookings')
+        $user = Customer::
+        with(['manuel' => function($query){
+            $query->with([
+                'hotel', 'bus', 'flight', 'tour', 'visa'
+            ]);
+        }])
         ->with('legalpaper')
-        ->where('role','!=',['SuperAdmin','admin'])
         ->get();
+        $data = collect([]);
+        foreach ($user as $item) {
+            $element = collect([]);
+            $element->name = $item->name;
+            return $element;
+        }
         return response()->json([
             'users' => $user,
         ], 200);
@@ -37,18 +48,18 @@ class UserController extends Controller
         if ($validation->fails()) {
             return response()->json(['errors' => $validation->errors()], 401);
         }
-        $user = User::create([
+        $user = Customer::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
             'phone' => $request->phone,
             'emergency_phone' => $request->emergency_phone,
         ]);
-
         foreach($request->image as $image){
+            $imag_path = $this->uploadFile($image['image'], 'admin/legal_paper/user');
             LegalPaper::create([
                 'user_id' => $user->id,
-                'image' => $image['image']
+                'image' => $imag_path
             ]);
         }
         return response()->json([
@@ -59,6 +70,12 @@ class UserController extends Controller
 
     public function deleteuser($id){
         $user=User::find($id);
+        $legal_papers = LegalPaper
+        ->where('user_id', $user->id)
+        ->get();
+        foreach ($legal_papers as $item) {
+            $this->deleteImage($item->image);
+        }
         $user->delete();
         return response()->json([
             'message' => 'User deleted successfully',

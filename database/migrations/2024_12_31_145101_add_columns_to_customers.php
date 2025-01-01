@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('legal_papers', function (Blueprint $table) {
-            $table->id();
-            $table->longText('image');
-            $table->foreignId('user_id')->nullable()->constrained('customers')->onDelete('cascade')->onUpdate('cascade');
-            $table->timestamps();
+        Schema::table('customers', function (Blueprint $table) {
+            $table->enum('role', ['lead', 'customer']);
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('legal_papers');
+        Schema::table('customers', function (Blueprint $table) {
+            //
+        });
     }
 };

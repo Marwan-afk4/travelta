@@ -40,51 +40,61 @@ class BookingController extends Controller
             $agent_type = 'agent_id';
         }
         $hotel = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'hotel'])
+        ->with(['hotel', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
             $query->where('check_in', '>', date('Y-m-d'));
         })
         ->get();
         $bus = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'bus'])
+        ->with(['bus', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('bus', function($query){
             $query->where('departure', '>', date('Y-m-d'));
         })
         ->get();
         $visa = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'visa'])
+        ->with(['visa', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('visa', function($query){
             $query->where('travel_date', '>', date('Y-m-d'));
         })
         ->get();
         $flight = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'flight'])
+        ->with(['flight', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('flight', function($query){
             $query->where('departure', '>', date('Y-m-d'));
         })
         ->get();
        $tour = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'tour'])
+        ->with(['tour', 'taxes', 'from_supplier'])
         ->whereHas('tour.hotel')
         ->where($agent_type, $agent_id)
         ->whereDoesntHave('tour.hotel', function($query){
             $query->where('check_in', '<=', date('Y-m-d'));
         })
         ->get();
+        foreach ($hotel as $item) {
+            $item->start_date = $item->hotel->check_in;
+            $item->end_date = $item->hotel->check_out;
+        }
+        foreach ($bus as $item) {
+            $item->start_date = $item->bus->departure;
+            $item->end_date = $item->bus->arrival;
+        }
+        foreach ($visa as $item) {
+            $item->start_date = $item->visa->travel_date;
+            $item->end_date = $item->visa->travel_date;
+        }
+        foreach ($flight as $item) {
+            $item->start_date = $item->flight->departure;
+            $item->end_date = $item->flight->arrival;
+        }
+        foreach ($tour as $item) {
+            $item->start_date = $item->tour->hotel->sortBy('check_in')->first()->check_in;
+            $item->end_date = $item->tour->hotel->sortByDesc('check_out')->first()->check_out;
+        }
 
         return response()->json([
             'hotel' => $hotel,
@@ -113,9 +123,7 @@ class BookingController extends Controller
             $agent_type = 'agent_id';
         }
         $hotel = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'hotel'])
+        ->with(['hotel', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
             $query->whereDate('check_in', '<=', date('Y-m-d'))
@@ -123,9 +131,7 @@ class BookingController extends Controller
         })
         ->get(); 
         $bus = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'bus'])
+        ->with(['bus', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('bus', function($query){
             $query->whereDate('departure', '<=', date('Y-m-d'))
@@ -133,18 +139,14 @@ class BookingController extends Controller
         })
         ->get();
         $visa = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'visa'])
+        ->with(['visa', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('visa', function($query){
             $query->whereDate('travel_date', date('Y-m-d'));
         })
         ->get(); 
         $flight = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'flight'])
+        ->with(['flight', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('flight', function($query){
             $query->whereDate('departure', '<=', date('Y-m-d'))
@@ -152,15 +154,33 @@ class BookingController extends Controller
         })
         ->get(); 
         $tour = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'tour'])
+        ->with(['tour.hotel', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('tour.hotel', function($query){
             $query->whereDate('check_in', '<=', date('Y-m-d'))
             ->whereDate('check_out', '>=', date('Y-m-d'));
         })
-        ->get(); 
+        ->get();
+        foreach ($hotel as $item) {
+            $item->start_date = $item->hotel->check_in;
+            $item->end_date = $item->hotel->check_out;
+        }
+        foreach ($bus as $item) {
+            $item->start_date = $item->bus->departure;
+            $item->end_date = $item->bus->arrival;
+        }
+        foreach ($visa as $item) {
+            $item->start_date = $item->visa->travel_date;
+            $item->end_date = $item->visa->travel_date;
+        }
+        foreach ($flight as $item) {
+            $item->start_date = $item->flight->departure;
+            $item->end_date = $item->flight->arrival;
+        }
+        foreach ($tour as $item) {
+            $item->start_date = $item->tour->hotel->sortBy('check_in')->first()->check_in;
+            $item->end_date = $item->tour->hotel->sortByDesc('check_out')->first()->check_out;
+        }
 
         return response()->json([
             'hotel' => $hotel,
@@ -189,51 +209,61 @@ class BookingController extends Controller
             $agent_type = 'agent_id';
         }
         $hotel = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'hotel'])
+        ->with([ 'hotel', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
             $query->where('check_out', '<', date('Y-m-d'));
         })
         ->get();
          $bus = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'bus'])
+        ->with(['bus', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('bus', function($query){
             $query->where('arrival', '<', date('Y-m-d'));
         })
         ->get();
         $visa = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'visa'])
+        ->with(['visa', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('visa', function($query){
             $query->where('travel_date', '<', date('Y-m-d'));
         })
         ->get();
         $flight = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'flight'])
+        ->with(['flight', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('flight', function($query){
             $query->where('arrival', '<', date('Y-m-d'));
         })
         ->get();
         $tour = $this->manuel_booking
-        ->with(['from_supplier' => function($query){
-            $query->select('agent');
-        }, 'tour'])
+        ->with(['tour', 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('tour.hotel')
         ->whereDoesntHave('tour.hotel', function($query){
             $query->where('check_out', '>=', date('Y-m-d'));
         })
         ->get();
+        foreach ($hotel as $item) {
+            $item->start_date = $item->hotel->check_in;
+            $item->end_date = $item->hotel->check_out;
+        }
+        foreach ($bus as $item) {
+            $item->start_date = $item->bus->departure;
+            $item->end_date = $item->bus->arrival;
+        }
+        foreach ($visa as $item) {
+            $item->start_date = $item->visa->travel_date;
+            $item->end_date = $item->visa->travel_date;
+        }
+        foreach ($flight as $item) {
+            $item->start_date = $item->flight->departure;
+            $item->end_date = $item->flight->arrival;
+        }
+        foreach ($tour as $item) {
+            $item->start_date = $item->tour->hotel->sortBy('check_in')->first()->check_in;
+            $item->end_date = $item->tour->hotel->sortByDesc('check_out')->first()->check_out;
+        }
 
         return response()->json([
             'hotel' => $hotel,

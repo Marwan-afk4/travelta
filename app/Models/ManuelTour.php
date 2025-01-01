@@ -19,4 +19,8 @@ class ManuelTour extends Model
     public function hotel(){
         return $this->hasMany(ManuelTourHotel::class, 'manuel_tour_id');
     }
+
+    public function bus(){
+        return $this->hasMany(ManuelTourBus::class, 'manuel_tour_id');
+    }
 }

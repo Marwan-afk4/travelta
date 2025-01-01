@@ -15,8 +15,13 @@ class SupplierAgent extends Model
         'phones',
         'affilate_id',
         'agent_id',
+        'emergency_phone',
     ];
+    protected $appends = ['name'];
 
+    public function getNameAttribute(){
+        return $this->attributes['agent'];
+    }
     public function services(){
         return $this->belongsToMany(Service::class, 'supplier_agent_service', 'supplier_agent_id', 'service_id');
     }
