@@ -75,6 +75,26 @@ class BookingController extends Controller
             $query->where('check_in', '<=', date('Y-m-d'));
         })
         ->get();
+        foreach ($hotel as $item) {
+            $item->start_date = $item->hotel->check_in;
+            $item->end_date = $item->hotel->check_out;
+        }
+        foreach ($bus as $item) {
+            $item->start_date = $item->bus->departure;
+            $item->end_date = $item->bus->arrival;
+        }
+        foreach ($visa as $item) {
+            $item->start_date = $item->visa->travel_date;
+            $item->end_date = $item->visa->travel_date;
+        }
+        foreach ($flight as $item) {
+            $item->start_date = $item->flight->departure;
+            $item->end_date = $item->flight->arrival;
+        }
+        foreach ($tour as $item) {
+            $item->start_date = $item->tour->hotel->sortBy('check_in')->first()->check_in;
+            $item->end_date = $item->tour->hotel->sortByDesc('check_out')->first()->check_out;
+        }
 
         return response()->json([
             'hotel' => $hotel,
@@ -140,7 +160,27 @@ class BookingController extends Controller
             $query->whereDate('check_in', '<=', date('Y-m-d'))
             ->whereDate('check_out', '>=', date('Y-m-d'));
         })
-        ->get(); 
+        ->get();
+        foreach ($hotel as $item) {
+            $item->start_date = $item->hotel->check_in;
+            $item->end_date = $item->hotel->check_out;
+        }
+        foreach ($bus as $item) {
+            $item->start_date = $item->bus->departure;
+            $item->end_date = $item->bus->arrival;
+        }
+        foreach ($visa as $item) {
+            $item->start_date = $item->visa->travel_date;
+            $item->end_date = $item->visa->travel_date;
+        }
+        foreach ($flight as $item) {
+            $item->start_date = $item->flight->departure;
+            $item->end_date = $item->flight->arrival;
+        }
+        foreach ($tour as $item) {
+            $item->start_date = $item->tour->hotel->sortBy('check_in')->first()->check_in;
+            $item->end_date = $item->tour->hotel->sortByDesc('check_out')->first()->check_out;
+        }
 
         return response()->json([
             'hotel' => $hotel,
@@ -204,6 +244,26 @@ class BookingController extends Controller
             $query->where('check_out', '>=', date('Y-m-d'));
         })
         ->get();
+        foreach ($hotel as $item) {
+            $item->start_date = $item->hotel->check_in;
+            $item->end_date = $item->hotel->check_out;
+        }
+        foreach ($bus as $item) {
+            $item->start_date = $item->bus->departure;
+            $item->end_date = $item->bus->arrival;
+        }
+        foreach ($visa as $item) {
+            $item->start_date = $item->visa->travel_date;
+            $item->end_date = $item->visa->travel_date;
+        }
+        foreach ($flight as $item) {
+            $item->start_date = $item->flight->departure;
+            $item->end_date = $item->flight->arrival;
+        }
+        foreach ($tour as $item) {
+            $item->start_date = $item->tour->hotel->sortBy('check_in')->first()->check_in;
+            $item->end_date = $item->tour->hotel->sortByDesc('check_out')->first()->check_out;
+        }
 
         return response()->json([
             'hotel' => $hotel,
