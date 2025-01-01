@@ -23,6 +23,7 @@ class ManuelBooking extends Model
         'affilate_id',
         'agent_id',
     ];
+    protected $appends = ['to_client'];
 
     public function taxes(){
         return $this->belongsToMany(Tax::class, 'manuel_taxes', 'manuel_id', 'tax_id');
@@ -32,7 +33,7 @@ class ManuelBooking extends Model
         return $this->belongsTo(SupplierAgent::class, 'to_supplier_id');
     }
 
-    public function to_client(){
+    public function getToClientAttribute(){
         if ($this->attributes['to_supplier_id']) {
             return $this->belongsTo(SupplierAgent::class, 'to_supplier_id')->first();
         }
