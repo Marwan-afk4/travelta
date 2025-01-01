@@ -30,7 +30,7 @@ class ManuelBooking extends Model
     }
 
     public function from_supplier(){
-        return $this->belongsTo(SupplierAgent::class, 'to_supplier_id');
+        return $this->belongsTo(SupplierAgent::class, 'from_supplier_id');
     }
 
     public function getToClientAttribute(){
