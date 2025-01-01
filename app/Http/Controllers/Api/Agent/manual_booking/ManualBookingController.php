@@ -384,8 +384,8 @@ class ManualBookingController extends Controller
                 }
            }
         }
-        if (isset($request->adults) && !empty($request->adults)) {
-            $adults = is_string($request->adults) ?json_decode($request->adults) :$request->adults;
+        if (isset($request->adults_data) && !empty($request->adults_data)) {
+            $adults = is_string($request->adults_data) ?json_decode($request->adults_data) :$request->adults_data;
             foreach ($adults as $item) {
                 $this->adults
                 ->create([
@@ -395,8 +395,8 @@ class ManualBookingController extends Controller
                 ]);
             }
         }
-        if (isset($request->child) && !empty($request->child)) {
-            $child = is_string($request->child) ?json_decode($request->child) :$request->child;
+        if (isset($request->child_data) && !empty($request->child_data)) {
+            $child = is_string($request->child_data) ?json_decode($request->child_data) :$request->child_data;
             foreach ($child as $item) {
                 $this->child
                 ->create([
