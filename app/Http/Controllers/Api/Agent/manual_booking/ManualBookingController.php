@@ -263,7 +263,7 @@ class ManualBookingController extends Controller
             $manuel_booking->taxes()->attach($taxes);
             $service = $this->services
             ->where('id', $request->from_service_id)
-            ->first()->service_name->hdfgh;
+            ->first()->service_name;
             if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
                 $validation = Validator::make($request->all(), [
                     'check_in' => 'required|date',
