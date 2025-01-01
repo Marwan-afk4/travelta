@@ -109,6 +109,11 @@ class ManualBookingController extends Controller
         ->get();
         $services = $this->services
         ->get();
+        $adult_title = [
+            'MR',
+            'MISS',
+            'MRS',
+        ];
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $currencies = $this->currency
             ->where('affilate_id', $agent_id)
@@ -124,7 +129,8 @@ class ManualBookingController extends Controller
             'cities' => $cities,
             'contries' => $contries,
             'services' => $services,
-            'currencies' => $currencies
+            'currencies' => $currencies,
+            'adult_title' => $adult_title
         ]);
     }
 
