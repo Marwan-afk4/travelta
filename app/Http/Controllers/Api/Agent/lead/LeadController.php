@@ -54,13 +54,17 @@ class LeadController extends Controller
 
     public function leads_search(){
         // /leads/leads_search
-        $leads = $this->customer_data
-        ->where('type', 'lead')
-        ->with('customer')
+        $user_id = auth()->user()->id;
+        $role = auth()->user()->role == 'freelancer' ||
+        auth()->user()->role == 'affilate' ? 'affilate_id' :'agent_id';
+        $leads = $this->customer
+        ->whereDoesntHave('agent_customer', function($query) use($user_id, $role){
+            $query->where($role, $user_id);
+        })
         ->get();
         
         return response()->json([
-            'leads' => $leads->pluck('customer')
+            'leads' => $leads
         ]);
     }
 

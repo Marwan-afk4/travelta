@@ -20,6 +20,10 @@ class Customer extends Model
         return $this->hasMany(ManuelBooking::class, 'to_customer_id');
     }
 
+    public function agent_customer(){
+        return $this->hasMany(CustomerData::class, 'customer_id');
+    }
+
     protected $hidden = [
         'password',
     ];

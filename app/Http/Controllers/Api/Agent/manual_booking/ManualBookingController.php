@@ -385,8 +385,25 @@ class ManualBookingController extends Controller
            }
         }
         if ($request->adults) {
-            foreach ($request->adults as $item) {
-                # code...
+            $adults = is_string($request->adults) ?json_decode($request->adults) :$request->adults;
+            foreach ($adults as $item) {
+                $this->adults
+                ->create([
+                    'title' => $item->title,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name,
+                ]);
+            }
+        }
+        if ($request->child) {
+            $child = is_string($request->child) ?json_decode($request->child) :$request->child;
+            foreach ($child as $item) {
+                $this->child
+                ->create([
+                    'age' => $item->age,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name,
+                ]);
             }
         }
 

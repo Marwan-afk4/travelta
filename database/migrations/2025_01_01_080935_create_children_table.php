@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId(column: 'manuel_booking_id')->nullable()->constrained('manuel_bookings')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('age');
             $table->integer('first_name');
+            $table->integer('last_name');
             $table->timestamps();
         });
     }
