@@ -32,6 +32,11 @@ class ManuelBooking extends Model
         return $this->belongsTo(SupplierAgent::class, 'from_supplier_id');
     }
 
+    public function to_client(){
+        return $this->belongsTo(SupplierAgent::class, 'to_supplier_id')
+        ?? $this->belongsTo(Customer::class, 'to_customer_id');
+    }
+
     public function hotel(){
         return $this->hasOne(ManuelHotel::class, 'manuel_booking_id');
     }

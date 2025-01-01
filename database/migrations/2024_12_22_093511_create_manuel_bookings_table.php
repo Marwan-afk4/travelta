@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('manuel_bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId(column: 'to_supplier_id')->nullable()->constrained('supplier_agents')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'to_customer_id')->nullable()->constrained('customer_data')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId(column: 'to_customer_id')->nullable()->constrained('customers')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId(column: 'from_supplier_id')->nullable()->constrained('supplier_agents')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId(column: 'from_service_id')->nullable()->constrained('services')->onUpdate('cascade')->onDelete('cascade');
             $table->float('cost');

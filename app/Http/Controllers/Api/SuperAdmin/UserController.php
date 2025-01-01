@@ -15,10 +15,20 @@ class UserController extends Controller
 {
     use image;
     public function users(){
-        $user = Customer::with('bookings')
+        $user = Customer::
+        with(['manuel' => function($query){
+            $query->with([
+                'hotel', 'bus', 'flight', 'tour', 'visa'
+            ]);
+        }])
         ->with('legalpaper')
-        ->where('role','!=',['SuperAdmin','admin'])
         ->get();
+        $data = collect([]);
+        foreach ($user as $item) {
+            $element = collect([]);
+            $element->name = $item->name;
+            return $element;
+        }
         return response()->json([
             'users' => $user,
         ], 200);

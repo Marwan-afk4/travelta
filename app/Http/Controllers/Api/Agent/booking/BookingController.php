@@ -42,7 +42,7 @@ class BookingController extends Controller
         $hotel = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'hotel'])
+        }, 'hotel', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
             $query->where('check_in', '>', date('Y-m-d'));
@@ -51,7 +51,7 @@ class BookingController extends Controller
         $bus = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'bus'])
+        }, 'bus', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('bus', function($query){
             $query->where('departure', '>', date('Y-m-d'));
@@ -60,7 +60,7 @@ class BookingController extends Controller
         $visa = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'visa'])
+        }, 'visa', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('visa', function($query){
             $query->where('travel_date', '>', date('Y-m-d'));
@@ -69,7 +69,7 @@ class BookingController extends Controller
         $flight = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'flight'])
+        }, 'flight', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('flight', function($query){
             $query->where('departure', '>', date('Y-m-d'));
@@ -78,7 +78,7 @@ class BookingController extends Controller
        $tour = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'tour'])
+        }, 'tour', 'taxes', 'from_supplier', 'to_client'])
         ->whereHas('tour.hotel')
         ->where($agent_type, $agent_id)
         ->whereDoesntHave('tour.hotel', function($query){
@@ -115,7 +115,7 @@ class BookingController extends Controller
         $hotel = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'hotel'])
+        }, 'hotel', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
             $query->whereDate('check_in', '<=', date('Y-m-d'))
@@ -125,7 +125,7 @@ class BookingController extends Controller
         $bus = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'bus'])
+        }, 'bus', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('bus', function($query){
             $query->whereDate('departure', '<=', date('Y-m-d'))
@@ -135,7 +135,7 @@ class BookingController extends Controller
         $visa = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'visa'])
+        }, 'visa', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('visa', function($query){
             $query->whereDate('travel_date', date('Y-m-d'));
@@ -144,7 +144,7 @@ class BookingController extends Controller
         $flight = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'flight'])
+        }, 'flight', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('flight', function($query){
             $query->whereDate('departure', '<=', date('Y-m-d'))
@@ -154,7 +154,7 @@ class BookingController extends Controller
         $tour = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'tour'])
+        }, 'tour.hotel', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('tour.hotel', function($query){
             $query->whereDate('check_in', '<=', date('Y-m-d'))
@@ -191,7 +191,7 @@ class BookingController extends Controller
         $hotel = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'hotel'])
+        }, 'hotel', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
             $query->where('check_out', '<', date('Y-m-d'));
@@ -200,7 +200,7 @@ class BookingController extends Controller
          $bus = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'bus'])
+        }, 'bus', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('bus', function($query){
             $query->where('arrival', '<', date('Y-m-d'));
@@ -209,7 +209,7 @@ class BookingController extends Controller
         $visa = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'visa'])
+        }, 'visa', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('visa', function($query){
             $query->where('travel_date', '<', date('Y-m-d'));
@@ -218,7 +218,7 @@ class BookingController extends Controller
         $flight = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'flight'])
+        }, 'flight', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('flight', function($query){
             $query->where('arrival', '<', date('Y-m-d'));
@@ -227,7 +227,7 @@ class BookingController extends Controller
         $tour = $this->manuel_booking
         ->with(['from_supplier' => function($query){
             $query->select('agent');
-        }, 'tour'])
+        }, 'tour', 'taxes', 'from_supplier', 'to_client'])
         ->where($agent_type, $agent_id)
         ->whereHas('tour.hotel')
         ->whereDoesntHave('tour.hotel', function($query){
