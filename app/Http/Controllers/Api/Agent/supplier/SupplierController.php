@@ -21,6 +21,7 @@ class SupplierController extends Controller
         'admin_email',
         'emails',
         'phones',
+        'emergency_phone',
     ];
 
     public function view(Request $request){

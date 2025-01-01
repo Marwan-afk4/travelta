@@ -19,6 +19,7 @@ class LeadController extends Controller
         'phone',
         'email',
         'gender',
+        'emergency_phone',
     ];
 
     public function view(Request $request){
