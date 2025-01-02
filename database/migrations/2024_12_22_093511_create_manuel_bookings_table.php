@@ -20,7 +20,7 @@ return new class extends Migration
             $table->float('cost');
             $table->enum('tax_type', ['include', 'exclude']);
             $table->float('total_price');
-            $table->foreignId(column: 'currency_id')->nullable()->constrained('currancies')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId(column: 'currency_id')->nullable()->constrained('currency_agents')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId(column: 'country_id')->nullable()->constrained('countries')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId(column: 'city_id')->nullable()->constrained('cities')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();

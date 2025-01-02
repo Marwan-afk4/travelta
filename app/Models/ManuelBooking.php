@@ -29,6 +29,14 @@ class ManuelBooking extends Model
         return $this->belongsToMany(Tax::class, 'manuel_taxes', 'manuel_id', 'tax_id');
     }
 
+    public function agent(){
+        return $this->belongsTo(Agent::class, 'agent_id');
+    }
+
+    public function city(){
+        return $this->belongsTo(City::class);
+    }
+
     public function from_supplier(){
         return $this->belongsTo(SupplierAgent::class, 'from_supplier_id');
     }
