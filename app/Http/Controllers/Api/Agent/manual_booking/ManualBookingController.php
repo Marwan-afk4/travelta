@@ -417,6 +417,8 @@ class ManualBookingController extends Controller
                 }
             }
             // Cart
+            // total_cart, payment_type, amount, payment_method_id,
+            // payments [{amount, date}]
             $manuel_cart = $this->manuel_cart
             ->create([
                 'manuel_booking_id' => $manuel_booking->id,
@@ -440,7 +442,6 @@ class ManualBookingController extends Controller
                         'manuel_cart_id' => $manuel_cart->id,
                         'amount' => $item->amount,
                         'date' => $item->date,
-                        'payment' => $item->payment,
                     ]);
                 }
             }
