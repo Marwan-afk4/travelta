@@ -190,7 +190,7 @@ class AgentAuthController extends Controller
             ->orWhere('phone', $request->email)
             ->first();
         }
-        
+        try {
         if (password_verify($request->input('password'), $user->password)) {
             $user->token = $user->createToken($user->role)->plainTextToken;
             if ((!empty($user->end_date) && $user->end_date > date('Y-m-d')) || 
@@ -233,6 +233,11 @@ class AgentAuthController extends Controller
                 }
             }
         }
+        //code...
+    } catch (\Throwable $th) {
+        //throw $th;
+    }
         return response()->json(['faield'=>'creational not Valid'],403);
+
     }
 }
