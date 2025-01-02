@@ -412,7 +412,8 @@ class ManualBookingController extends Controller
                         'last_name' => $item->last_name,
                     ]);
                 }
-            } 
+            }
+            
             return response()->json([
                 'success' => $request->all(),
             ]);

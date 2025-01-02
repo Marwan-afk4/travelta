@@ -233,8 +233,6 @@ class AgentAuthController extends Controller
                 }
             }
         }
-        else { 
-            return response()->json(['faield'=>'creational not Valid'],403);
-        }
+        return response()->json(['faield'=>'creational not Valid'],403);
     }
 }
