@@ -38,7 +38,7 @@ class Authcontroller extends Controller
             'user' => $user,
             'token' => $token
         ], 200);
-    }
+    } 
 
     public function login(Request $request){
         $Validation = Validator::make(request()->all(), [
