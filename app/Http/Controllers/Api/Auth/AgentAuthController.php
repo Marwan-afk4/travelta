@@ -126,7 +126,6 @@ class AgentAuthController extends Controller
             ->create($agentRequest);
         } 
         else {
-            $agentRequest['services'] = json_encode($request->services);
             $agent = $this->agent
             ->create($agentRequest);
         }

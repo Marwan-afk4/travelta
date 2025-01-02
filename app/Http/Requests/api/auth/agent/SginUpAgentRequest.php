@@ -59,7 +59,7 @@ class SginUpAgentRequest extends FormRequest
                 'tax_card_image' => ['required'],
                 'tourism_license_image' => ['required'],
                 'commercial_register_image' => ['required'],
-                'services' => ['required', 'array'],
+                'services' => ['required'],
                 'services.*' => ['in:hotels,tours,flight,visas,service,umrah,activities']
             ];
         }
