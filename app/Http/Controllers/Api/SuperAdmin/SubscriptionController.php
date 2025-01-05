@@ -16,11 +16,13 @@ class SubscriptionController extends Controller
     public function subscribers(){
         $affilate = $this->affilates
         ->where('end_date', '>=', date('Y-m-d'))
+        ->whereNotNull('plan_id')
         ->with('plan')
         ->get();
         $agent = $this->agents
         ->with('plan')
         ->where('end_date', '>=', date('Y-m-d'))
+        ->whereNotNull('plan_id')
         ->get();
         $affilate = SubscriperResource::collection($affilate);
         $agent = SubscriperResource::collection($agent);
