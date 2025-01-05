@@ -24,6 +24,7 @@ class AffilateAgent extends Model
         'end_date',
         'price_cycle',
     ];
+    protected $appends = ['name'];
 
     protected $hidden = [
         'password',
@@ -34,6 +35,10 @@ class AffilateAgent extends Model
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function getNameAttribute(){
+        return $this->attributes['f_name'] . ' ' . $this->attributes['l_name'];
     }
 
     public function legal_papers(){
