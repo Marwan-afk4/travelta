@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SuperAdmin\PaymentMethodController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
 use App\Http\Controllers\Api\SuperAdmin\ServicesController;
 use App\Http\Controllers\Api\SuperAdmin\SignupApproveController;
+use App\Http\Controllers\Api\SuperAdmin\Subscription;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
 use Illuminate\Http\Request;
@@ -32,10 +33,14 @@ use Illuminate\Support\Facades\Route;
         
 ///////////////////////////////////////// Booking //////////////////////////////////////////////////
 
-        Route::get('/super/bookings',[BookingController::class,'getBookings']);
+        Route::get('/super/subscribers',[Subscription::class,'subscribers']);
+
+///////////////////////////////////// Subscriptions //////////////////////////////////////////////
+        
+        Route::get('/super/plans',[PlanController::class,'plans']);
 
 ///////////////////////////////////////// Plans //////////////////////////////////////////////////
-
+                
         Route::get('/super/plans',[PlanController::class,'plans']);
 
         Route::post('/super/plan/add',[PlanController::class,'addplan']);
