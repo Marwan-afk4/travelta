@@ -30,23 +30,23 @@ class BookingController extends Controller
         // return response()->json(['bookings' => $data]);
         
         $hotel = $this->manuel_booking
-        ->with(['hotel', 'taxes', 'from_supplier', 'to_client'])
+        ->with(['hotel', 'taxes', 'from_supplier'])
         ->get();
         $bus = $this->manuel_booking
-        ->with(['bus', 'taxes', 'from_supplier', 'to_client'])
+        ->with(['bus', 'taxes', 'from_supplier'])
         ->get();
         $visa = $this->manuel_booking
-        ->with(['visa', 'taxes', 'from_supplier', 'to_client'])
+        ->with(['visa', 'taxes', 'from_supplier'])
         ->get();
         $flight = $this->manuel_booking
-        ->with(['flight', 'taxes', 'from_supplier', 'to_client'])
+        ->with(['flight', 'taxes', 'from_supplier'])
         ->get();
        $tour = $this->manuel_booking
         ->with(['tour' => function($query){
             $query->with([
                 'hotel', 'bus'
             ]);
-        }, 'taxes', 'from_supplier', 'to_client'])
+        }, 'taxes', 'from_supplier'])
         ->whereHas('tour')
         ->get();
         foreach ($hotel as $item) {
