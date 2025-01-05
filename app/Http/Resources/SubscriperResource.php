@@ -23,8 +23,8 @@ class SubscriperResource extends JsonResource
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'role' => $this->role,
-            'plan' => $this->whenLoaded('plan')->name,
-            'price' => $this->whenLoaded('plan')->price,
+            'plan' => $this->whenLoaded('plan')->name ?? null,
+            'price' => $this->whenLoaded('plan')->price ?? null,
         ];
     }
 }
