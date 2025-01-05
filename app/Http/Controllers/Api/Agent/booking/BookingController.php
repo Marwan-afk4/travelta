@@ -68,7 +68,11 @@ class BookingController extends Controller
         })
         ->get();
        $tour = $this->manuel_booking
-        ->with(['tour', 'taxes', 'from_supplier'])
+        ->with(['tour' => function($query){
+            $query->with([
+                'hotel', 'bus'
+            ]);
+        }, 'taxes', 'from_supplier'])
         ->whereHas('tour.hotel')
         ->where($agent_type, $agent_id)
         ->whereDoesntHave('tour.hotel', function($query){
@@ -154,7 +158,11 @@ class BookingController extends Controller
         })
         ->get(); 
         $tour = $this->manuel_booking
-        ->with(['tour.hotel', 'taxes', 'from_supplier'])
+        ->with(['tour' => function($query){
+            $query->with([
+                'hotel', 'bus'
+            ]);
+        }, 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('tour.hotel', function($query){
             $query->whereDate('check_in', '<=', date('Y-m-d'))
@@ -237,7 +245,11 @@ class BookingController extends Controller
         })
         ->get();
         $tour = $this->manuel_booking
-        ->with(['tour', 'taxes', 'from_supplier'])
+        ->with(['tour' => function($query){
+            $query->with([
+                'hotel', 'bus'
+            ]);
+        }, 'taxes', 'from_supplier'])
         ->where($agent_type, $agent_id)
         ->whereHas('tour.hotel')
         ->whereDoesntHave('tour.hotel', function($query){

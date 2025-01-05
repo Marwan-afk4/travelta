@@ -22,6 +22,7 @@ class ManuelBooking extends Model
         'mark_up_type',
         'affilate_id',
         'agent_id',
+        'status',
     ];
     protected $appends = ['to_client'];
 

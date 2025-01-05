@@ -29,6 +29,10 @@ use Illuminate\Support\Facades\Route;
         Route::post('/super/user/add',[UserController::class,'adduser']);
 
         Route::delete('/super/user/delete/{id}',[UserController::class,'deleteuser']);
+        
+///////////////////////////////////////// Booking //////////////////////////////////////////////////
+
+        Route::get('/super/bookings',[BookingController::class,'getBookings']);
 
 ///////////////////////////////////////// Plans //////////////////////////////////////////////////
 

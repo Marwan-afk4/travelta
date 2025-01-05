@@ -419,32 +419,32 @@ class ManualBookingController extends Controller
             // Cart
             // total_cart, payment_type, amount, payment_method_id,
             // payments [{amount, date}]
-            $manuel_cart = $this->manuel_cart
-            ->create([
-                'manuel_booking_id' => $manuel_booking->id,
-                'total' => $request->total_cart,
-                'payment_type' => $request->payment_type,
-                'payment' => $request->amount ?? 0,
-                'payment_method_id' => $request->payment_method_id,
-            ]);
-            if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
-                $validation = Validator::make($request->all(), [
-                    'payments' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                $payments = is_string($request->payments) ? json_decode($request->payments)
-                : $request->payments;
-                foreach ($payments as $item) {
-                    $this->payments_cart
-                    ->create([
-                        'manuel_cart_id' => $manuel_cart->id,
-                        'amount' => $item->amount,
-                        'date' => $item->date,
-                    ]);
-                }
-            }
+            // $manuel_cart = $this->manuel_cart
+            // ->create([
+            //     'manuel_booking_id' => $manuel_booking->id,
+            //     'total' => $request->total_cart,
+            //     'payment_type' => $request->payment_type,
+            //     'payment' => $request->amount ?? 0,
+            //     'payment_method_id' => $request->payment_method_id,
+            // ]);
+            // if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
+            //     $validation = Validator::make($request->all(), [
+            //         'payments' => 'required',
+            //     ]);
+            //     if($validation->fails()){
+            //         return response()->json(['errors'=>$validation->errors()], 401);
+            //     }
+            //     $payments = is_string($request->payments) ? json_decode($request->payments)
+            //     : $request->payments;
+            //     foreach ($payments as $item) {
+            //         $this->payments_cart
+            //         ->create([
+            //             'manuel_cart_id' => $manuel_cart->id,
+            //             'amount' => $item->amount,
+            //             'date' => $item->date,
+            //         ]);
+            //     }
+            // }
 
             return response()->json([
                 'success' => $request->all(),

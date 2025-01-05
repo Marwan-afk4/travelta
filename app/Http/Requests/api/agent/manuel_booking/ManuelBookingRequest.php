@@ -37,9 +37,9 @@ class ManuelBookingRequest extends FormRequest
             'city_id' => ['sometimes', 'exists:services,id'],
             'mark_up' => ['required', 'numeric'],
             'mark_up_type' => ['required', 'in:value,precentage'],
-            'total_cart' => ['required', 'numeric'],
-            'payment_type' => ['required', 'in:full,partial,later'],
-            'payment_method_id' => ['required', 'exists:payment_methods,id'],
+            // 'total_cart' => ['required', 'numeric'],
+            // 'payment_type' => ['required', 'in:full,partial,later'],
+            // 'payment_method_id' => ['required', 'exists:payment_methods,id'],
         ];
     }
 
