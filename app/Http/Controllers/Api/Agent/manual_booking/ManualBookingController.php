@@ -356,6 +356,12 @@ class ManualBookingController extends Controller
         // tour, type, adult_price, child_price, adults, childreen
         // tour_buses [{transportation, seats}],
         // tour_hotels[{destination, hotel_name, room_type, check_in, check_out, nights}] 
+        $validation = Validator::make($request->all(), [
+            'cart_id' => 'required|exists:manuel_data_carts,id',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -390,94 +396,35 @@ class ManualBookingController extends Controller
             ->where('id', $manuel_data_cart->from_service_id)
             ->first()->service_name;
             if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
-                $validation = Validator::make($request->all(), [
-                    'check_in' => 'required|date',
-                    'check_out' => 'required|date',
-                    'nights' => 'required|numeric',
-                    'hotel_name' => 'required',
-                    'room_type' => 'required',
-                    'room_quantity' => 'required|numeric',
-                    'adults' => 'required|numeric',
-                    'childreen' => 'required|numeric',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
+         
                 $hotelRequest = $manuel_data_cart->only($this->hotelRequest);
                 $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_hotel = $this->manuel_hotel
                 ->create($hotelRequest);
             }
             elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-                $validation = Validator::make($request->all(), [
-                    'from' => 'required',
-                    'to' => 'required',
-                    'departure' => 'required|date',
-                    'arrival' => 'required|date',
-                    'adults' => 'required|numeric',
-                    'childreen' => 'required|numeric',
-                    'adult_price' => 'required|numeric',
-                    'child_price' => 'required|numeric',
-                    'bus' => 'required',
-                    'bus_number' => 'required',
-                    'driver_phone' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
+          
                 $busRequest = $manuel_data_cart->only($this->busRequest);
                 $busRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_bus = $this->manuel_bus
                 ->create($busRequest);
             }
             elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
-                $validation = Validator::make($request->all(), [
-                    'country' => 'required',
-                    'travel_date' => 'required|date', 
-                    'appointment_date' => 'date',
-                    'number' => 'required|numeric', 
-                    'customers' => 'required', 
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
+      
                 $visaRequest = $manuel_data_cart->only($this->visaRequest);
                 $visaRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_visa = $this->manuel_visa
                 ->create($visaRequest);
             }
             elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
-                $validation = Validator::make($request->all(), [
-                    'type' => 'in:domestic,international',
-                    'direction' => 'in:one_way,round_trip,multi_city',
-                    'departure' => 'date',
-                    'arrival' => 'date',
-                    'adults' => 'numeric',
-                    'childreen' => 'numeric',
-                    'infants' => 'numeric',
-                    'adult_price' => 'numeric',
-                    'child_price' => 'numeric',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
+    
                 $flightRequest = $manuel_data_cart->only($this->flightRequest);
                 $flightRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_flight = $this->manuel_flight
                 ->create($flightRequest);
             }
             elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
-                $validation = Validator::make($request->all(), [
-                    'tour' => 'required',
-                    'type' => 'required|in:domestic,international',
-                    'adult_price' => 'numeric',
-                    'child_price' => 'numeric',
-                    'adults' => 'numeric',
-                    'childreen' => 'numeric', 
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
+      
                 $tourRequest = $manuel_data_cart->only($this->tourRequest);
                 $tourRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_tour = $this->manuel_tour
