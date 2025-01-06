@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\LegalPaper;
 use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -36,8 +37,8 @@ class UserController extends Controller
                 $flight = $value->flight;
                 $tour = $value->tour;
                 $visa = $value->visa;
-                $agent = $value->agent; 
-                $booking[$key]['agent'] = $agent; 
+                $agent = $value->agent;
+                $booking[$key]['agent'] = $agent;
                 $booking[$key]['agent'] = !empty($agent) ? $agent->name : null;
                 $booking[$key]['price'] = $value->total_price;
                 if (!empty($hotel)) {
@@ -115,8 +116,7 @@ class UserController extends Controller
 
     public function deleteuser($id){
         $user=User::find($id);
-        $legal_papers = LegalPaper
-        ->where('user_id', $user->id)
+        $legal_papers = LegalPaper::where('user_id', $user->id)
         ->get();
         foreach ($legal_papers as $item) {
             $this->deleteImage($item->image);
