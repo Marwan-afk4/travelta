@@ -356,6 +356,7 @@ class ManualBookingController extends Controller
         // tour, type, adult_price, child_price, adults, childreen
         // tour_buses [{transportation, seats}],
         // tour_hotels[{destination, hotel_name, room_type, check_in, check_out, nights}] 
+        
         $validation = Validator::make($request->all(), [
             'cart_id' => 'required|exists:manuel_data_carts,id',
         ]);
@@ -380,7 +381,7 @@ class ManualBookingController extends Controller
         $manuel_data_cart = json_decode($manuel_data_cart->cart);
         $manuel_data_cart = collect($manuel_data_cart);
         $manuelRequest = $manuel_data_cart->only($this->manuelRequest);
-
+        
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $manuelRequest['affilate_id'] = $agent_id;
         }
@@ -404,47 +405,95 @@ class ManualBookingController extends Controller
             'to_supplier_id' => $manuelRequest['to_supplier_id'],
             'agent_id' => $manuelRequest['agent_id'],
         ]);
-            $taxes = is_string($manuel_data_cart->taxes) ? json_decode($manuel_data_cart->taxes) : $manuel_data_cart->taxes;
+        try{
+            $taxes = is_string($manuel_data_cart['taxes']) ? json_decode($manuel_data_cart['taxes']) : $manuel_data_cart['taxes'];
             $manuel_booking->taxes()->attach($taxes);
             $service = $this->services
-            ->where('id', $manuel_data_cart->from_service_id)
+            ->where('id', $manuel_data_cart['from_service_id'])
             ->first()->service_name;
             if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
          
-                $hotelRequest = $manuel_data_cart->only($this->hotelRequest);
+                $hotelRequest = [
+                    'check_in' => $manuel_data_cart['check_in'],
+                    'check_out' => $manuel_data_cart['check_out'],
+                    'nights' => $manuel_data_cart['nights'],
+                    'hotel_name' => $manuel_data_cart['hotel_name'],
+                    'room_type' => $manuel_data_cart['room_type'],
+                    'room_quantity' => $manuel_data_cart['room_quantity'],
+                    'adults' => $manuel_data_cart['adults'],
+                    'childreen' => $manuel_data_cart['childreen'],
+                ];
                 $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_hotel = $this->manuel_hotel
                 ->create($hotelRequest);
             }
             elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-          
-                $busRequest = $manuel_data_cart->only($this->busRequest);
+           
+                $busRequest = [ 
+                    'from' => $manuel_data_cart['from'],
+                    'to' => $manuel_data_cart['to'],
+                    'departure' => $manuel_data_cart['departure'],
+                    'arrival' => $manuel_data_cart['arrival'],
+                    'adults' => $manuel_data_cart['adults'],
+                    'childreen' => $manuel_data_cart['childreen'],
+                    'adult_price' => $manuel_data_cart['adult_price'],
+                    'child_price' => $manuel_data_cart['child_price'],
+                    'bus' => $manuel_data_cart['bus'],
+                    'bus_number' => $manuel_data_cart['bus_number'],
+                    'driver_phone' => $manuel_data_cart['driver_phone'],
+                ];
                 $busRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_bus = $this->manuel_bus
                 ->create($busRequest);
             }
             elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
-      
-                $visaRequest = $manuel_data_cart->only($this->visaRequest);
+                $visaRequest = [
+                    'country' => $manuel_data_cart['country'],
+                    'travel_date' => $manuel_data_cart['travel_date'],
+                    'appointment_date' => $manuel_data_cart['appointment_date'],
+                    'notes' => $manuel_data_cart['notes'],
+                    'number' => $manuel_data_cart['number'],
+                    'customers' => $manuel_data_cart['customers']
+                ];
                 $visaRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_visa = $this->manuel_visa
                 ->create($visaRequest);
             }
             elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
-    
-                $flightRequest = $manuel_data_cart->only($this->flightRequest);
+                $flightRequest = [
+                    'type' => $manuel_data_cart['type'],
+                    'direction' => $manuel_data_cart['direction'],
+                    'from_to' => $manuel_data_cart['from_to'],
+                    'departure' => $manuel_data_cart['departure'],
+                    'arrival' => $manuel_data_cart['arrival'],
+                    'class' => $manuel_data_cart['class'],
+                    'adults' => $manuel_data_cart['adults'],
+                    'childreen' => $manuel_data_cart['childreen'],
+                    'infants' => $manuel_data_cart['infants'],
+                    'airline' => $manuel_data_cart['airline'],
+                    'ticket_number' => $manuel_data_cart['ticket_number'],
+                    'adult_price' => $manuel_data_cart['adult_price'],
+                    'child_price' => $manuel_data_cart['child_price'],
+                    'ref_pnr' => $manuel_data_cart['ref_pnr'],
+                ];
                 $flightRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_flight = $this->manuel_flight
                 ->create($flightRequest);
             }
             elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
-      
-                $tourRequest = $manuel_data_cart->only($this->tourRequest);
+                $tourRequest = [
+                    'tour' => $manuel_data_cart['tour'],
+                    'type' => $manuel_data_cart['type'],
+                    'adult_price' => $manuel_data_cart['adult_price'],
+                    'child_price' => $manuel_data_cart['child_price'],
+                    'adults' => $manuel_data_cart['adults'],
+                    'childreen' => $manuel_data_cart['childreen'],
+                ];
                 $tourRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_tour = $this->manuel_tour
                 ->create($tourRequest);
-                $manuel_tour_bus = is_string($manuel_data_cart->tour_buses) ? json_decode($manuel_data_cart->tour_buses) : $manuel_data_cart->taxes;
-                $manuel_tour_hotel = is_string($manuel_data_cart->tour_hotels) ? json_decode($manuel_data_cart->tour_hotels) : $manuel_data_cart->taxes; 
+                $manuel_tour_bus = is_string($manuel_data_cart['tour_buses']) ? json_decode($manuel_data_cart['tour_buses']) : $manuel_data_cart['taxes'];
+                $manuel_tour_hotel = is_string($manuel_data_cart['tour_hotels']) ? json_decode($manuel_data_cart['tour_hotels']) : $manuel_data_cart['taxes']; 
             // return $manuel_tour_bus;
             if ($manuel_tour_bus) {
                     foreach ($manuel_tour_bus as $item) {
@@ -471,8 +520,8 @@ class ManualBookingController extends Controller
                     }
             }
             }
-            if (isset($manuel_data_cart->adults_data) && !empty($manuel_data_cart->adults_data)) {
-                $adults = is_string($manuel_data_cart->adults_data) ?json_decode($manuel_data_cart->adults_data) :$manuel_data_cart->adults_data;
+            if (isset($manuel_data_cart['adults_data']) && !empty($manuel_data_cart['adults_data'])) {
+                $adults = is_string($manuel_data_cart['adults_data']) ?json_decode($manuel_data_cart['adults_data']) :$manuel_data_cart['adults_data'];
                 foreach ($adults as $item) {
                     $this->adults
                     ->create([
@@ -482,8 +531,8 @@ class ManualBookingController extends Controller
                     ]);
                 }
             }
-            if (isset($manuel_data_cart->child_data) && !empty($manuel_data_cart->child_data)) {
-                $child = is_string($manuel_data_cart->child_data) ?json_decode($manuel_data_cart->child_data) :$manuel_data_cart->child_data;
+            if (isset($manuel_data_cart['child_data']) && !empty($manuel_data_cart['child_data'])) {
+                $child = is_string($manuel_data_cart['child_data']) ?json_decode($manuel_data_cart['child_data']) :$manuel_data_cart['child_data'];
                 foreach ($child as $item) {
                     $this->child
                     ->create([
@@ -523,5 +572,11 @@ class ManualBookingController extends Controller
             return response()->json([
                 'success' => $request->all(),
             ]);
+        } catch (\Throwable $th) {
+            $manuel_booking->delete();
+            return response()->json([
+                'faild' => 'something wrong',
+            ], 400);
+        }
     }
 }
