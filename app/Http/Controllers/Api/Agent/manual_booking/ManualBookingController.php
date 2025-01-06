@@ -256,7 +256,7 @@ class ManualBookingController extends Controller
     }
 
     public function cart(ManuelBookingRequest $request){
-        $total = $manuelRequest->total_price;
+        $total = $request->total_price;
         try {
             $service = $this->services
             ->where('id', $request->from_service_id)
