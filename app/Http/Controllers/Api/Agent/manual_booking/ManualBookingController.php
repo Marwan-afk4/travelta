@@ -257,7 +257,6 @@ class ManualBookingController extends Controller
 
     public function cart(ManuelBookingRequest $request){
         $total = $request->total_price;
-        try {
             $service = $this->services
             ->where('id', $request->from_service_id)
             ->first()->service_name;
@@ -346,12 +345,6 @@ class ManualBookingController extends Controller
                 'cart_id' => $manuel_data_cart->id,
                 'total' => $total,
             ]);
-        } catch (\Throwable $th) {
-            $manuel_data_cart->delete();
-            return response()->json([
-                'faild' => 'something wrong',
-            ], 400);
-        }
     }
 
     public function booking(Request $request){
