@@ -387,9 +387,23 @@ class ManualBookingController extends Controller
         else{
             $manuelRequest['agent_id'] = $agent_id;
         }
+
         $manuel_booking = $this->manuel_booking
-        ->create($manuelRequest);
-        try {
+        ->create([
+            'from_supplier_id' => $manuelRequest['from_supplier_id'],
+            'from_service_id' => $manuelRequest['from_service_id'],
+            'mark_up_type' => $manuelRequest['mark_up_type'],
+            'mark_up' => $manuelRequest['mark_up'],
+            'price' => $manuelRequest['price'],
+            'country_id' => $manuelRequest['country_id'],
+            'city_id' => $manuelRequest['city_id'],
+            'tax_type' => $manuelRequest['tax_type'],
+            'cost' => $manuelRequest['cost'],
+            'total_price' => $manuelRequest['total_price'],
+            'currency_id' => $manuelRequest['currency_id'],
+            'to_supplier_id' => $manuelRequest['to_supplier_id'],
+            'agent_id' => $manuelRequest['agent_id'],
+        ]);
             $taxes = is_string($manuel_data_cart->taxes) ? json_decode($manuel_data_cart->taxes) : $manuel_data_cart->taxes;
             $manuel_booking->taxes()->attach($taxes);
             $service = $this->services
@@ -509,11 +523,5 @@ class ManualBookingController extends Controller
             return response()->json([
                 'success' => $request->all(),
             ]);
-        } catch (\Throwable $th) {
-            $manuel_booking->delete();
-            return response()->json([
-                'faild' => 'something wrong',
-            ], 400);
-        }
     }
 }
