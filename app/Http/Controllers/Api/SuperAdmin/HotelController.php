@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 
 class HotelController extends Controller
 {
-    protected $updateHotel = ['hotel_name', 'country_id', 'city_id', 'zone_id', 'email', 'phone_number', 'rating', 'image'];
+    protected $updateHotel = ['hotel_name', 'country_id', 'city_id', 'zone_id', 'email', 'phone_number', 'stars', 'image'];
 
     public function Hotels()
     {
@@ -29,7 +29,7 @@ class HotelController extends Controller
                 'hotel_name' => $hotel->hotel_name,
                 'email' => $hotel->email,
                 'phone_number' => $hotel->phone_number,
-                'rating' => $hotel->rating,
+                'stars' => $hotel->stars,
                 'image' => $hotel->image
             ];
         });
@@ -58,7 +58,7 @@ class HotelController extends Controller
             'zone_id' => 'required|exists:zones,id',
             'email' => 'required|email|unique:hotels,email',
             'phone_number' => 'required|unique:hotels,phone_number',
-            'rating' => 'nullable',
+            'stars' => 'nullable',
             'image' => 'nullable|array',
         ]);
         if ($validation->fails()) {
@@ -71,7 +71,7 @@ class HotelController extends Controller
             'zone_id' => $request->zone_id,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
-            'rating' => $request->rating,
+            'stars' => $request->stars,
             'image' => $request->image,
         ]);
         return response()->json([
