@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\Agent\supplier\SupplierController;
 
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
+use App\Http\Controllers\Api\Agent\Wallet\WalletController;
+
 use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
@@ -38,15 +40,15 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('add', 'create');
         Route::delete('delete/{id}', 'delete');
     });
-//marwan
-Route::controller(PlanController::class)->prefix('plan')->group(function(){
-    Route::get('/', 'plans');
-});
-//marwan
-Route::controller(PaymentController::class)->prefix('payment')->group(function(){
-    Route::get('/payment_methods', 'getPaymentMethods');
-    Route::post('/make_payment', 'makePayment');
-});
+    //marwan
+    Route::controller(PlanController::class)->prefix('plan')->group(function(){
+        Route::get('/', 'plans');
+    });
+    //marwan
+    Route::controller(PaymentController::class)->prefix('payment')->group(function(){
+        Route::get('/payment_methods', 'getPaymentMethods');
+        Route::post('/make_payment', 'makePayment');
+    });
 
     Route::controller(SupplierController::class)->prefix('supplier')->group(function(){
         Route::get('/', 'view');
@@ -56,8 +58,17 @@ Route::controller(PaymentController::class)->prefix('payment')->group(function()
         Route::delete('delete/{id}', 'delete');
     });
 
+    Route::controller(WalletController::class)->prefix('wallet')->group(function(){
+        Route::get('/', 'view');
+        Route::post('add', 'add');
+        Route::post('add', 'add');
+        Route::post('charge', 'charge');
+        Route::delete('delete/{id}', 'delete');
+    });
+
     Route::controller(ManualBookingController::class)->prefix('manual_booking')->group(function(){
         Route::post('/', 'booking');
+        Route::post('/cart', 'cart');
         Route::get('/supplier_customer', 'to_b2_filter');
         Route::get('/service_supplier', 'from_supplier');
         Route::get('/taxes', 'from_taxes');
