@@ -39,7 +39,8 @@ class ManualBookingController extends Controller
     private ManuelVisa $manuel_visa, private ManuelTourBus $manuel_tour_bus,
     private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency,
     private Adult $adults, private Child $child, private ManuelCart $manuel_cart,
-    private PaymentsCart $payments_cart, private ManuelDataCart $manuel_data_cart){}
+    private PaymentsCart $payments_cart, private ManuelDataCart $manuel_data_cart,
+    private Customer $customers){}
     
     protected $hotelRequest = [
         'check_in',
@@ -351,6 +352,20 @@ class ManualBookingController extends Controller
         $manuel_data_cart = $this->manuel_data_cart
         ->where('id', $id)
         ->first();
+        $manuel_data_cart = json_decode($manuel_data_cart->cart);
+        $service = $this->services
+        ->where('id', $manuel_data_cart->from_service_id)
+        ->first();
+        if (!empty($manuel_data_cart->to_supplier_id)) {
+            $to_client = $this->supplier_agent
+            ->where('id', $manuel_data_cart->to_supplier_id)
+            ->first();
+        } else {   
+            $to_client = $this->customers
+            ->where('id', $manuel_data_cart->to_customer_id)
+            ->first();
+        }
+
         if (empty($manuel_data_cart)) {
             return response()->json([
                 'errors' => 'id is wrong'
@@ -358,7 +373,8 @@ class ManualBookingController extends Controller
         }
 
         return response()->json([
-            'manuel_data_cart' => json_decode($manuel_data_cart->cart)
+            'service' => $service->service_name ?? null,
+            'to_client' => $to_client->name ?? null,
         ]);
     }
 
@@ -557,16 +573,16 @@ class ManualBookingController extends Controller
             if ($request->image && !empty($request->image)) {
                 
             }
-            $manuel_cart = $this->manuel_cart
-            ->create([
-                'manuel_booking_id' => $,
-                'total' => ,
-                'payment_type' => ,
-                'payment' => ,
-                'payment_method_id' => ,
-                'image' => ,
-                'status' => ,
-            ]);
+            // $manuel_cart = $this->manuel_cart
+            // ->create([
+            //     'manuel_booking_id' => $,
+            //     'total' => ,
+            //     'payment_type' => ,
+            //     'payment' => ,
+            //     'payment_method_id' => ,
+            //     'image' => ,
+            //     'status' => ,
+            // ]);
             if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
                 $validation = Validator::make($request->all(), [
                     'payments' => 'required',
