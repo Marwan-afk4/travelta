@@ -11,5 +11,7 @@ class PaymentsCart extends Model
         'amount',
         'date',
         'payment',
+        'image',
+        'status',
     ];
 }

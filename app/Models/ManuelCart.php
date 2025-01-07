@@ -12,5 +12,7 @@ class ManuelCart extends Model
         'payment_type',
         'payment',
         'payment_method_id',
+        'image',
+        'status',
     ];
 }

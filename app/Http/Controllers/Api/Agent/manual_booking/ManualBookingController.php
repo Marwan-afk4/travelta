@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\api\agent\manuel_booking\ManuelBookingRequest;
+use App\Http\Requests\api\agent\manuel_booking\CartBookingRequest;
 
 use App\Models\CustomerData;
 use App\Models\SupplierAgent;
@@ -335,7 +336,6 @@ class ManualBookingController extends Controller
                 }
             }
             
-            
             $manuel_data_cart = $this->manuel_data_cart
             ->create([
                 'cart' => json_encode($request->all())
@@ -347,7 +347,22 @@ class ManualBookingController extends Controller
             ]);
     }
 
-    public function booking(Request $request){
+    public function cart_data($id){
+        $manuel_data_cart = $this->manuel_data_cart
+        ->where('id', $id)
+        ->first();
+        if (empty($manuel_data_cart)) {
+            return response()->json([
+                'errors' => 'id is wrong'
+            ], 400);
+        }
+
+        return response()->json([
+            'manuel_data_cart' => json_decode($manuel_data_cart->cart)
+        ]);
+    }
+
+    public function booking(CartBookingRequest $request){
         // Hotel => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","check_in": "2024-05-05","check_out": "2024-07-07","nights": "3","hotel_name": "Hilton","room_type": "2","room_quantity": "10","adults": "25","childreen": "10"}
         // Bus => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","from": "Alex","to": "Sharm","departure": "2024-05-05 11:30:00","arrival": "2024-07-07 11:30:00","adults": "2","childreen": "10","adult_price": "250","child_price": "100","bus": "Travelta","bus_number": "12345","driver_phone": "01234566"}
         // Visa => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","country": "Alex","travel_date": "2024-12-30","appointment_date": "2024-12-28","number": "10","customers": "['Ahmed', 'Mohamed']","notes": "Hello"}
@@ -357,12 +372,6 @@ class ManualBookingController extends Controller
         // tour_buses [{transportation, seats}],
         // tour_hotels[{destination, hotel_name, room_type, check_in, check_out, nights}] 
         
-        $validation = Validator::make($request->all(), [
-            'cart_id' => 'required|exists:manuel_data_carts,id',
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
-        }
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -545,29 +554,37 @@ class ManualBookingController extends Controller
             // Cart
             // total_cart, payment_type, amount, payment_method_id,
             // payments [{amount, date}]
-            // if ($request->payment_method_id && !empty($request->payment_method_id)) {
-            //     # code...
-            // }
-            // $manuel_cart = $this->manuel_cart
-            // ->create();
-            // if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
-            //     $validation = Validator::make($request->all(), [
-            //         'payments' => 'required',
-            //     ]);
-            //     if($validation->fails()){
-            //         return response()->json(['errors'=>$validation->errors()], 401);
-            //     }
-            //     $payments = is_string($request->payments) ? json_decode($request->payments)
-            //     : $request->payments;
-            //     foreach ($payments as $item) {
-            //         $this->payments_cart
-            //         ->create([
-            //             'manuel_cart_id' => $manuel_cart->id,
-            //             'amount' => $item->amount,
-            //             'date' => $item->date,
-            //         ]);
-            //     }
-            // }
+            if ($request->image && !empty($request->image)) {
+                
+            }
+            $manuel_cart = $this->manuel_cart
+            ->create([
+                'manuel_booking_id' => $,
+                'total' => ,
+                'payment_type' => ,
+                'payment' => ,
+                'payment_method_id' => ,
+                'image' => ,
+                'status' => ,
+            ]);
+            if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
+                $validation = Validator::make($request->all(), [
+                    'payments' => 'required',
+                ]);
+                if($validation->fails()){
+                    return response()->json(['errors'=>$validation->errors()], 401);
+                }
+                $payments = is_string($request->payments) ? json_decode($request->payments)
+                : $request->payments;
+                foreach ($payments as $item) {
+                    $this->payments_cart
+                    ->create([
+                        'manuel_cart_id' => $manuel_cart->id,
+                        'amount' => $item->amount,
+                        'date' => $item->date,
+                    ]);
+                }
+            }
 
             return response()->json([
                 'success' => $request->all(),

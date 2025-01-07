@@ -68,6 +68,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::controller(ManualBookingController::class)->prefix('manual_booking')->group(function(){
         Route::post('/', 'booking');
+        Route::get('/cart_data/{id}', 'cart_data');
         Route::post('/cart', 'cart');
         Route::get('/supplier_customer', 'to_b2_filter');
         Route::get('/service_supplier', 'from_supplier');

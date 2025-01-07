@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ManuelBookingRequest extends FormRequest
+class CartBookingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,19 +24,10 @@ class ManuelBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'to_supplier_id' => ['exists:supplier_agents,id'],
-            'to_customer_id' => ['exists:customer_data,id'],
-            'from_supplier_id' => ['required', 'exists:supplier_agents,id'],
-            'from_service_id' => ['required', 'exists:services,id'],
-            'cost' => ['required', 'numeric'],
-            'price' => ['required', 'numeric'],
-            'currency_id' => ['required', 'exists:currency_agents,id'],
-            'tax_type' => ['required', 'in:include,exclude'],
-            'total_price' => ['required', 'numeric'],
-            'country_id' => ['required', 'exists:services,id'],
-            'city_id' => ['sometimes', 'exists:services,id'],
-            'mark_up' => ['required', 'numeric'],
-            'mark_up_type' => ['required', 'in:value,precentage'],
+            'cart_id' => 'required|exists:manuel_data_carts,id',
+            'total_cart' => ['required', 'numeric'],
+            'payment_type' => ['required', 'in:full,partial,later'],
+            'payment_method_id' => ['required', 'exists:payment_methods,id'],
         ];
     }
 
