@@ -571,22 +571,21 @@ class ManualBookingController extends Controller
                 }
             }
             // Cart
-            // total_cart, payment_type, amount, payment_method_id,
+            // total_cart, payment_type, amount, payment_method_id, image
             // payments [{amount, date}]
-            $cartRequest = [];
+            $cartRequest = [
+                'manuel_booking_id' => $manuel_booking->id,
+                'total' => $request->total_cart,
+                'payment_type' => $request->payment_type,
+                'payment' => $request->amount ?? 0,
+                'payment_method_id' => $request->payment_method_id,
+            ];
             if ($request->image && !empty($request->image)) {
                 $image_path = $this->upload($request, 'image', 'admin/manuel/receipt');
+                $cartRequest['image'] = $image_path;
             }
-            // $manuel_cart = $this->manuel_cart
-            // ->create([
-            //     'manuel_booking_id' => $,
-            //     'total' => ,
-            //     'payment_type' => ,
-            //     'payment' => ,
-            //     'payment_method_id' => ,
-            //     'image' => ,
-            //     'status' => ,
-            // ]);
+            $manuel_cart = $this->manuel_cart
+            ->create($cartRequest);
             if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
                 $validation = Validator::make($request->all(), [
                     'payments' => 'required',
