@@ -28,9 +28,12 @@ use App\Models\Child;
 use App\Models\ManuelCart;
 use App\Models\PaymentsCart;
 use App\Models\ManuelDataCart;
+use App\Models\Customer;
+use App\trait\image;
 
 class ManualBookingController extends Controller
 {
+    use image;
     public function __construct(private City $cities, private Country $contries,
     private CustomerData $customer_data, private SupplierAgent $supplier_agent,
     private Service $services, private Tax $taxes, private ManuelBooking $manuel_booking,
@@ -570,8 +573,9 @@ class ManualBookingController extends Controller
             // Cart
             // total_cart, payment_type, amount, payment_method_id,
             // payments [{amount, date}]
+            $cartRequest = [];
             if ($request->image && !empty($request->image)) {
-                
+                $image_path = $this->upload($request, 'image', 'admin/manuel/receipt');
             }
             // $manuel_cart = $this->manuel_cart
             // ->create([
