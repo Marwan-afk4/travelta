@@ -333,7 +333,8 @@ class ManualBookingController extends Controller
                     'adult_price' => 'numeric',
                     'child_price' => 'numeric',
                     'adults' => 'numeric',
-                    'childreen' => 'numeric', 
+                    'childreen' => 'numeric',
+                    'flight_date' => 'date',
                 ]);
                 if($validation->fails()){
                     return response()->json(['errors'=>$validation->errors()], 401);
@@ -411,12 +412,11 @@ class ManualBookingController extends Controller
         $manuelRequest = $manuel_data_cart->only($this->manuelRequest);
         
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
-            $manuelRequest['affilate_id'] = $agent_id;
+            $role = 'affilate_id';
         }
         else{
-            $manuelRequest['agent_id'] = $agent_id;
+            $role = 'agent_id';
         }
-
         $manuel_booking = $this->manuel_booking
         ->create([
             'from_supplier_id' => $manuelRequest['from_supplier_id'],
@@ -431,16 +431,37 @@ class ManualBookingController extends Controller
             'total_price' => $manuelRequest['total_price'],
             'currency_id' => $manuelRequest['currency_id'],
             'to_supplier_id' => $manuelRequest['to_supplier_id'],
-            'agent_id' => $manuelRequest['agent_id'],
+            $role => $agent_id,
         ]);
         try{
+            if (isset($request->adults_data) && !empty($request->adults_data)) {
+                $adults_data = json_decode($request->adults_data) ?? [];
+                foreach ($adults_data as $item) {	
+                    $this->adults
+                    ->create([
+                        'manuel_booking_id' => $manuel_booking->id,
+                        'title' => $item['title'],
+                        'first_name' => $item['first_name'],
+                        'last_name' => $item['last_name'],
+                    ]);
+                }
+                $child_data = json_decode($request->child_data) ?? [];
+                foreach ($child_data as $item) {	
+                    $this->child
+                    ->create([
+                        'manuel_booking_id' => $manuel_booking->id,
+                        'age' => $item['age'],
+                        'first_name' => $item['first_name'],
+                        'last_name' => $item['last_name'],
+                    ]);
+                }
+            }
             $taxes = is_string($manuel_data_cart['taxes']) ? json_decode($manuel_data_cart['taxes']) : $manuel_data_cart['taxes'];
             $manuel_booking->taxes()->attach($taxes);
             $service = $this->services
             ->where('id', $manuel_data_cart['from_service_id'])
             ->first()->service_name;
             if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
-         
                 $hotelRequest = [
                     'check_in' => $manuel_data_cart['check_in'],
                     'check_out' => $manuel_data_cart['check_out'],
@@ -456,7 +477,6 @@ class ManualBookingController extends Controller
                 ->create($hotelRequest);
             }
             elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-           
                 $busRequest = [ 
                     'from' => $manuel_data_cart['from'],
                     'to' => $manuel_data_cart['to'],
@@ -481,7 +501,6 @@ class ManualBookingController extends Controller
                     'appointment_date' => $manuel_data_cart['appointment_date'],
                     'notes' => $manuel_data_cart['notes'],
                     'number' => $manuel_data_cart['number'],
-                    'customers' => $manuel_data_cart['customers']
                 ];
                 $visaRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_visa = $this->manuel_visa
@@ -517,6 +536,9 @@ class ManualBookingController extends Controller
                     'adults' => $manuel_data_cart['adults'],
                     'childreen' => $manuel_data_cart['childreen'],
                 ];
+                if(isset($manuel_data_cart['flight_date']) && !empty($manuel_data_cart['flight_date'])){
+                    $tourRequest['flight_date'] = $manuel_data_cart['flight_date'];
+                }
                 $tourRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_tour = $this->manuel_tour
                 ->create($tourRequest);
