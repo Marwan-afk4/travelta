@@ -419,18 +419,18 @@ class ManualBookingController extends Controller
         }
         $manuel_booking = $this->manuel_booking
         ->create([
-            'from_supplier_id' => $manuelRequest['from_supplier_id'],
-            'from_service_id' => $manuelRequest['from_service_id'],
-            'mark_up_type' => $manuelRequest['mark_up_type'],
-            'mark_up' => $manuelRequest['mark_up'],
-            'price' => $manuelRequest['price'],
-            'country_id' => $manuelRequest['country_id'],
-            'city_id' => $manuelRequest['city_id'],
-            'tax_type' => $manuelRequest['tax_type'],
-            'cost' => $manuelRequest['cost'],
-            'total_price' => $manuelRequest['total_price'],
-            'currency_id' => $manuelRequest['currency_id'],
-            'to_supplier_id' => $manuelRequest['to_supplier_id'],
+            'from_supplier_id' => $manuelRequest['from_supplier_id'] ?? null,
+            'from_service_id' => $manuelRequest['from_service_id'] ?? null,
+            'mark_up_type' => $manuelRequest['mark_up_type'] ?? null,
+            'mark_up' => $manuelRequest['mark_up'] ?? null,
+            'price' => $manuelRequest['price'] ?? null,
+            'country_id' => $manuelRequest['country_id'] ?? null,
+            'city_id' => $manuelRequest['city_id'] ?? null,
+            'tax_type' => $manuelRequest['tax_type'] ?? null,
+            'cost' => $manuelRequest['cost'] ?? null,
+            'total_price' => $manuelRequest['total_price'] ?? null,
+            'currency_id' => $manuelRequest['currency_id'] ?? null,
+            'to_supplier_id' => $manuelRequest['to_supplier_id'] ?? null,
             $role => $agent_id,
         ]);
        // try{
@@ -440,9 +440,9 @@ class ManualBookingController extends Controller
                     $this->adults
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'title' => $item['title'] ?? null,
+                        'first_name' => $item['first_name'] ?? null,
+                        'last_name' => $item['last_name'] ?? null,
                     ]);
                 }
                 $child_data = json_decode($request->child_data) ?? [];
@@ -450,9 +450,9 @@ class ManualBookingController extends Controller
                     $this->child
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'age' => $item['age'] ?? null,
+                        'first_name' => $item['first_name'] ?? null,
+                        'last_name' => $item['last_name'] ?? null,
                     ]);
                 }
             }
@@ -463,14 +463,14 @@ class ManualBookingController extends Controller
             ->first()->service_name;
             if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
                 $hotelRequest = [
-                    'check_in' => $manuel_data_cart['check_in'],
-                    'check_out' => $manuel_data_cart['check_out'],
-                    'nights' => $manuel_data_cart['nights'],
-                    'hotel_name' => $manuel_data_cart['hotel_name'],
-                    'room_type' => $manuel_data_cart['room_type'],
-                    'room_quantity' => $manuel_data_cart['room_quantity'],
-                    'adults' => $manuel_data_cart['adults'],
-                    'childreen' => $manuel_data_cart['childreen'],
+                    'check_in' => $manuel_data_cart['check_in'] ?? null,
+                    'check_out' => $manuel_data_cart['check_out'] ?? null,
+                    'nights' => $manuel_data_cart['nights'] ?? null,
+                    'hotel_name' => $manuel_data_cart['hotel_name'] ?? null,
+                    'room_type' => $manuel_data_cart['room_type'] ?? null,
+                    'room_quantity' => $manuel_data_cart['room_quantity'] ?? null,
+                    'adults' => $manuel_data_cart['adults'] ?? null,
+                    'childreen' => $manuel_data_cart['childreen'] ?? null,
                 ];
                 $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_hotel = $this->manuel_hotel
@@ -478,17 +478,17 @@ class ManualBookingController extends Controller
             }
             elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
                 $busRequest = [ 
-                    'from' => $manuel_data_cart['from'],
-                    'to' => $manuel_data_cart['to'],
-                    'departure' => $manuel_data_cart['departure'],
-                    'arrival' => $manuel_data_cart['arrival'],
-                    'adults' => $manuel_data_cart['adults'],
-                    'childreen' => $manuel_data_cart['childreen'],
-                    'adult_price' => $manuel_data_cart['adult_price'],
-                    'child_price' => $manuel_data_cart['child_price'],
-                    'bus' => $manuel_data_cart['bus'],
-                    'bus_number' => $manuel_data_cart['bus_number'],
-                    'driver_phone' => $manuel_data_cart['driver_phone'],
+                    'from' => $manuel_data_cart['from'] ?? null,
+                    'to' => $manuel_data_cart['to'] ?? null,
+                    'departure' => $manuel_data_cart['departure'] ?? null,
+                    'arrival' => $manuel_data_cart['arrival'] ?? null,
+                    'adults' => $manuel_data_cart['adults'] ?? null,
+                    'childreen' => $manuel_data_cart['childreen'] ?? null,
+                    'adult_price' => $manuel_data_cart['adult_price'] ?? null,
+                    'child_price' => $manuel_data_cart['child_price'] ?? null,
+                    'bus' => $manuel_data_cart['bus'] ?? null,
+                    'bus_number' => $manuel_data_cart['bus_number'] ?? null,
+                    'driver_phone' => $manuel_data_cart['driver_phone'] ?? null,
                 ];
                 $busRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_bus = $this->manuel_bus
@@ -529,12 +529,12 @@ class ManualBookingController extends Controller
             }
             elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
                 $tourRequest = [
-                    'tour' => $manuel_data_cart['tour'],
-                    'type' => $manuel_data_cart['type'],
-                    'adult_price' => $manuel_data_cart['adult_price'],
-                    'child_price' => $manuel_data_cart['child_price'],
-                    'adults' => $manuel_data_cart['adults'],
-                    'childreen' => $manuel_data_cart['childreen'],
+                    'tour' => $manuel_data_cart['tour'] ?? null,
+                    'type' => $manuel_data_cart['type'] ?? null,
+                    'adult_price' => $manuel_data_cart['adult_price'] ?? null,
+                    'child_price' => $manuel_data_cart['child_price'] ?? null,
+                    'adults' => $manuel_data_cart['adults'] ?? null,
+                    'childreen' => $manuel_data_cart['childreen'] ?? null,
                 ];
                 if(isset($manuel_data_cart['flight_date']) && !empty($manuel_data_cart['flight_date'])){
                     $tourRequest['flight_date'] = $manuel_data_cart['flight_date'];
