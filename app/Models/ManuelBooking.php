@@ -34,6 +34,10 @@ class ManuelBooking extends Model
         return $this->belongsTo(Agent::class, 'agent_id');
     }
 
+    public function country(){
+        return $this->belongsTo(Country::class);
+    }
+
     public function city(){
         return $this->belongsTo(City::class);
     }

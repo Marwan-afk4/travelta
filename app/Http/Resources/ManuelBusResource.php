@@ -15,9 +15,9 @@ class ManuelBusResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'supplier_from_name' => $this->id,
-            'supplier_from_email' => $this->name ?? $this->f_name . ' ' . $this->l_name,
-            'supplier_from_phone' => $this->email,
+            'supplier_from_name' => $this->from_supplier->agent ?? null,
+            'supplier_from_email' => json_decode($this->emails) ?? $this->emails,
+            'supplier_from_phone' => json_decode($this->phones) ?? $this->phones,
             'country' => $this->phone,
             'total_price' => $this->start_date,
             'to_name' => $this->end_date,

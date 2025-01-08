@@ -433,7 +433,7 @@ class ManualBookingController extends Controller
             'to_supplier_id' => $manuelRequest['to_supplier_id'] ?? null,
             $role => $agent_id,
         ]);
-       // try{
+        try{
             if (isset($request->adults_data) && !empty($request->adults_data)) {
                 $adults_data = json_decode($request->adults_data) ?? [];
                 foreach ($adults_data as $item) {	
@@ -595,46 +595,46 @@ class ManualBookingController extends Controller
             // Cart
             // total_cart, payment_type, amount, payment_method_id, image
             // payments [{amount, date}]
-            // $cartRequest = [
-            //     'manuel_booking_id' => $manuel_booking->id,
-            //     'total' => $request->total_cart,
-            //     'payment_type' => $request->payment_type,
-            //     'payment' => $request->amount ?? 0,
-            //     'payment_method_id' => $request->payment_method_id,
-            // ];
-            // if ($request->image && !empty($request->image)) {
-            //     $image_path = $this->upload($request, 'image', 'admin/manuel/receipt');
-            //     $cartRequest['image'] = $image_path;
-            // }
-            // $manuel_cart = $this->manuel_cart
-            // ->create($cartRequest);
-            // if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
-            //     $validation = Validator::make($request->all(), [
-            //         'payments' => 'required',
-            //     ]);
-            //     if($validation->fails()){
-            //         return response()->json(['errors'=>$validation->errors()], 401);
-            //     }
-            //     $payments = is_string($request->payments) ? json_decode($request->payments)
-            //     : $request->payments;
-            //     foreach ($payments as $item) {
-            //         $this->payments_cart
-            //         ->create([
-            //             'manuel_cart_id' => $manuel_cart->id,
-            //             'amount' => $item->amount,
-            //             'date' => $item->date,
-            //         ]);
-            //     }
-            // }
+            $cartRequest = [
+                'manuel_booking_id' => $manuel_booking->id,
+                'total' => $request->total_cart,
+                'payment_type' => $request->payment_type,
+                'payment' => $request->amount ?? 0,
+                'payment_method_id' => $request->payment_method_id,
+            ];
+            if ($request->image && !empty($request->image)) {
+                $image_path = $this->upload($request, 'image', 'admin/manuel/receipt');
+                $cartRequest['image'] = $image_path;
+            }
+            $manuel_cart = $this->manuel_cart
+            ->create($cartRequest);
+            if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
+                $validation = Validator::make($request->all(), [
+                    'payments' => 'required',
+                ]);
+                if($validation->fails()){
+                    return response()->json(['errors'=>$validation->errors()], 401);
+                }
+                $payments = is_string($request->payments) ? json_decode($request->payments)
+                : $request->payments;
+                foreach ($payments as $item) {
+                    $this->payments_cart
+                    ->create([
+                        'manuel_cart_id' => $manuel_cart->id,
+                        'amount' => $item->amount,
+                        'date' => $item->date,
+                    ]);
+                }
+            }
 
-        //     return response()->json([
-        //         'success' => $request->all(),
-        //     ]);
-        // } catch (\Throwable $th) {
-        //     $manuel_booking->delete();
-        //     return response()->json([
-        //         'faild' => 'something wrong',
-        //     ], 400);
-        // }
+            return response()->json([
+                'success' => $request->all(),
+            ]);
+        } catch (\Throwable $th) {
+            $manuel_booking->delete();
+            return response()->json([
+                'faild' => 'something wrong',
+            ], 400);
+        }
     }
 }
