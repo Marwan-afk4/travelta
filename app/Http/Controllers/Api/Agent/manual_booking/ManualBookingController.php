@@ -30,6 +30,7 @@ use App\Models\ManuelCart;
 use App\Models\PaymentsCart;
 use App\Models\ManuelDataCart;
 use App\Models\Customer;
+use App\Models\PaymentMethod;
 use App\trait\image;
 
 class ManualBookingController extends Controller
@@ -44,7 +45,7 @@ class ManualBookingController extends Controller
     private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency,
     private Adult $adults, private Child $child, private ManuelCart $manuel_cart,
     private PaymentsCart $payments_cart, private ManuelDataCart $manuel_data_cart,
-    private Customer $customers){}
+    private Customer $customers, private PaymentMethod $payment_methods){}
     
     protected $hotelRequest = [
         'check_in',
@@ -134,6 +135,8 @@ class ManualBookingController extends Controller
         ->get();
         $services = $this->services
         ->get();
+        $payment_methods = $this->payment_methods
+        ->get();
         $adult_title = [
             'MR',
             'MISS',
@@ -155,7 +158,8 @@ class ManualBookingController extends Controller
             'contries' => $contries,
             'services' => $services,
             'currencies' => $currencies,
-            'adult_title' => $adult_title
+            'adult_title' => $adult_title,
+            'payment_methods' => $payment_methods
         ]);
     }
 
