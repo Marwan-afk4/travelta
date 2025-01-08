@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\api\agent\manuel_booking\ManuelBookingRequest;
 use App\Http\Requests\api\agent\manuel_booking\CartBookingRequest;
+use Illuminate\Support\Str;
 
 use App\Models\CustomerData;
 use App\Models\SupplierAgent;
@@ -413,6 +414,16 @@ class ManualBookingController extends Controller
         else{
             $role = 'agent_id';
         }
+        $code = 'm' . rand(10000, 99999) . strtolower(Str::random(1));
+        $manuel_booking_data = $this->manuel_booking
+        ->where('code', $code)
+        ->first();
+        while (!empty($manuel_booking_data)) {
+            $code = 'm' . rand(10000, 99999) . strtolower(Str::random(1));
+            $manuel_booking_data = $this->manuel_booking
+            ->where('code', $code)
+            ->first();
+        }
         $manuel_booking = $this->manuel_booking
         ->create([
             'from_supplier_id' => $manuelRequest['from_supplier_id'] ?? null,
@@ -428,6 +439,7 @@ class ManualBookingController extends Controller
             'currency_id' => $manuelRequest['currency_id'] ?? null,
             'to_supplier_id' => $manuelRequest['to_supplier_id'] ?? null,
             $role => $agent_id,
+            'code' => $code,
         ]);
         try{
             if (isset($request->adults_data) && !empty($request->adults_data)) {
