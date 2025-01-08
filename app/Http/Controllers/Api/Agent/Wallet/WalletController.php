@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api\Agent\Wallet;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\trait\image;
 
 use App\Models\Wallet;
 use App\Models\ChargeWallet;
 
 class WalletController extends Controller
 {
+    use image;
     public function __construct(private Wallet $wallet, private ChargeWallet $charge_wallet){}
     protected $chargeWallet = [
         'wallet_id',
@@ -168,9 +170,14 @@ class WalletController extends Controller
             $walletRequest['agent_id'] = $agent_id;
         }
         if ($request->image) {
-            # code...
+            $image_path = $this->upload($request, 'image', 'agent/wallet/receipt');
+            $walletRequest['image'] = $image_path;
         }
         $charge_wallet = $this->charge_wallet
         ->create($walletRequest);
+
+        return response()->json([
+            'success' => 'You charge wallet success',
+        ]);
     }
 }

@@ -11,6 +11,7 @@ class ManuelBooking extends Model
         'to_customer_id',
         'from_supplier_id',
         'from_service_id',
+        'code',
         'cost',
         'price',
         'currency_id',
