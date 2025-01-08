@@ -433,7 +433,7 @@ class ManualBookingController extends Controller
             'to_supplier_id' => $manuelRequest['to_supplier_id'],
             $role => $agent_id,
         ]);
-        try{
+       // try{
             if (isset($request->adults_data) && !empty($request->adults_data)) {
                 $adults_data = json_decode($request->adults_data) ?? [];
                 foreach ($adults_data as $item) {	
@@ -627,14 +627,14 @@ class ManualBookingController extends Controller
             //     }
             // }
 
-            return response()->json([
-                'success' => $request->all(),
-            ]);
-        } catch (\Throwable $th) {
-            $manuel_booking->delete();
-            return response()->json([
-                'faild' => 'something wrong',
-            ], 400);
-        }
+        //     return response()->json([
+        //         'success' => $request->all(),
+        //     ]);
+        // } catch (\Throwable $th) {
+        //     $manuel_booking->delete();
+        //     return response()->json([
+        //         'faild' => 'something wrong',
+        //     ], 400);
+        // }
     }
 }
