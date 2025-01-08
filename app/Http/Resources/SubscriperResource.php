@@ -14,17 +14,16 @@ class SubscriperResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $locale = app()->getLocale(); // Use the application's current locale
         return [
-            'id' => $this->id,
-            'name' => $this->name ?? $this->f_name . ' ' . $this->l_name,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
-            'role' => $this->role,
-            'plan' => $this->whenLoaded('plan')->name ?? null,
-            'price' => $this->whenLoaded('plan')->price ?? null,
+            'supplier_from_name' => $this->from_supplier->agent ?? null,
+            'supplier_from_email' => json_decode($this->emails) ?? $this->emails,
+            'supplier_from_phone' => json_decode($this->phones) ?? $this->phones,
+            'country' => $this->country->name,
+            'total_price' => $this->total_price,
+            'to_name' => $this->to_client->name,
+            'to_role' => $this->to_client->agent ? 'Supplier' : 'Customer',
+            'to_email' => $this->to_client->emails ? json_decode($this->to_client->emails)[0] ?? $this->to_client->emails: $this->to_client->email,
+            'to_phone' => $this->to_client->phones ? json_decode($this->to_client->phones)[0] ?? $this->to_client->phones: $this->to_client->phone,
         ];
     }
 }

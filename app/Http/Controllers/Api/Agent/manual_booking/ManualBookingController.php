@@ -357,9 +357,6 @@ class ManualBookingController extends Controller
         ->where('id', $id)
         ->first();
         $manuel_data_cart = json_decode($manuel_data_cart->cart);
-        $service = $this->services
-        ->where('id', $manuel_data_cart->from_service_id)
-        ->first();
         if (!empty($manuel_data_cart->to_supplier_id)) {
             $to_client = $this->supplier_agent
             ->where('id', $manuel_data_cart->to_supplier_id)
@@ -377,8 +374,7 @@ class ManualBookingController extends Controller
         }
 
         return response()->json([
-            'service' => $service->service_name ?? null,
-            'to_client' => $to_client->name ?? null,
+            'data' => $manuel_data_cart,
         ]);
     }
 
