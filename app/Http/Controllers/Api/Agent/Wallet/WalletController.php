@@ -167,5 +167,7 @@ class WalletController extends Controller
         else {
             $walletRequest['agent_id'] = $agent_id;
         }
+        $charge_wallet = $this->charge_wallet
+        ->create($walletRequest);
     }
 }

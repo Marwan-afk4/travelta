@@ -496,11 +496,11 @@ class ManualBookingController extends Controller
             }
             elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
                 $visaRequest = [
-                    'country' => $manuel_data_cart['country'],
-                    'travel_date' => $manuel_data_cart['travel_date'],
-                    'appointment_date' => $manuel_data_cart['appointment_date'],
-                    'notes' => $manuel_data_cart['notes'],
-                    'number' => $manuel_data_cart['number'],
+                    'country' => $manuel_data_cart['country'] ?? null,
+                    'travel_date' => $manuel_data_cart['travel_date'] ?? null,
+                    'appointment_date' => $manuel_data_cart['appointment_date'] ?? null,
+                    'notes' => $manuel_data_cart['notes'] ?? null,
+                    'number' => $manuel_data_cart['number'] ?? null,
                 ];
                 $visaRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_visa = $this->manuel_visa
@@ -508,20 +508,20 @@ class ManualBookingController extends Controller
             }
             elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
                 $flightRequest = [
-                    'type' => $manuel_data_cart['type'],
-                    'direction' => $manuel_data_cart['direction'],
-                    'from_to' => $manuel_data_cart['from_to'],
-                    'departure' => $manuel_data_cart['departure'],
-                    'arrival' => $manuel_data_cart['arrival'],
-                    'class' => $manuel_data_cart['class'],
-                    'adults' => $manuel_data_cart['adults'],
-                    'childreen' => $manuel_data_cart['childreen'],
-                    'infants' => $manuel_data_cart['infants'],
-                    'airline' => $manuel_data_cart['airline'],
-                    'ticket_number' => $manuel_data_cart['ticket_number'],
-                    'adult_price' => $manuel_data_cart['adult_price'],
-                    'child_price' => $manuel_data_cart['child_price'],
-                    'ref_pnr' => $manuel_data_cart['ref_pnr'],
+                    'type' => $manuel_data_cart['type'] ?? null,
+                    'direction' => $manuel_data_cart['direction'] ?? null,
+                    'from_to' => $manuel_data_cart['from_to'] ?? null,
+                    'departure' => $manuel_data_cart['departure'] ?? null,
+                    'arrival' => $manuel_data_cart['arrival'] ?? null,
+                    'class' => $manuel_data_cart['class'] ?? null,
+                    'adults' => $manuel_data_cart['adults'] ?? null,
+                    'childreen' => $manuel_data_cart['childreen'] ?? null,
+                    'infants' => $manuel_data_cart['infants'] ?? null,
+                    'airline' => $manuel_data_cart['airline'] ?? null,
+                    'ticket_number' => $manuel_data_cart['ticket_number'] ?? null,
+                    'adult_price' => $manuel_data_cart['adult_price'] ?? null,
+                    'child_price' => $manuel_data_cart['child_price'] ?? null,
+                    'ref_pnr' => $manuel_data_cart['ref_pnr'] ?? null,
                 ];
                 $flightRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_flight = $this->manuel_flight
