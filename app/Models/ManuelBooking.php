@@ -48,7 +48,7 @@ class ManuelBooking extends Model
     }
 
     public function getToClientAttribute(){
-        if ($this->attributes['to_supplier_id']) {
+        if (!empty($this->attributes['to_supplier_id'])) {
             return $this->belongsTo(SupplierAgent::class, 'to_supplier_id')->first();
         }
         return $this->belongsTo(Customer::class, 'to_customer_id')->first();
