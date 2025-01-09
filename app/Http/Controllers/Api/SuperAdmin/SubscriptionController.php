@@ -17,10 +17,10 @@ class SubscriptionController extends Controller
         $affilate = $this->affilates
         ->where('end_date', '>=', date('Y-m-d'))
         ->whereNotNull('plan_id')
-        ->with('plan')
+        ->with('plan', 'to_customer', 'to_supplier')
         ->get();
         $agent = $this->agents
-        ->with('plan')
+        ->with('plan', 'to_customer', 'to_supplier')
         ->where('end_date', '>=', date('Y-m-d'))
         ->whereNotNull('plan_id')
         ->get();
