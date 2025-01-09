@@ -90,7 +90,6 @@ class GroupController extends Controller
         ->first();
         $group->update([
             'name' => $request->name,
-            $role => $agent_id,
         ]);
         $group->nationalities()->sync($nationalities);
 
