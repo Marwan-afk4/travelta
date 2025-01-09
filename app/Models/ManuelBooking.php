@@ -81,4 +81,12 @@ class ManuelBooking extends Model
     public function visa(){
         return $this->hasOne(ManuelVisa::class, 'manuel_booking_id');
     }
+
+    public function adults(){
+        return $this->hasMany(Adult::class, 'manuel_booking_id');
+    }
+
+    public function children(){
+        return $this->hasMany(Child::class, 'manuel_booking_id');
+    }
 }
