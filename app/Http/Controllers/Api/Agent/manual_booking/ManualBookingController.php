@@ -727,7 +727,9 @@ class ManualBookingController extends Controller
                     ]);
                 }
             }
-            $manuel_data_cart->delete();
+            $this->manuel_data_cart
+            ->where('id', $id)
+            ->delete();
 
             return response()->json([
                 'success' => $request->all(),
