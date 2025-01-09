@@ -43,7 +43,7 @@ class BookingController extends Controller
         ->whereHas('bus')
         ->get();
         $visa = $this->manuel_booking
-        ->with(['visa', 'taxes', 'from_supplier', 'country'])
+        ->with(['visa', 'taxes', 'from_supplier', 'country', 'adults', 'children'])
         ->whereHas('visa')
         ->get();
         $flight = $this->manuel_booking
