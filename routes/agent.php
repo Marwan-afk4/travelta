@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\Agent\booking\BookingController;
 
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
+use App\Http\Controllers\Api\Agent\settings\GroupController;
 
 use App\Http\Controllers\Api\SuperAdmin\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
@@ -99,6 +100,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(CurrencyController::class)->prefix('currency')->group(function(){
             Route::get('/', 'view');
+            Route::post('add', 'create');
+            Route::post('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
+        });
+
+        Route::controller(GroupController::class)->prefix('group')->group(function(){
+            Route::get('/', 'view');
+            Route::get('item/{id}', 'group');
             Route::post('add', 'create');
             Route::post('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');

@@ -24,6 +24,9 @@ class ManuelVisaResource extends JsonResource
             'to_role' => $this->to_client->agent ? 'Supplier' : 'Customer',
             'to_email' => $this->to_client->emails ? json_decode($this->to_client->emails)[0] ?? $this->to_client->emails: $this->to_client->email,
             'to_phone' => $this->to_client->phones ? json_decode($this->to_client->phones)[0] ?? $this->to_client->phones: $this->to_client->phone,
+            'travel_date' => $this->visa->travel_date,
+            'appointment' => $this->visa->appointment_date,
+            'notes' => $this->visa->notes,
         ];
     }
 }
