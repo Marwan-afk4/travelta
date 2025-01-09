@@ -11,4 +11,8 @@ class Group extends Model
         'affilate_id',
         'agent_id',
     ];
+
+    public function nationalities(){
+        return $this->belongsToMany(Nationality::class, 'nationality_group', 'group_id', 'nationality_id');
+    }
 }
