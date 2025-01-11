@@ -12,7 +12,8 @@ use App\Http\Controllers\Api\Agent\supplier\SupplierController;
 
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
-use App\Http\Controllers\Api\Agent\Wallet\WalletController;
+use App\Http\Controllers\Api\Agent\accounting\Wallet\WalletController;
+use App\Http\Controllers\Api\Agent\accounting\financial\FinancialController;
 
 use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
@@ -54,6 +55,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::controller(SupplierController::class)->prefix('supplier')->group(function(){
         Route::get('/', 'view');
         Route::get('item/{id}', 'supplier');
+        Route::post('add', 'create');
+        Route::post('update/{id}', 'modify');
+        Route::delete('delete/{id}', 'delete');
+    });
+
+    Route::controller(FinancialController::class)->prefix('financial')->group(function(){
+        Route::get('/', 'view');
+        Route::get('item/{id}', 'financial');
         Route::post('add', 'create');
         Route::post('update/{id}', 'modify');
         Route::delete('delete/{id}', 'delete');

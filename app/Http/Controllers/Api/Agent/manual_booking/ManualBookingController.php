@@ -379,25 +379,13 @@ class ManualBookingController extends Controller
             ], 400);
         }
         $service = $this->services->where('id', $manuel_data_cart->from_service_id)->first()->service_name ?? null;
-        $arr = [
-
-            "from_supplier"=> $this->supplier_agent->where('id', $manuel_data_cart->from_supplier_id)->first()->name ?? null,
-            "from_service"=>  $service,
-            "mark_up_type"=> $manuel_data_cart->mark_up_type,
-            "mark_up"=> $manuel_data_cart->mark_up,
-            "price"=> $manuel_data_cart->price,
-            "country"=> $this->contries->where('id', $manuel_data_cart->country_id)->first()->name ?? null,
-            "city"=> $this->cities->where('id', $manuel_data_cart->city_id ?? 0)->first()->name ?? null,
-            "currency"=> $this->currency->where('id', $manuel_data_cart->currency_id ?? 0)->first()->name ?? null,
-            "to_client"=> $manuel_data_cart->to_supplier_id ?
-            $this->supplier_agent->where('id', $manuel_data_cart->to_supplier_id)->first()->name ?? null
-            :$this->customers->where('id', $manuel_data_cart->to_customer_id)->first()->name ?? null,
-            "role"=> $manuel_data_cart->to_supplier_id ? 'supplier' : 'customer',
-            "taxes"=> json_decode($manuel_data_cart->taxes ?? '[]') ?? [],
-            "tax_type"=> $manuel_data_cart->tax_type,
-            "cost"=> $manuel_data_cart->cost,
-            "total_price"=> $manuel_data_cart->total_price,
-            'hotel' => [
+        $hotel = null;
+        $bus = null;
+        $visa = null;
+        $flight = null;
+        $tour = null;
+        if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
+            $hotel = [
                 "check_in" => $manuel_data_cart->check_in ?? null,
                 "check_out" => $manuel_data_cart->check_out ?? null,
                 "hotel_name" => $manuel_data_cart->hotel_name ?? null, 
@@ -408,8 +396,28 @@ class ManualBookingController extends Controller
                 "adults" =>  $manuel_data_cart->adults ?? null,
                 "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
                 "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
-            ],
-            'visa' => [
+            ];
+        }
+        elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
+            $bus = [
+                "from" => $manuel_data_cart->from ?? null,
+                "to" => $manuel_data_cart->to ?? null,  
+                "bus" => $manuel_data_cart->bus ?? null,
+                "departure" =>  $manuel_data_cart->departure ?? null,
+                "arrival" => $manuel_data_cart->arrival ?? null,  
+                "adults" => $manuel_data_cart->adults ?? null, 
+                "childreen" => $manuel_data_cart->childreen ?? null, 
+                "adult_price" => $manuel_data_cart->adult_price ?? null, 
+                "child_price" => $manuel_data_cart->child_price ?? null, 
+                "bus" => $manuel_data_cart->bus ?? null,
+                "bus_number" => $manuel_data_cart->bus_number ?? null,
+                "driver_phone" => $manuel_data_cart->driver_phone ?? null, 
+                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
+                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+            ];
+        }
+        elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
+            $visa = [
                 "country_visa"=> $manuel_data_cart->country ?? null,
                 "travel_date"=> $manuel_data_cart->travel_date ??null,
                 "appointment_date"=> $manuel_data_cart->appointment_date ?? null,
@@ -417,8 +425,10 @@ class ManualBookingController extends Controller
                 "notes"=> $manuel_data_cart->notes ?? null,
                 "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
                 "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
-            ],
-            'flight' => [	
+            ];
+        }
+        elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
+            $flight = [	
                 "type" => $manuel_data_cart->type ?? null, 
                 "direction" =>  $manuel_data_cart->direction ?? null,
                 "from_to" =>  json_decode($manuel_data_cart->from_to ?? '[]') ?? [],
@@ -435,24 +445,10 @@ class ManualBookingController extends Controller
                 "ref_pnr" =>  $manuel_data_cart->ref_pnr ?? null,
                 "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
                 "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
-            ],
-            'bus' => [
-                "from" => $manuel_data_cart->from ?? null,
-                "to" => $manuel_data_cart->to ?? null,  
-                "bus" => $manuel_data_cart->bus ?? null,
-                "departure" =>  $manuel_data_cart->departure ?? null,
-                "arrival" => $manuel_data_cart->arrival ?? null,  
-                "adults" => $manuel_data_cart->adults ?? null, 
-                "childreen" => $manuel_data_cart->childreen ?? null, 
-                "adult_price" => $manuel_data_cart->adult_price ?? null, 
-                "child_price" => $manuel_data_cart->child_price ?? null, 
-                "bus" => $manuel_data_cart->bus ?? null,
-                "bus_number" => $manuel_data_cart->bus_number ?? null,
-                "driver_phone" => $manuel_data_cart->driver_phone ?? null, 
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
-            ],
-            'tour' => [
+            ];
+        }
+        elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
+            $tour = [
                 "tour" => $manuel_data_cart->tour ?? null, 
                 "type" => $manuel_data_cart->type ?? null, 
                 "adult_price" => $manuel_data_cart->adult_price ?? null, 
@@ -464,7 +460,30 @@ class ManualBookingController extends Controller
                 "tour_hotels" => json_decode($manuel_data_cart->tour_hotels ?? '[]') ?? [], 
                 "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
                 "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
-            ],
+            ];
+        }
+        $arr = [
+            "from_supplier"=> $this->supplier_agent->where('id', $manuel_data_cart->from_supplier_id)->first()->name ?? null,
+            "from_service"=>  $service,
+            "mark_up_type"=> $manuel_data_cart->mark_up_type,
+            "mark_up"=> $manuel_data_cart->mark_up,
+            "price"=> $manuel_data_cart->price,
+            "country"=> $this->contries->where('id', $manuel_data_cart->country_id)->first()->name ?? null,
+            "city"=> $this->cities->where('id', $manuel_data_cart->city_id ?? 0)->first()->name ?? null,
+            "currency"=> $this->currency->where('id', $manuel_data_cart->currency_id ?? 0)->first()->name ?? null,
+            "to_client"=> $manuel_data_cart->to_supplier_id ?
+            $this->supplier_agent->where('id', $manuel_data_cart->to_supplier_id)->first()->name ?? null
+            :$this->customers->where('id', $manuel_data_cart->to_customer_id)->first()->name ?? null,
+            "role"=> $manuel_data_cart->to_supplier_id ? 'supplier' : 'customer',
+            "taxes"=> json_decode($manuel_data_cart->taxes ?? '[]') ?? [],
+            "tax_type"=> $manuel_data_cart->tax_type,
+            "cost"=> $manuel_data_cart->cost,
+            "total_price"=> $manuel_data_cart->total_price,
+            'hotel' => $hotel,
+            'visa' => $visa,
+            'flight' => $flight,
+            'bus' => $bus,
+            'tour' => $tour,
         ];
    
         return response()->json([

@@ -16,4 +16,8 @@ class FinantiolAcounting extends Model
         'status',
         'logo',
     ];
+
+    public function currancy(){
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
 }
