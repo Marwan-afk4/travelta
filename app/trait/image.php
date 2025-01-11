@@ -85,7 +85,7 @@ trait image
             $folderPath = 'admin/manuel/receipt'; // You can modify this to any subfolder in the storage/app directory
 
             // Save the image to the storage disk (default is local)
-            Storage::disk('local')->put($folderPath . '/' . $fileName, $imageData);
+            Storage::disk('public')->put($folderPath . '/' . $fileName, $imageData);
 
             // Return the image path
             return $folderPath . '/' . $fileName;
