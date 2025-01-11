@@ -79,8 +79,7 @@ trait image
             $imageData = base64_decode($imageData);
 
             // Generate a unique file name with the appropriate extension
-            $fileExtension = $this->getImageExtension($imageType);
-            $fileName = uniqid() . '.' . $fileExtension;
+            $fileName = uniqid() . '.' . $type;
 
             // Define the folder path in storage
             $folderPath = 'admin/manuel/receipt'; // You can modify this to any subfolder in the storage/app directory
