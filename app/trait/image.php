@@ -85,10 +85,10 @@ trait image
             $folderPath = 'admin/manuel/receipt'; // You can modify this to any subfolder in the storage/app directory
 
             // Save the image to the storage disk (default is local)
-            return Storage::disk('local')->put($folderPath . '/' . $fileName, $imageData);
+            Storage::disk('local')->put($folderPath . '/' . $fileName, $imageData);
 
-            // // Return the image path
-            // return response()->json(['path' => Storage::url($folderPath . '/' . $fileName)]);
+            // Return the image path
+            return $folderPath . '/' . $fileName;
         }
 
         return response()->json(['error' => 'Invalid base64 image string'], 400);
