@@ -63,6 +63,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::controller(FinancialController::class)->prefix('financial')->group(function(){
         Route::get('/', 'view');
         Route::get('item/{id}', 'financial');
+        Route::put('status/{id}', 'status');
         Route::post('add', 'create');
         Route::post('update/{id}', 'modify');
         Route::delete('delete/{id}', 'delete');

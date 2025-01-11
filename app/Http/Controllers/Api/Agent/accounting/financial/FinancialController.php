@@ -46,6 +46,43 @@ class FinancialController extends Controller
             'currencies' => $currencies,
         ]);
     }
+
+    public function status(Request $request, $id){
+        // agent/financial/status/{id}
+        // Keys
+        // status
+        $validation = Validator::make($request->all(), [
+            'status' => 'required|boolean',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $financial = $this->financial
+        ->where('id', $id)
+        ->where($role, $agent_id)
+        ->update([
+            'status' => $request->status
+        ]); 
+
+        return response()->json([
+            'success' => $request->status ? 'active' : 'banned',
+        ]);
+    }
     
     public function financial(Request $request, $id){
         // /agent/financial/item/{id}
@@ -77,6 +114,8 @@ class FinancialController extends Controller
 
     public function create(FinancialRequest $request){
         // agent/financial/add
+        // Keys
+        // name, details, balance, currency_id, status, logo
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -107,7 +146,9 @@ class FinancialController extends Controller
     }
 
     public function modify(FinancialRequest $request, $id){
-        // agent/financial/add
+        // agent/financial/update/{id}
+        // Keys
+        // name, details, balance, currency_id, status, logo
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -145,6 +186,7 @@ class FinancialController extends Controller
     }
 
     public function delete(Request $request, $id){
+        // agent/financial/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
