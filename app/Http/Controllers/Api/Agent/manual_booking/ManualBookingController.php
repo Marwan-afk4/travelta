@@ -31,7 +31,7 @@ use App\Models\ManuelCart;
 use App\Models\PaymentsCart;
 use App\Models\ManuelDataCart;
 use App\Models\Customer;
-use App\Models\PaymentMethod;
+use App\Models\FinantiolAcounting;
 use App\trait\image;
 
 class ManualBookingController extends Controller
@@ -46,7 +46,7 @@ class ManualBookingController extends Controller
     private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency,
     private Adult $adults, private Child $child, private ManuelCart $manuel_cart,
     private PaymentsCart $payments_cart, private ManuelDataCart $manuel_data_cart,
-    private Customer $customers, private PaymentMethod $payment_methods){}
+    private Customer $customers, private FinantiolAcounting $financial_accounting){}
     
     protected $hotelRequest = [
         'check_in',
@@ -136,7 +136,7 @@ class ManualBookingController extends Controller
         ->get();
         $services = $this->services
         ->get();
-        $payment_methods = $this->payment_methods
+        $financial_accounting = $this->financial_accounting
         ->get();
         $adult_title = [
             'MR',
@@ -160,7 +160,7 @@ class ManualBookingController extends Controller
             'services' => $services,
             'currencies' => $currencies,
             'adult_title' => $adult_title,
-            'payment_methods' => $payment_methods
+            'financial_accounting' => $financial_accounting
         ]);
     }
 
@@ -552,6 +552,7 @@ class ManualBookingController extends Controller
             'to_supplier_id' => $manuelRequest['to_supplier_id'] ?? null,
             $role => $agent_id,
             'code' => $code,
+            'payment_type' => $request->payment_type,
         ]);
         try{
             if (isset($request->adults_data) && !empty($request->adults_data)) {
@@ -713,21 +714,27 @@ class ManualBookingController extends Controller
                 }
             }
             // Cart
-            // total_cart, payment_type, amount, payment_method_id, image
+            // payment_type, total_cart
+            // payment_methods[amount, payment_method_id, image]
             // payments [{amount, date}]
-            $cartRequest = [
-                'manuel_booking_id' => $manuel_booking->id,
-                'total' => $request->total_cart,
-                'payment_type' => $request->payment_type,
-                'payment' => $request->amount ?? 0,
-                'payment_method_id' => $request->payment_method_id,
-            ];
-            if ($request->image && !empty($request->image)) {
-                $image_path = $this->upload($request, 'image', 'admin/manuel/receipt');
-                $cartRequest['image'] = $image_path;
+            if ($request->payment_methods) {
+                $payment_methods = is_string($request->payment_methods) ? 
+                json_decode($request->payment_methods) : $request->payment_methods;
+                foreach ($payment_methods as $item) {
+                    $cartRequest = [
+                        'manuel_booking_id' => $manuel_booking->id,
+                        'total' => $request->total_cart,
+                        'payment' => $item->amount ?? 0,
+                        'payment_method_id' => $request->payment_method_id,
+                    ];
+                    if ($item->image && !empty($item->image)) {
+                        $image_path = $this->storeBase64Image($item->image);
+                        $cartRequest['image'] = $image_path;
+                    }
+                    $manuel_cart = $this->manuel_cart
+                    ->create($cartRequest);
+                }
             }
-            $manuel_cart = $this->manuel_cart
-            ->create($cartRequest);
             if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
                 $validation = Validator::make($request->all(), [
                     'payments' => 'required',
@@ -740,7 +747,7 @@ class ManualBookingController extends Controller
                 foreach ($payments as $item) {
                     $this->payments_cart
                     ->create([
-                        'manuel_cart_id' => $manuel_cart->id,
+                        'manuel_booking_id' => $manuel_booking->id,
                         'amount' => $item->amount,
                         'date' => $item->date,
                     ]);

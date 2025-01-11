@@ -20,6 +20,7 @@ class ManuelBooking extends Model
         'country_id',
         'city_id',
         'mark_up',
+        'payment_type',
         'mark_up_type',
         'affilate_id',
         'agent_id',

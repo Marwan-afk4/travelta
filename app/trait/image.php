@@ -65,5 +65,33 @@ trait image
             Storage::disk('public')->delete($imagePath);
         }
     }
-    
+   
+    public function storeBase64Image($base64Image)
+    {
+
+        // Validate if the base64 string has a valid image MIME type
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            // Extract the image MIME type
+            $imageType = $type[1]; // e.g., 'jpeg', 'png', 'gif', etc.
+
+            // Extract the actual base64 encoded data (remove the data URL part)
+            $imageData = substr($base64Image, strpos($base64Image, ',') + 1);
+            $imageData = base64_decode($imageData);
+
+            // Generate a unique file name with the appropriate extension
+            $fileExtension = $this->getImageExtension($imageType);
+            $fileName = uniqid() . '.' . $fileExtension;
+
+            // Define the folder path in storage
+            $folderPath = 'admin/manuel/receipt'; // You can modify this to any subfolder in the storage/app directory
+
+            // Save the image to the storage disk (default is local)
+            return Storage::disk('local')->put($folderPath . '/' . $fileName, $imageData);
+
+            // // Return the image path
+            // return response()->json(['path' => Storage::url($folderPath . '/' . $fileName)]);
+        }
+
+        return response()->json(['error' => 'Invalid base64 image string'], 400);
+    }
 }
