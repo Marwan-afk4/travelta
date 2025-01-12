@@ -33,8 +33,6 @@ class ManuelBusResource extends JsonResource
             'bus_name' => $this->bus->bus,
             'bus_no' => $this->bus->bus_number,
             'driver_phone' => $this->bus->driver_phone,            
-            'no_adults' => $this->adults->count(),
-            'no_children' => $this->children->count(),
         ];
     }
 }

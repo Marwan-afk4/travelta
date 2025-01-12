@@ -35,9 +35,7 @@ class ManuelFlightResource extends JsonResource
             'flight_class' => $this->flight->class,
             'airline' => $this->flight->airline,
             'ticket_no' => $this->flight->ticket_number,
-            'ref_pnr' => $this->flight->ref_pnr,            
-            'no_adults' => $this->adults->count(),
-            'no_children' => $this->children->count(),
+            'ref_pnr' => $this->flight->ref_pnr,
         ];
     }
 }
