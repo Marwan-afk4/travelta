@@ -9,5 +9,7 @@ class RoomType extends Model
     protected $fillable = [
         'name',
         'status',
+        'affilate_id',
+        'agent_id',
     ];
 }

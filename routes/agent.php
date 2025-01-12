@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
 
+use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomTypesController;
+
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
 use App\Http\Controllers\Api\Agent\settings\GroupController;
@@ -99,6 +101,20 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::controller(CustomerController::class)->prefix('customer')->group(function(){
         Route::get('/', 'view');
+    });
+
+    Route::prefix('/room')->group(function(){
+        Route::prefix('/settings')->group(function(){
+            Route::prefix('/types')->controller(RoomTypesController::class)
+            ->group(function(){
+                Route::get('/', 'view');
+                Route::get('item/{id}', 'room_type');
+                Route::put('status/{id}', 'status');
+                Route::post('add', 'create');
+                Route::post('update/{id}', 'modify');
+                Route::delete('delete/{id}', 'delete');
+            });
+        });
     });
 
     Route::prefix('/settings')->group(function(){
