@@ -12,14 +12,20 @@ use App\Http\Controllers\Api\Agent\supplier\SupplierController;
 
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
-use App\Http\Controllers\Api\Agent\Wallet\WalletController;
+use App\Http\Controllers\Api\Agent\accounting\Wallet\WalletController;
+use App\Http\Controllers\Api\Agent\accounting\financial\FinancialController;
 
 use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
 
+use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomTypesController;
+use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomAmenityController;
+use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomExtraController;
+
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
+use App\Http\Controllers\Api\Agent\settings\GroupController;
 
 use App\Http\Controllers\Api\SuperAdmin\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
@@ -58,6 +64,15 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::delete('delete/{id}', 'delete');
     });
 
+    Route::controller(FinancialController::class)->prefix('financial')->group(function(){
+        Route::get('/', 'view');
+        Route::get('item/{id}', 'financial');
+        Route::put('status/{id}', 'status');
+        Route::post('add', 'create');
+        Route::post('update/{id}', 'modify');
+        Route::delete('delete/{id}', 'delete');
+    });
+
     Route::controller(WalletController::class)->prefix('wallet')->group(function(){
         Route::get('/', 'view');
         Route::post('add', 'add');
@@ -68,6 +83,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::controller(ManualBookingController::class)->prefix('manual_booking')->group(function(){
         Route::post('/', 'booking');
+        Route::get('/cart_data/{id}', 'cart_data');
         Route::post('/cart', 'cart');
         Route::get('/supplier_customer', 'to_b2_filter');
         Route::get('/service_supplier', 'from_supplier');
@@ -89,6 +105,40 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('/', 'view');
     });
 
+    Route::prefix('/room')->group(function(){
+        Route::prefix('/settings')->group(function(){
+            Route::prefix('/types')->controller(RoomTypesController::class)
+            ->group(function(){
+                Route::get('/', 'view');
+                Route::get('item/{id}', 'room_type');
+                Route::put('status/{id}', 'status');
+                Route::post('add', 'create');
+                Route::post('update/{id}', 'modify');
+                Route::delete('delete/{id}', 'delete');
+            });
+            
+            Route::prefix('/amenity')->controller(RoomAmenityController::class)
+            ->group(function(){
+                Route::get('/', 'view');
+                Route::get('item/{id}', 'room_amenity');
+                Route::put('status/{id}', 'status');
+                Route::post('add', 'create');
+                Route::post('update/{id}', 'modify');
+                Route::delete('delete/{id}', 'delete');
+            });
+            
+            Route::prefix('/extra')->controller(RoomExtraController::class)
+            ->group(function(){
+                Route::get('/', 'view');
+                Route::get('item/{id}', 'room_extra');
+                Route::put('status/{id}', 'status');
+                Route::post('add', 'create');
+                Route::post('update/{id}', 'modify');
+                Route::delete('delete/{id}', 'delete');
+            });
+        });
+    });
+
     Route::prefix('/settings')->group(function(){
         Route::controller(TaxController::class)->prefix('tax')->group(function(){
             Route::get('/', 'view');
@@ -98,6 +148,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(CurrencyController::class)->prefix('currency')->group(function(){
             Route::get('/', 'view');
+            Route::post('add', 'create');
+            Route::post('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
+        });
+
+        Route::controller(GroupController::class)->prefix('group')->group(function(){
+            Route::get('/', 'view');
+            Route::get('item/{id}', 'group');
             Route::post('add', 'create');
             Route::post('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');

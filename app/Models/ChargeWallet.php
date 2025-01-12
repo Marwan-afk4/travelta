@@ -12,5 +12,6 @@ class ChargeWallet extends Model
         'affilate_id',
         'payment_method_id',
         'amount',
+        'image',
     ];
 }

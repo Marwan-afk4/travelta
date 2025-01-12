@@ -90,7 +90,7 @@ class SupplierController extends Controller
     public function create(SupplierRequest $request){
         // supplier/add
         // Keys
-        // agent,admin_name,admin_phone,admin_email,emails,phones,services[],
+        // agent,admin_name,admin_phone,admin_email,emails[],phones[],services[],
         $supplierRequest = $request->only($this->supplierRequest);
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;

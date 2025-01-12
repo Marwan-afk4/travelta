@@ -26,5 +26,11 @@ class SupplierAgent extends Model
         return $this->belongsToMany(Service::class, 'supplier_agent_service', 'supplier_agent_id', 'service_id');
     }
 
- 
+    public function getemailsAttribute($data){
+        return json_decode($data) ?? $data;
+    }
+
+    public function getphonesAttribute($data){
+        return json_decode($data) ?? $data;
+    }
 }

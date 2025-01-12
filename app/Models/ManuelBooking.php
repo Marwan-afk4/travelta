@@ -11,6 +11,7 @@ class ManuelBooking extends Model
         'to_customer_id',
         'from_supplier_id',
         'from_service_id',
+        'code',
         'cost',
         'price',
         'currency_id',
@@ -19,6 +20,7 @@ class ManuelBooking extends Model
         'country_id',
         'city_id',
         'mark_up',
+        'payment_type',
         'mark_up_type',
         'affilate_id',
         'agent_id',
@@ -34,6 +36,10 @@ class ManuelBooking extends Model
         return $this->belongsTo(Agent::class, 'agent_id');
     }
 
+    public function country(){
+        return $this->belongsTo(Country::class);
+    }
+
     public function city(){
         return $this->belongsTo(City::class);
     }
@@ -42,8 +48,16 @@ class ManuelBooking extends Model
         return $this->belongsTo(SupplierAgent::class, 'from_supplier_id');
     }
 
+    public function to_supplier(){
+        return $this->belongsTo(SupplierAgent::class, 'to_supplier_id');
+    }
+
+    public function to_customer(){
+        return $this->belongsTo(Customer::class, 'to_customer_id');
+    }
+
     public function getToClientAttribute(){
-        if ($this->attributes['to_supplier_id']) {
+        if (!empty($this->attributes['to_supplier_id'])) {
             return $this->belongsTo(SupplierAgent::class, 'to_supplier_id')->first();
         }
         return $this->belongsTo(Customer::class, 'to_customer_id')->first();
@@ -67,5 +81,13 @@ class ManuelBooking extends Model
 
     public function visa(){
         return $this->hasOne(ManuelVisa::class, 'manuel_booking_id');
+    }
+
+    public function adults(){
+        return $this->hasMany(Adult::class, 'manuel_booking_id');
+    }
+
+    public function children(){
+        return $this->hasMany(Child::class, 'manuel_booking_id');
     }
 }

@@ -15,9 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId(column: 'manuel_booking_id')->nullable()->constrained('manuel_bookings')->onUpdate('cascade')->onDelete('cascade');
             $table->float('total');
-            $table->enum('payment_type', ['full', 'partial', 'later']);
             $table->float('payment')->default(0);
-            $table->foreignId(column: 'payment_method_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId(column: 'payment_method_id')->nullable()->constrained('finantiol_acountings')->onUpdate('cascade')->onDelete('set null');
             $table->timestamps();
         });
     }

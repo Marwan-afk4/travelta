@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('manuel_bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId(column: 'to_supplier_id')->nullable()->constrained('supplier_agents')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'to_customer_id')->nullable()->constrained('customers')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'from_supplier_id')->nullable()->constrained('supplier_agents')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'from_service_id')->nullable()->constrained('services')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId(column: 'to_supplier_id')->nullable()->constrained('supplier_agents')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId(column: 'to_customer_id')->nullable()->constrained('customers')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId(column: 'from_supplier_id')->nullable()->constrained('supplier_agents')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId(column: 'from_service_id')->nullable()->constrained('services')->onUpdate('cascade')->onDelete('set null');
             $table->float('cost');
             $table->enum('tax_type', ['include', 'exclude']);
             $table->float('total_price');
-            $table->foreignId(column: 'currency_id')->nullable()->constrained('currency_agents')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'country_id')->nullable()->constrained('countries')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'city_id')->nullable()->constrained('cities')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId(column: 'currency_id')->nullable()->constrained('currency_agents')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId(column: 'country_id')->nullable()->constrained('countries')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId(column: 'city_id')->nullable()->constrained('cities')->onUpdate('cascade')->onDelete('set null');
             $table->timestamps();
         });
     }

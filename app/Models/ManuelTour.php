@@ -10,10 +10,11 @@ class ManuelTour extends Model
         'tour',
         'type',
         'manuel_booking_id',
+        'flight_date',
         'adult_price',
         'child_price',
         'adults',
-        'childreen', 
+        'childreen',
     ];
 
     public function hotel(){

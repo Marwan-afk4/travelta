@@ -13,6 +13,5 @@ class ManuelVisa extends Model
         'notes',
         'manuel_booking_id',
         'number',
-        'customers'
     ];
 }

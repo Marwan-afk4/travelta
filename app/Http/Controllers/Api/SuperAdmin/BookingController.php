@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use App\Http\Resources\ManuelBusResource;
+use App\Http\Resources\ManuelFlightResource;
+use App\Http\Resources\ManuelHotelResource;
+use App\Http\Resources\ManuelTourResource;
+use App\Http\Resources\ManuelVisaResource;
 
 use App\Models\ManuelBooking;
 
@@ -30,19 +35,19 @@ class BookingController extends Controller
         // return response()->json(['bookings' => $data]);
         
         $hotel = $this->manuel_booking
-        ->with(['hotel', 'taxes', 'from_supplier'])
+        ->with(['hotel', 'taxes', 'from_supplier', 'country', 'adults', 'children'])
         ->whereHas('hotel')
         ->get();
         $bus = $this->manuel_booking
-        ->with(['bus', 'taxes', 'from_supplier'])
+        ->with(['bus', 'taxes', 'from_supplier', 'country', 'adults', 'children'])
         ->whereHas('bus')
         ->get();
         $visa = $this->manuel_booking
-        ->with(['visa', 'taxes', 'from_supplier'])
+        ->with(['visa', 'taxes', 'from_supplier', 'country', 'adults', 'children'])
         ->whereHas('visa')
         ->get();
         $flight = $this->manuel_booking
-        ->with(['flight', 'taxes', 'from_supplier'])
+        ->with(['flight', 'taxes', 'from_supplier', 'country', 'adults', 'children'])
         ->whereHas('flight')
         ->get();
        $tour = $this->manuel_booking
@@ -50,29 +55,14 @@ class BookingController extends Controller
             $query->with([
                 'hotel', 'bus'
             ]);
-        }, 'taxes', 'from_supplier'])
+        }, 'taxes', 'from_supplier', 'country', 'adults', 'children'])
         ->whereHas('tour')
-        ->get();
-        foreach ($hotel as $item) {
-            $item->start_date = $item->hotel->check_in;
-            $item->end_date = $item->hotel->check_out;
-        }
-        foreach ($bus as $item) {
-            $item->start_date = $item->bus->departure;
-            $item->end_date = $item->bus->arrival;
-        }
-        foreach ($visa as $item) {
-            $item->start_date = $item->visa->travel_date;
-            $item->end_date = $item->visa->travel_date;
-        }
-        foreach ($flight as $item) {
-            $item->start_date = $item->flight->departure;
-            $item->end_date = $item->flight->arrival;
-        }
-        foreach ($tour as $item) {
-            $item->start_date = $item->tour->hotel->sortBy('check_in')->first()->check_in;
-            $item->end_date = $item->tour->hotel->sortByDesc('check_out')->first()->check_out;
-        }
+        ->get(); 
+        $hotel = ManuelHotelResource::collection($hotel);
+        $bus = ManuelBusResource::collection($bus);
+        $visa = ManuelVisaResource::collection($visa);
+        $flight = ManuelFlightResource::collection($flight);
+        $tour = ManuelTourResource::collection($tour);
 
         return response()->json([
             'hotel' => $hotel,

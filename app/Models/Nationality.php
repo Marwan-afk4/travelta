@@ -4,10 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class Nationality extends Model
 {
     protected $fillable = [
-        'role_name',
-        'admin_position_id',
+        'name',
     ];
 }

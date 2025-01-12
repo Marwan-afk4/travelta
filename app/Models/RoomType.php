@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class RoomType extends Model
 {
     protected $fillable = [
-        'role_name',
-        'admin_position_id',
+        'name',
+        'status',
+        'affilate_id',
+        'agent_id',
     ];
 }
