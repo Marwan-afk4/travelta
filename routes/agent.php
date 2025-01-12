@@ -20,6 +20,8 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 use App\Http\Controllers\Api\Agent\booking\BookingController;
 
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomTypesController;
+use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomAmenityController;
+use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomExtraController;
 
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
@@ -109,6 +111,26 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             ->group(function(){
                 Route::get('/', 'view');
                 Route::get('item/{id}', 'room_type');
+                Route::put('status/{id}', 'status');
+                Route::post('add', 'create');
+                Route::post('update/{id}', 'modify');
+                Route::delete('delete/{id}', 'delete');
+            });
+            
+            Route::prefix('/amenity')->controller(RoomAmenityController::class)
+            ->group(function(){
+                Route::get('/', 'view');
+                Route::get('item/{id}', 'room_amenity');
+                Route::put('status/{id}', 'status');
+                Route::post('add', 'create');
+                Route::post('update/{id}', 'modify');
+                Route::delete('delete/{id}', 'delete');
+            });
+            
+            Route::prefix('/extra')->controller(RoomExtraController::class)
+            ->group(function(){
+                Route::get('/', 'view');
+                Route::get('item/{id}', 'room_extra');
                 Route::put('status/{id}', 'status');
                 Route::post('add', 'create');
                 Route::post('update/{id}', 'modify');

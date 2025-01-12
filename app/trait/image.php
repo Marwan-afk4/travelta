@@ -58,7 +58,7 @@ trait image
     
         return null;
     }
-    
+
     public function deleteImage($imagePath){
         // Check if the file exists
         if ($imagePath && Storage::disk('public')->exists($imagePath)) {

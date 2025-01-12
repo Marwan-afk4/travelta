@@ -725,7 +725,7 @@ class ManualBookingController extends Controller
                         'manuel_booking_id' => $manuel_booking->id,
                         'total' => $request->total_cart,
                         'payment' => $item->amount ?? 0,
-                        'payment_method_id' => $request->payment_method_id,
+                        'payment_method_id' => $item->payment_method_id,
                     ];
                     if ($item->image && !empty($item->image)) {
                         $image_path = $this->storeBase64Image($item->image);
@@ -733,6 +733,11 @@ class ManualBookingController extends Controller
                     }
                     $manuel_cart = $this->manuel_cart
                     ->create($cartRequest);
+                    $financial_accounting = $this->financial_accounting
+                    ->where('id', $item->payment_method_id)
+                    ->where($role, $agent_id)
+                    ->first();
+                    $financial_accounting->balance = $financial_accounting->balance + $item->amount;
                 }
             }
             if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
