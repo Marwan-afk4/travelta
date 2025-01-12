@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('country_taxes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('country_id')->constrained()->onDelete('cascade');
+            $table->enum('type', ['fixed', 'percentage']);
+            $table->float('amount');
             $table->timestamps();
         });
     }
