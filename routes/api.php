@@ -1,13 +1,18 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\Authcontroller;
+use App\Http\Controllers\Api\SuperAdmin\AcceptedCardsController;
 use App\Http\Controllers\Api\SuperAdmin\AgencyController;
 use App\Http\Controllers\Api\SuperAdmin\BookingController;
 use App\Http\Controllers\Api\SuperAdmin\CityController;
 use App\Http\Controllers\Api\SuperAdmin\CountryController;
 use App\Http\Controllers\Api\SuperAdmin\CurrancyController;
 use App\Http\Controllers\Api\SuperAdmin\DepartmentController;
+use App\Http\Controllers\Api\SuperAdmin\FacilitiesController;
+use App\Http\Controllers\Api\SuperAdmin\FeaturesController;
 use App\Http\Controllers\Api\SuperAdmin\HotelController;
+use App\Http\Controllers\Api\SuperAdmin\HotelImageController;
+use App\Http\Controllers\Api\SuperAdmin\HotelPoliciesController;
 use App\Http\Controllers\Api\SuperAdmin\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\PaymentMethodController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
@@ -15,6 +20,7 @@ use App\Http\Controllers\Api\SuperAdmin\ServicesController;
 use App\Http\Controllers\Api\SuperAdmin\SignupApproveController;
 use App\Http\Controllers\Api\SuperAdmin\Subscription;
 use App\Http\Controllers\Api\SuperAdmin\SubscriptionController;
+use App\Http\Controllers\Api\SuperAdmin\ThemeController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
 use Illuminate\Http\Request;
@@ -31,7 +37,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('/super/user/add',[UserController::class,'adduser']);
 
         Route::delete('/super/user/delete/{id}',[UserController::class,'deleteuser']);
-        
+
 ///////////////////////////////////////// Booking //////////////////////////////////////////////////
 
         Route::get('/super/bookings',[BookingController::class,'getBookings']);
@@ -41,11 +47,11 @@ use Illuminate\Support\Facades\Route;
         Route::get('/super/subscribers',[SubscriptionController::class,'subscribers']);
 
 ///////////////////////////////////// Subscriptions //////////////////////////////////////////////
-        
+
         Route::get('/super/plans',[PlanController::class,'plans']);
 
 ///////////////////////////////////////// Plans //////////////////////////////////////////////////
-                
+
         Route::get('/super/plans',[PlanController::class,'plans']);
 
         Route::post('/super/plan/add',[PlanController::class,'addplan']);
@@ -154,7 +160,64 @@ use Illuminate\Support\Facades\Route;
 
         Route::put('/super/payment/reject/{id}',[PaymentController::class,'rejectPayment']);
 
-
         Route::post('/super/make-payment',[PaymentController::class , 'makePayment']);
+
+//////////////////////////////////////////////// Facilites ///////////////////////////////////////////////////////////
+
+        Route::get('/super/FacilIties', [FacilitiesController::class, 'getAllFacilities']);
+
+        Route::post('/super/Facility/aDd', [FacilitiesController::class, 'addFacility']);
+
+        Route::delete('/super/Facility/deLete/{id}', [FacilitiesController::class, 'deleteFacility']);
+
+        Route::put('/super/Facility/uPdate/{id}',[FacilitiesController::class,'updateFacility']);
+
+//////////////////////////////////////////////// Themes ///////////////////////////////////////////////////////////
+
+        Route::get('/super/THemes', [ThemeController::class, 'getAllTheme']);
+
+        Route::post('/super/Theme/Add', [ThemeController::class, 'addTheme']);
+
+        Route::delete('/super/Theme/Delete/{id}', [ThemeController::class, 'deleteTheme']);
+
+        Route::put('/super/Theme/updaTe/{id}',[ThemeController::class,'updateTheme']);
+
+//////////////////////////////////////////// Accepted Cards ///////////////////////////////////////////////////////////
+
+        Route::get('/super/acceptedCards', [AcceptedCardsController::class, 'getCards']);
+
+        Route::post('/super/acceptedCard/add', [AcceptedCardsController::class, 'addCard']);
+
+        Route::delete('/super/acceptedCard/delete/{id}', [AcceptedCardsController::class, 'deleteCard']);
+
+        Route::put('/super/acceptedCard/update/{id}',[AcceptedCardsController::class,'updateCard']);
+
+/////////////////////////////////////////////// Features ///////////////////////////////////////////////////////////
+
+        Route::get('/super/Features', [FeaturesController::class, 'getAllFeatures']);
+
+        Route::post('/super/Feature/adD', [FeaturesController::class, 'addFeature']);
+
+        Route::delete('/super/Feature/dElete/{id}', [FeaturesController::class, 'deleteFeature']);
+
+        Route::put('/super/Feature/Update/{id}',[FeaturesController::class,'updateFeature']);
+
+//////////////////////////////////////////// Hotel Images ///////////////////////////////////////////////////////////
+
+        Route::get('/super/hOtelImages', [HotelImageController::class, 'getAllHotelImages']);
+
+        Route::delete('/super/hotElImage/deLete/{id}', [HotelImageController::class, 'deleteHotelImage']);
+
+////////////////////////////////////////////////// Hotel Policy ///////////////////////////////////////////////////////////
+
+        Route::get('/super/hOtelPolicIes', [HotelPoliciesController::class, 'getAllPolicies']);
+
+        Route::delete('/super/hotelPolicY/deLetE/{id}', [HotelPoliciesController::class, 'deletePolicy']);
+
+///////////////////////////////////////////////////// Hotels ///////////////////////////////////////////////////////////
+
+        Route::get('/super/hotels', [HotelController::class, 'getHotel']);
+
+        Route::post('/super/hotel/add', [HotelController::class, 'storeHotel']);
 });
 

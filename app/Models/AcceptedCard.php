@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class AcceptedCard extends Model
 {
-    //
+
+    protected $fillable = [
+        'card_name'
+    ];
 
 
     public function hotels()

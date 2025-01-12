@@ -49,8 +49,24 @@ class Hotel extends Model
         return $this->belongsToMany(Facility::class,'hotel_facilities');
     }
 
-    public function accepted_cards()
+    public function acceptedCards()
+{
+    return $this->belongsToMany(AcceptedCard::class, 'hotel_accepted_cards', 'hotel_id', 'card_id');
+}
+
+    public function features()
     {
-        return $this->belongsToMany(AcceptedCard::class,'hotel_accepted_cards');
+        return $this->belongsToMany(Feature::class, 'hotel_features');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(HotelIamge::class);
+    }
+
+
+    public function policies()
+    {
+        return $this->hasMany(HotelPolicy::class);
     }
 }
