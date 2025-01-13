@@ -16,4 +16,9 @@ class Wallet extends Model
     public function currancy(){
         return $this->belongsTo(Currancy::class, 'currancy_id');
     }
+
+    public function pendding_wallet(){
+        return $this->hasMany(ChargeWallet::class, 'wallet_id')
+        ->where('status', 'pending');
+    }
 }

@@ -37,12 +37,14 @@ class WalletController extends Controller
             $wallet = $this->wallet 
             ->where('affilate_id', $agent_id)
             ->with('currancy')
+            ->withSum('pendding_wallet', 'amount')
             ->get();
         } 
         else {
             $wallet = $this->wallet 
             ->where('agent_id', $agent_id)
             ->with('currancy')
+            ->withSum('pendding_wallet', 'amount')
             ->get();
         }
         $currency = $this->currency

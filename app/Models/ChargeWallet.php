@@ -13,5 +13,6 @@ class ChargeWallet extends Model
         'payment_method_id',
         'amount',
         'image',
+        'status',
     ];
 }
