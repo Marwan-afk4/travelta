@@ -9,7 +9,6 @@ use App\trait\image;
 
 use App\Models\Wallet;
 use App\Models\ChargeWallet;
-use App\Models\CurrencyAgent;
 
 class WalletController extends Controller
 {
@@ -185,9 +184,7 @@ class WalletController extends Controller
             $image_path = $this->upload($request, 'image', 'agent/wallet/receipt');
             $walletRequest['image'] = $image_path;
         }
-        $charge_wallet,
-        private  = $this->charge_wallet,
-        private 
+        $charge_wallet = $this->charge_wallet
         ->create($walletRequest);
 
         return response()->json([
