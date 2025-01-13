@@ -46,6 +46,7 @@ class WalletController extends Controller
             ->get();
         }
         $currency = $this->currency
+        ->select('id', 'name')
         ->get();
 
         return response()->json([
