@@ -16,6 +16,11 @@ class FinantiolAcounting extends Model
         'status',
         'logo',
     ];
+    protected $appends = ['logo_link'];
+
+    public function getLogoLinkAttribute(){
+        return url('storage/' . $this->attributes['logo']);
+    }
 
     public function currancy(){
         return $this->belongsTo(CurrencyAgent::class, 'currency_id');

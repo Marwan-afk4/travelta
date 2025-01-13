@@ -19,6 +19,9 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
 
+use App\Http\Controllers\Api\Agent\inventory\room\room\RoomController;
+use App\Http\Controllers\Api\Agent\inventory\room\room\CreateRoomController;
+
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomTypesController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomAmenityController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomExtraController;
@@ -75,7 +78,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::controller(WalletController::class)->prefix('wallet')->group(function(){
         Route::get('/', 'view');
-        Route::post('add', 'add');
+        Route::get('/item/{id}', 'wallet');
         Route::post('add', 'add');
         Route::post('charge', 'charge');
         Route::delete('delete/{id}', 'delete');
@@ -105,7 +108,22 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('/', 'view');
     });
 
-    Route::prefix('/room')->group(function(){
+    Route::prefix('/room')->group(function(){ 
+        Route::controller(RoomController::class)
+        ->group(function(){
+            Route::get('/lists', 'lists');
+            Route::get('/hotel_lists', 'hotel_lists');
+        });
+        Route::controller(CreateRoomController::class)
+        ->group(function(){
+            Route::get('/', 'view');
+            Route::get('item/{id}', 'room_type');
+            Route::put('status/{id}', 'status');
+            Route::post('add', 'create');
+            Route::post('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
+        });
+
         Route::prefix('/settings')->group(function(){
             Route::prefix('/types')->controller(RoomTypesController::class)
             ->group(function(){

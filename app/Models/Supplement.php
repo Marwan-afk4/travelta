@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CountryTax extends Model
+class Supplement extends Model
 {
-    protected $fillable =[
+    protected $fillable = [
+        'room_id',
         'name',
-        'country_id',
         'type',
-        'amount',
+        'price',
     ];
 }

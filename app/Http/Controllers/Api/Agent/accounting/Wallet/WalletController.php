@@ -9,11 +9,13 @@ use App\trait\image;
 
 use App\Models\Wallet;
 use App\Models\ChargeWallet;
+use App\Models\CurrencyAgent;
 
 class WalletController extends Controller
 {
     use image;
-    public function __construct(private Wallet $wallet, private ChargeWallet $charge_wallet){}
+    public function __construct(private Wallet $wallet, private ChargeWallet $charge_wallet,
+    private CurrencyAgent $currency){}
     protected $chargeWallet = [
         'wallet_id',
         'payment_method_id',
@@ -21,6 +23,7 @@ class WalletController extends Controller
     ]; 
 
     public function view(Request $request){
+        // /wallet
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -42,13 +45,46 @@ class WalletController extends Controller
             ->with('currancy')
             ->get();
         }
+        $currency = $this->currency
+        ->get();
 
         return response()->json([
             'wallets' => $wallet,
+            'currencies' => $currency,
+        ]);
+    }
+
+    public function wallet(Request $request, $id){
+        // /wallet/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $pending_wallet = $this->charge_wallet
+        ->where($role, $agent_id)
+        ->where('wallet_id', $id)
+        ->get();
+
+        return response()->json([
+            'pending_wallet' => $pending_wallet,
         ]);
     }
 
     public function add(Request $request){
+       // /wallet/add
+       // Keys
+       // currancy_id
         $validation = Validator::make($request->all(), [
             'currancy_id' => 'required|exists:currancies,id',
         ]);
@@ -103,6 +139,7 @@ class WalletController extends Controller
     }
 
     public function delete(Request $request, $id){
+        // /wallet/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -145,6 +182,8 @@ class WalletController extends Controller
     }
 
     public function charge(Request $request){
+        // /wallet/charge
+        // wallet_id, payment_method_id, amount, image
         $validation = Validator::make($request->all(), [
             'wallet_id' => 'required|exists:wallets,id',
             'payment_method_id' => 'required|exists:payment_methods,id',
