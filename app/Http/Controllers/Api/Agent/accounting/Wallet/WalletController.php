@@ -9,11 +9,13 @@ use App\trait\image;
 
 use App\Models\Wallet;
 use App\Models\ChargeWallet;
+use App\Models\CurrencyAgent;
 
 class WalletController extends Controller
 {
     use image;
-    public function __construct(private Wallet $wallet, private ChargeWallet $charge_wallet){}
+    public function __construct(private Wallet $wallet, private ChargeWallet $charge_wallet,
+    private CurrencyAgent $currency){}
     protected $chargeWallet = [
         'wallet_id',
         'payment_method_id',
@@ -21,6 +23,7 @@ class WalletController extends Controller
     ]; 
 
     public function view(Request $request){
+        // /wallet
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -42,13 +45,19 @@ class WalletController extends Controller
             ->with('currancy')
             ->get();
         }
+        $currency = $this->currency
+        ->get();
 
         return response()->json([
             'wallets' => $wallet,
+            'currencies' => $currency,
         ]);
     }
 
     public function add(Request $request){
+       // /wallet/add
+       // Keys
+       // currancy_id
         $validation = Validator::make($request->all(), [
             'currancy_id' => 'required|exists:currancies,id',
         ]);
@@ -103,6 +112,7 @@ class WalletController extends Controller
     }
 
     public function delete(Request $request, $id){
+        // /wallet/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -145,6 +155,8 @@ class WalletController extends Controller
     }
 
     public function charge(Request $request){
+        // /wallet/charge
+        // wallet_id, payment_method_id, amount, image
         $validation = Validator::make($request->all(), [
             'wallet_id' => 'required|exists:wallets,id',
             'payment_method_id' => 'required|exists:payment_methods,id',
@@ -173,7 +185,9 @@ class WalletController extends Controller
             $image_path = $this->upload($request, 'image', 'agent/wallet/receipt');
             $walletRequest['image'] = $image_path;
         }
-        $charge_wallet = $this->charge_wallet
+        $charge_wallet,
+        private  = $this->charge_wallet,
+        private 
         ->create($walletRequest);
 
         return response()->json([

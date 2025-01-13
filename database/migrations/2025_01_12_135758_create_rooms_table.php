@@ -34,8 +34,8 @@ return new class extends Migration
             $table->enum('tax_type', ['include', 'exclude', 'include_except']);
             $table->string('check_in');
             $table->string('check_out');
-            $table->text('policy');
-            $table->text('children_policy');
+            $table->text('policy')->nullable();
+            $table->text('children_policy')->nullable();
             $table->enum('cancelation', ['free', 'non_refunable']);
             $table->timestamps();
         });
