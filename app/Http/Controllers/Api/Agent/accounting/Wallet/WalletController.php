@@ -89,7 +89,7 @@ class WalletController extends Controller
        // Keys
        // currancy_id
         $validation = Validator::make($request->all(), [
-            'currancy_id' => 'required|exists:currancies,id',
+            'currancy_id' => 'required|exists:currency_agents,id',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
