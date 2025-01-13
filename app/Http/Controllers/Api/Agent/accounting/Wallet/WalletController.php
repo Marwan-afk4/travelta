@@ -9,13 +9,13 @@ use App\trait\image;
 
 use App\Models\Wallet;
 use App\Models\ChargeWallet;
-use App\Models\CurrencyAgent;
+use App\Models\Currancy;
 
 class WalletController extends Controller
 {
     use image;
     public function __construct(private Wallet $wallet, private ChargeWallet $charge_wallet,
-    private CurrencyAgent $currency){}
+    private Currancy $currency){}
     protected $chargeWallet = [
         'wallet_id',
         'payment_method_id',
@@ -37,15 +37,18 @@ class WalletController extends Controller
             $wallet = $this->wallet 
             ->where('affilate_id', $agent_id)
             ->with('currancy')
+            ->withSum('pendding_wallet', 'amount')
             ->get();
         } 
         else {
             $wallet = $this->wallet 
             ->where('agent_id', $agent_id)
             ->with('currancy')
+            ->withSum('pendding_wallet', 'amount')
             ->get();
         }
         $currency = $this->currency
+        ->select('id', 'currancy_name AS name')
         ->get();
 
         return response()->json([
