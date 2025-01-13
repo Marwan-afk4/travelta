@@ -15,7 +15,7 @@ class WalletController extends Controller
 {
     use image;
     public function __construct(private Wallet $wallet, private ChargeWallet $charge_wallet,
-    private CurrencyAgent $currency){}
+    private Currancy $currency){}
     protected $chargeWallet = [
         'wallet_id',
         'payment_method_id',
@@ -48,7 +48,7 @@ class WalletController extends Controller
             ->get();
         }
         $currency = $this->currency
-        ->select('id', 'name')
+        ->select('id', 'currancy_name AS name')
         ->get();
 
         return response()->json([
@@ -89,7 +89,7 @@ class WalletController extends Controller
        // Keys
        // currancy_id
         $validation = Validator::make($request->all(), [
-            'currancy_id' => 'required|exists:currency_agents,id',
+            'currancy_id' => 'required|exists:currancies,id',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
