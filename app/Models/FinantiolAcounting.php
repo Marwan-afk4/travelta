@@ -19,7 +19,7 @@ class FinantiolAcounting extends Model
     protected $appends = ['logo_link'];
 
     public function getLogoLinkAttribute(){
-        return url('storage/' . $this->attributes['logo_link']);
+        return url('storage/' . $this->attributes['logo']);
     }
 
     public function currancy(){
