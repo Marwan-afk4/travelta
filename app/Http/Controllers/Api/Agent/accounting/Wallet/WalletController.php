@@ -9,7 +9,7 @@ use App\trait\image;
 
 use App\Models\Wallet;
 use App\Models\ChargeWallet;
-use App\Models\CurrencyAgent;
+use App\Models\Currancy;
 
 class WalletController extends Controller
 {
