@@ -78,7 +78,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::controller(WalletController::class)->prefix('wallet')->group(function(){
         Route::get('/', 'view');
-        Route::post('add', 'add');
+        Route::get('/item/{id}', 'wallet');
         Route::post('add', 'add');
         Route::post('charge', 'charge');
         Route::delete('delete/{id}', 'delete');

@@ -53,6 +53,33 @@ class WalletController extends Controller
         ]);
     }
 
+    public function wallet(Request $request, $id){
+        // /wallet/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $pending_wallet = $this->charge_wallet
+        ->where($role, $agent_id)
+        ->where('wallet_id', $id)
+        ->get();
+
+        return response()->json([
+            'pending_wallet' => $pending_wallet,
+        ]);
+    }
+
     public function add(Request $request){
        // /wallet/add
        // Keys
