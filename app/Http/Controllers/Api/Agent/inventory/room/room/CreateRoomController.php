@@ -11,7 +11,8 @@ use App\Models\Supplement;
 
 class CreateRoomController extends Controller
 {
-    public function __construct(private Room $room, private Supplement $supplements){}
+    public function __construct(private Room $room, private Supplement $supplements,
+    private RoomAgency $room_agency, private RoomCancel $room_cancelation){}
     protected $roomRequest = [
         'description',
         'status',
@@ -43,6 +44,10 @@ class CreateRoomController extends Controller
         // currency_id, b2c_markup, b2e_markup, b2b_markup, tax_type, check_in, check_out, 
         // policy, children_policy, cancelation
         // supplements[name, type, price, currency_id]
+        // amenities[]
+        // agencies[agency_code, percentage]
+        // taxes[]
+        // free_cancelation[amount, type, before]
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -76,6 +81,54 @@ class CreateRoomController extends Controller
             ]);
         }
         // Add Amenity
+        if ($request->amenities) {
+            $amenities = is_string($request->amenities)? json_decode($request->amenities)
+            :$request->amenities;
+            $room->amenity()->attach($amenities);
+        }
+        // Add Agencies
+        if ($request->agencies) {
+            $agencies = is_string($request->agencies) ? json_decode($request->agencies): 
+            $request->agencies; 
+            foreach ($agencies as $item) {
+                $this->room_agency
+                ->create([
+                    'room_id' => $room->id,
+                    'percentage' => $item->percentage,
+                    'agency_code' => $item->agency_code,
+                ]);
+            }
+        }
+        // Add Taxes 
+        if ($request->taxes) {
+            $taxes = is_string($request->taxes) ? json_decode($request->taxes): 
+            $request->taxes; 
+            $room->taxes()->attach($taxes);
+        }
+         // Add Except Taxes
+        if ($request->except_taxes) {
+        $except_taxes = is_string($request->except_taxes) ? json_decode($request->except_taxes): 
+        $request->except_taxes; 
+        $room->except_taxes()->attach($except_taxes);
+        }
+        // Add free cancelation
+        if ($request->free_cancelation) {
+            $free_cancelation = is_string($request->free_cancelation) ? json_decode($request->free_cancelation): 
+            $request->free_cancelation;
+            foreach ($free_cancelation as $item) {
+                $this->room_cancelation
+                ->create([
+                    'room_id' => $room->id,
+                    'amount' => $item->amount,
+                    'type' => $item->type,
+                    'before' => $item->before,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => 'You add data success'
+        ]);
     }
 
     public function modify(){
