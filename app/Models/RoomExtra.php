@@ -15,4 +15,12 @@ class RoomExtra extends Model
         'affilate_id',
         'agent_id',
     ];
+    protected $appends = ['thumbnail_link'];
+
+    public function getThumbnailLinkAttribute(){
+        return url('storage/' . $this->attributes['thumbnail']);
+    }
+    public function hotel(){
+        return $this->belongsTo(Hotel::class, 'hotel_id');
+    }
 }

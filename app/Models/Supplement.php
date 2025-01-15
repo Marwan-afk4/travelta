@@ -11,5 +11,6 @@ class Supplement extends Model
         'name',
         'type',
         'price',
+        'currency',
     ];
 }

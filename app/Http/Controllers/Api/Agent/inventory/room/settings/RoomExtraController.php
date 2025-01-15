@@ -35,6 +35,7 @@ class RoomExtraController extends Controller
         }
         $room_extra = $this->room_extra 
         ->where($role, $agent_id)
+        ->with('hotel')
         ->get();
         $hotels = $this->hotels
         ->get();
