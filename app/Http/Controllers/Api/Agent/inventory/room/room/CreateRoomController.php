@@ -50,6 +50,7 @@ class CreateRoomController extends Controller
         // amenities[]
         // agencies[agency_code, percentage]
         // taxes[]
+        // except_taxes[]
         // free_cancelation[amount, type, before]
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -110,9 +111,9 @@ class CreateRoomController extends Controller
         }
          // Add Except Taxes
         if ($request->except_taxes) {
-        $except_taxes = is_string($request->except_taxes) ? json_decode($request->except_taxes): 
-        $request->except_taxes; 
-        $room->except_taxes()->attach($except_taxes);
+            $except_taxes = is_string($request->except_taxes) ? json_decode($request->except_taxes): 
+            $request->except_taxes; 
+            $room->except_taxes()->attach($except_taxes);
         }
         // Add free cancelation
         if ($request->free_cancelation) {

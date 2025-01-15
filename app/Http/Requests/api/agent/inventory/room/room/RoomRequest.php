@@ -26,7 +26,7 @@ class RoomRequest extends FormRequest
         return [
             'status' => ['required', 'boolean'],
             'price_type' => ['required', 'in:fixed,variable'],
-            'price' => ['float'],
+            'price' => ['numeric'],
             'quantity' => ['required', 'numeric'],
             'max_adults' => ['required', 'numeric'],
             'max_children' => ['required', 'numeric'],
