@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Http\Requests\api\agent\inventory\room\room\RoomRequest;
 use Illuminate\Support\Facades\Validator;
 
+use App\Models\Room;
 use App\Models\Supplement;
+use App\Models\RoomAgency;
+use App\Models\RoomCancel;
 
 class CreateRoomController extends Controller
 {

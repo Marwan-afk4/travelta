@@ -15,7 +15,7 @@ class WalletController extends Controller
 {
     use image;
     public function __construct(private Wallet $wallet, private ChargeWallet $charge_wallet,
-    private Currancy $currency){}
+    private Currancy $currency, private PaymentMethod $payment_methods){}
     protected $chargeWallet = [
         'wallet_id',
         'payment_method_id',
@@ -50,10 +50,13 @@ class WalletController extends Controller
         $currency = $this->currency
         ->select('id', 'currancy_name AS name')
         ->get();
+        $payment_methods = $this->payment_methods
+        ->get();
 
         return response()->json([
             'wallets' => $wallet,
             'currencies' => $currency,
+            'payment_methods' => $payment_methods,
         ]);
     }
 
