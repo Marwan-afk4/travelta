@@ -32,4 +32,8 @@ class Room extends Model
         'children_policy',
         'cancelation',
     ];
+
+    public function amenity(){
+        
+    }
 }

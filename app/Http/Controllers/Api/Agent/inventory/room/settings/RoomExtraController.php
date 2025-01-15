@@ -173,7 +173,7 @@ class RoomExtraController extends Controller
             $roomRequest['thumbnail'] = $image_path;
         }
         else{
-            $roomRequest->except('thumbnail');
+            unset($roomRequest['thumbnail']);
         }
         $room_extra->update($roomRequest);
 
