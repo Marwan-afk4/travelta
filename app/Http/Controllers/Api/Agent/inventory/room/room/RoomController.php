@@ -42,6 +42,7 @@ class RoomController extends Controller
         ->where('status', 1)
         ->get();
         $currencies = $this->currencies
+        ->select('id', 'name')
         ->where($role, $agent_id)
         ->get();
         $room_amenities = $this->room_amenities
