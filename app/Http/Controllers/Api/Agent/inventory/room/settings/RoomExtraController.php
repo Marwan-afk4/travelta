@@ -9,11 +9,12 @@ use Illuminate\Support\Facades\Validator;
 use App\trait\image;
 
 use App\Models\RoomExtra;
+use App\Models\Hotel;
 
 class RoomExtraController extends Controller
 {
     use image;
-    public function __construct(private RoomExtra $room_extra){}
+    public function __construct(private RoomExtra $room_extra, private Hotel $hotels){}
 
     public function view(Request $request){
         // /agent/room/settings/extra
@@ -35,9 +36,12 @@ class RoomExtraController extends Controller
         $room_extra = $this->room_extra 
         ->where($role, $agent_id)
         ->get();
+        $hotels = $this->hotels
+        ->get();
 
         return response()->json([
-            'room_extra' => $room_extra, 
+            'room_extra' => $room_extra,
+            'hotels' => $hotels,
         ]);
     }
 
