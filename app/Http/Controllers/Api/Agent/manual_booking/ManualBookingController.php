@@ -267,7 +267,6 @@ class ManualBookingController extends Controller
     }
 
     public function cart(ManuelBookingRequest $request){
-        // manual_booking/items
         $total = $request->total_price;
             $service = $this->services
             ->where('id', $request->from_service_id)
@@ -493,6 +492,7 @@ class ManualBookingController extends Controller
     }
 
     public function manuel_bookings(){
+        // https://travelta.online/agent/manual_booking/items
         $manuel_data_cart = $this->manuel_data_cart
         ->get();
         $data = [];
@@ -593,6 +593,7 @@ class ManualBookingController extends Controller
                 ];
             }
             $arr = [
+                'id' => $item->id,
                 "from_supplier"=> $this->supplier_agent->where('id', $manuel_item->from_supplier_id)->first()->name ?? null,
                 "from_service"=>  $service,
                 "mark_up_type"=> $manuel_item->mark_up_type,
