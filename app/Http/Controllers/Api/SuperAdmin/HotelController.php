@@ -24,8 +24,8 @@ class HotelController extends Controller
         'facilities:id,name',
         'acceptedCards:id,card_name',
         'features:id,name,description,image',
-        'images:id,iamge',
-        'policies:id,title,description'
+        'images',
+        'policies'
     ])->get();
 
     $hotels->each(function ($hotel) {
