@@ -491,6 +491,137 @@ class ManualBookingController extends Controller
         ]);
     }
 
+    public function manuel_bookings(){
+        $manuel_data_cart = $this->manuel_data_cart
+        ->get();
+        $data = [];
+        foreach ($manuel_data_cart as $item) {
+            $manuel_item = json_decode($item->cart);
+            if (!empty($manuel_item->to_supplier_id)) {
+                $to_client = $this->supplier_agent
+                ->where('id', $manuel_item->to_supplier_id)
+                ->first();
+            } else {   
+                $to_client = $this->customers
+                ->where('id', $manuel_item->to_customer_id)
+                ->first();
+            }
+
+            $service = $this->services->where('id', $manuel_item->from_service_id)->first()->service_name ?? null;
+            $hotel = null;
+            $bus = null;
+            $visa = null;
+            $flight = null;
+            $tour = null;
+            if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
+                $hotel = [
+                    "check_in" => $manuel_item->check_in ?? null,
+                    "check_out" => $manuel_item->check_out ?? null,
+                    "hotel_name" => $manuel_item->hotel_name ?? null, 
+                    "nights" => $manuel_item->nights ?? null,
+                    "room_type" => $manuel_item->room_type ?? null,
+                    "room_quantity" => $manuel_item->room_quantity ?? null,
+                    "childreen" =>  $manuel_item->childreen ?? null,
+                    "adults" =>  $manuel_item->adults ?? null,
+                    "adults_data" =>  json_decode($manuel_item->adults_data ?? '[]') ?? [],
+                    "children_data" =>  json_decode($manuel_item->children_data ?? '[]') ?? [],
+                ];
+            }
+            elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
+                $bus = [
+                    "from" => $manuel_item->from ?? null,
+                    "to" => $manuel_item->to ?? null,  
+                    "bus" => $manuel_item->bus ?? null,
+                    "departure" =>  $manuel_item->departure ?? null,
+                    "arrival" => $manuel_item->arrival ?? null,  
+                    "adults" => $manuel_item->adults ?? null, 
+                    "childreen" => $manuel_item->childreen ?? null, 
+                    "adult_price" => $manuel_item->adult_price ?? null, 
+                    "child_price" => $manuel_item->child_price ?? null, 
+                    "bus" => $manuel_item->bus ?? null,
+                    "bus_number" => $manuel_item->bus_number ?? null,
+                    "driver_phone" => $manuel_item->driver_phone ?? null, 
+                    "adults_data" =>  json_decode($manuel_item->adults_data ?? '[]') ?? [],
+                    "children_data" =>  json_decode($manuel_item->children_data ?? '[]') ?? [],
+                ];
+            }
+            elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
+                $visa = [
+                    "country_visa"=> $manuel_item->country ?? null,
+                    "travel_date"=> $manuel_item->travel_date ??null,
+                    "appointment_date"=> $manuel_item->appointment_date ?? null,
+                    "number"=> $manuel_item->number ?? null, 
+                    "notes"=> $manuel_item->notes ?? null,
+                    "adults_data" =>  json_decode($manuel_item->adults_data ?? '[]') ?? [],
+                    "children_data" =>  json_decode($manuel_item->children_data ?? '[]') ?? [],
+                ];
+            }
+            elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
+                $flight = [	
+                    "type" => $manuel_item->type ?? null, 
+                    "direction" =>  $manuel_item->direction ?? null,
+                    "from_to" =>  json_decode($manuel_item->from_to ?? '[]') ?? [],
+                    "departure" =>  $manuel_item->departure ?? null,
+                    "arrival" => $manuel_item->arrival ?? null,   
+                    "class" =>  $manuel_item->class ?? null,
+                    "adults" => $manuel_item->adults ?? null, 
+                    "childreen" => $manuel_item->childreen ?? null, 
+                    "infants" =>  $manuel_item->infants ?? null,
+                    "airline" =>  $manuel_item->airline ?? null,
+                    "ticket_number" =>  $manuel_item->ticket_number ?? null,
+                    "adult_price" => $manuel_item->adult_price ?? null, 
+                    "child_price" => $manuel_item->child_price ?? null, 
+                    "ref_pnr" =>  $manuel_item->ref_pnr ?? null,
+                    "adults_data" =>  json_decode($manuel_item->adults_data ?? '[]') ?? [],
+                    "children_data" =>  json_decode($manuel_item->children_data ?? '[]') ?? [],
+                ];
+            }
+            elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
+                $tour = [
+                    "tour" => $manuel_item->tour ?? null, 
+                    "type" => $manuel_item->type ?? null, 
+                    "adult_price" => $manuel_item->adult_price ?? null, 
+                    "child_price" => $manuel_item->child_price ?? null, 
+                    "adults" => $manuel_item->adults ?? null, 
+                    "childreen" => $manuel_item->childreen ?? null, 
+                    "flight_date" => $manuel_item->flight_date ?? null, 
+                    "tour_buses" => json_decode($manuel_item->tour_buses ?? '[]') ?? [], 
+                    "tour_hotels" => json_decode($manuel_item->tour_hotels ?? '[]') ?? [], 
+                    "adults_data" =>  json_decode($manuel_item->adults_data ?? '[]') ?? [],
+                    "children_data" =>  json_decode($manuel_item->children_data ?? '[]') ?? [],
+                ];
+            }
+            $arr = [
+                "from_supplier"=> $this->supplier_agent->where('id', $manuel_item->from_supplier_id)->first()->name ?? null,
+                "from_service"=>  $service,
+                "mark_up_type"=> $manuel_item->mark_up_type,
+                "mark_up"=> $manuel_item->mark_up,
+                "price"=> $manuel_item->price,
+                "country"=> $this->contries->where('id', $manuel_item->country_id)->first()->name ?? null,
+                "city"=> $this->cities->where('id', $manuel_item->city_id ?? 0)->first()->name ?? null,
+                "currency"=> $this->currency->where('id', $manuel_item->currency_id ?? 0)->first()->name ?? null,
+                "to_client"=> $manuel_item->to_supplier_id ?
+                $this->supplier_agent->where('id', $manuel_item->to_supplier_id)->first()->name ?? null
+                :$this->customers->where('id', $manuel_item->to_customer_id)->first()->name ?? null,
+                "role"=> $manuel_item->to_supplier_id ? 'supplier' : 'customer',
+                "taxes"=> json_decode($manuel_item->taxes ?? '[]') ?? [],
+                "tax_type"=> $manuel_item->tax_type,
+                "cost"=> $manuel_item->cost,
+                "total_price"=> $manuel_item->total_price,
+                'hotel' => $hotel,
+                'visa' => $visa,
+                'flight' => $flight,
+                'bus' => $bus,
+                'tour' => $tour,
+            ];
+            $data[] = $arr;
+        }
+   
+        return response()->json([
+            'data' => $data,
+        ]);
+    }
+
     public function booking(CartBookingRequest $request){
         // Hotel => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","check_in": "2024-05-05","check_out": "2024-07-07","nights": "3","hotel_name": "Hilton","room_type": "2","room_quantity": "10","adults": "25","childreen": "10"}
         // Bus => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","from": "Alex","to": "Sharm","departure": "2024-05-05 11:30:00","arrival": "2024-07-07 11:30:00","adults": "2","childreen": "10","adult_price": "250","child_price": "100","bus": "Travelta","bus_number": "12345","driver_phone": "01234566"}

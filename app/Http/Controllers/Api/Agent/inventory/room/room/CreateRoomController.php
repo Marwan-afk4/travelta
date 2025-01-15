@@ -42,16 +42,17 @@ class CreateRoomController extends Controller
     ];
 
     public function create(RoomRequest $request){ 
-        // description, status, price_type, price, quantity, max_adults, 
+        // description, status, price_type => [fixed, variable], price, quantity, max_adults, 
         // max_children, max_capacity, min_stay, room_type_id, hotel_id, hotel_meal_id, 
-        // currency_id, b2c_markup, b2e_markup, b2b_markup, tax_type, check_in, check_out, 
-        // policy, children_policy, cancelation
-        // supplements[name, type, price, currency_id]
+        // currency_id, b2c_markup, b2e_markup, b2b_markup, tax_type => [include, exclude, include_except], 
+        // check_in, check_out, policy, children_policy, cancelation => [free, non_refunable]
+        // supplements[name, type => [night, stay, person], price, currency_id]
         // amenities[]
         // agencies[agency_code, percentage]
         // taxes[]
         // except_taxes[]
-        // free_cancelation[amount, type, before]
+        // free_cancelation[amount, type => [precentage, value], before]
+        // Json => {"status": "1","price_type": "fixed","price": "100","quantity": "3","description": "Description","max_adults": "3","max_children": "2","max_capacity": "5","min_stay": "2","room_type_id": "1","hotel_id": "1","hotel_meal_id": "1","currency_id": "2","b2c_markup": "10","b2e_markup": "20","b2b_markup": "30","tax_type": "include_except","check_in": "11:00Am","check_out": "11:00Am","policy": "My policies","children_policy": "childreen policies","cancelation": "free","supplements": "[{\"name\":\"Chocolate\",\"type\":\"night\",\"price\":12,\"currency_id\":2}]","amenities": ["1"],"agencies": "[{\"agency_code\":\"1234\",\"percentage\":10}]","taxes": ["1"],"free_cancelation": "[{\"amount\":100,\"type\":\"value\",\"before\":2}]",                        "except_taxes": ["1"],"thumbnail": {}}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -132,7 +133,7 @@ class CreateRoomController extends Controller
             }
 
             return response()->json([
-                'success' => 'You add data success'
+                'success' => $request->all()
             ]);
         } 
         catch (\Throwable $th) {
