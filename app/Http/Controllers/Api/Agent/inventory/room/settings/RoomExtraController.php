@@ -172,6 +172,9 @@ class RoomExtraController extends Controller
             $image_path = $this->update_image($request, $room_extra->thumbnail, 'thumbnail', 'admin/inventory/room/extra');
             $roomRequest['thumbnail'] = $image_path;
         }
+        else{
+            $roomRequest->except('thumbnail');
+        }
         $room_extra->update($roomRequest);
 
         return response()->json([
