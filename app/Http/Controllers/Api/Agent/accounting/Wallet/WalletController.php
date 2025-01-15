@@ -9,6 +9,7 @@ use App\trait\image;
 
 use App\Models\Wallet;
 use App\Models\ChargeWallet;
+use App\Models\PaymentMethod;
 use App\Models\Currancy;
 
 class WalletController extends Controller
