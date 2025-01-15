@@ -625,7 +625,7 @@ class ManualBookingController extends Controller
     }
 
     public function delete_cart($id){
-        // manual_booking/cart/delete/{id}
+        // https://travelta.online/agent/manual_booking/cart/delete/{id}
         $manuel_data_cart = $this->manuel_data_cart
         ->where('id', $id)
         ->delete();
