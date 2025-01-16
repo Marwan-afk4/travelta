@@ -26,10 +26,12 @@ class UserController extends Controller
         $data = collect([]);
         foreach ($user as $item) {
             $element = collect([]);
+            $element['id'] = $item->id;
             $element['name'] = $item->name;
             $element['email'] = $item->email;
             $element['phone'] = $item->phone;
             $element['emergency_phone'] = $item->emergency_phone;
+            $element['gender'] = $item->gender;
             $booking = [];
             foreach ($item->manuel as $key => $value) {
                 $hotel = $value->hotel;
@@ -102,9 +104,9 @@ class UserController extends Controller
             'emergency_phone' => $request->emergency_phone,
         ]);
         foreach($request->image as $image){
-            $imag_path = $this->uploadFile($image['image'], 'admin/legal_paper/user');
+            $imag_path = $this->storeBase64Image($image['image'], 'admin/legal_paper/user');
             LegalPaper::create([
-                'user_id' => $user->id,
+                'customer_id' => $user->id,
                 'image' => $imag_path
             ]);
         }

@@ -116,7 +116,7 @@ use Illuminate\Support\Facades\Route;
 
 //////////////////////////////////////////////// Zone ///////////////////////////////////////////////////////////
 
-        Route::get('/super/zones', [ZoneController::class, 'getZone']);
+        Route::get('/super/zones', [ZoneController::class, 'getZones']);
 
         Route::post('/super/zone/add', [ZoneController::class, 'addZone']);
 
@@ -210,7 +210,7 @@ use Illuminate\Support\Facades\Route;
 
 ////////////////////////////////////////////////// Hotel Policy ///////////////////////////////////////////////////////////
 
-        Route::get('/super/hOtelPolicIes', [HotelPoliciesController::class, 'getAllPolicies']);
+        Route::get('/super/hOtelPolicIes/{id}', [HotelPoliciesController::class, 'getHotelPolicies']);
 
         Route::delete('/super/hotelPolicY/deLetE/{id}', [HotelPoliciesController::class, 'deletePolicy']);
 
@@ -219,5 +219,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('/super/hotels', [HotelController::class, 'getHotel']);
 
         Route::post('/super/hotel/add', [HotelController::class, 'storeHotel']);
+
+        Route::delete('/super/hotel/delete/{id}', [HotelController::class, 'deleteHotel']);
 });
 

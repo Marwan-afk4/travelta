@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hotel_iamges', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('hotel_id')->constrained()->onDelete('cascade');
-            $table->string('iamge')->notnull();
-            $table->timestamps();
+        Schema::table('legal_papers', function (Blueprint $table) {
+            $table->foreignId('customer_id')->nullable()->after('image')->constrained()->onDelete('cascade');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hotel_iamges');
+        Schema::table('legal_papers', function (Blueprint $table) {
+            //
+        });
     }
 };

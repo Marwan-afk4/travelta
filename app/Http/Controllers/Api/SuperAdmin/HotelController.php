@@ -6,16 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Hotel;
-use App\Models\HotelIamge;
+use App\Models\HotelImage;
 use App\Models\HotelPolicy;
 use App\Models\Zone;
+use App\trait\image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class HotelController extends Controller
 {
-    public function getHotel(){
+    use image;
+    public function getHotel()
+{
     $hotels = Hotel::with([
         'city:id,name,country_id',
         'country:id,name',
@@ -28,18 +32,35 @@ class HotelController extends Controller
         'policies'
     ])->get();
 
-    $hotels->each(function ($hotel) {
+    $baseUrl = url('/');
+
+    $hotels->each(function ($hotel) use ($baseUrl) {
+        if (!empty($hotel->hotel_logo)) {
+            $hotel->hotel_logo = $baseUrl . '/' . $hotel->hotel_logo;
+        }
+
+        $hotel->features->each(function ($feature) use ($baseUrl) {
+            if (!empty($feature->image)) {
+                $feature->image = $baseUrl . '/' . $feature->image;
+            }
+        });
+
+        $hotel->images->each(function ($image) use ($baseUrl) {
+            if (!empty($image->image)) {
+                $image->image = $baseUrl . '/' . $image->image;
+            }
+        });
+
         $hotel->themes->each->setHidden(['pivot']);
         $hotel->facilities->each->setHidden(['pivot']);
         $hotel->acceptedCards->each->setHidden(['pivot']);
     });
 
-    $data = [
+    return response()->json([
         'hotels' => $hotels
-    ];
-
-    return response()->json($data);
+    ]);
 }
+
 
 
     public function storeHotel(Request $request)
@@ -58,8 +79,8 @@ class HotelController extends Controller
         'hotel_website' => 'nullable|url',
         'check_in' => 'required',
         'check_out' => 'required',
-        'iamges' => 'nullable|array',
-        'iamges.*' => 'nullable|string', // Assuming image URLs or paths are strings
+        'images' => 'nullable|array',
+        'images.*' => 'nullable|string', // Assuming image URLs or paths are strings
         'policies' => 'nullable|array',
         'policies.*.title' => 'nullable|string',
         'policies.*.description' => 'nullable|string',
@@ -80,6 +101,7 @@ class HotelController extends Controller
         ], 422);
     }
 
+
     $validated = $validator->validated();
 
     // Ensure policies and other arrays are empty if not provided
@@ -88,19 +110,40 @@ class HotelController extends Controller
     $validated['facilities'] = $validated['facilities'] ?? [];
     $validated['accepted_cards'] = $validated['accepted_cards'] ?? [];
     $validated['themes'] = $validated['themes'] ?? [];
-    $validated['iamges'] = $validated['iamges'] ?? [];
+    $validated['images'] = $validated['images'] ?? [];
 
     DB::beginTransaction();
 
     try {
-        $hotel = Hotel::create($validated);
+        $hotelLogoPath = null;
+        if (!empty($validated['hotel_logo'])) {
+            $hotelLogoPath = $this->storeBase64Image($validated['hotel_logo'], 'admin/hotels/logos');
+        }
+
+        // Create hotel
+        $hotel = Hotel::create([
+            'hotel_name' => $validated['hotel_name'],
+            'description' => $validated['description'] ?? null,
+            'email' => $validated['email'],
+            'phone_number' => $validated['phone_number'],
+            'hotel_logo' => $hotelLogoPath,
+            'country_id' => $validated['country_id'],
+            'city_id' => $validated['city_id'],
+            'zone_id' => $validated['zone_id'] ?? null,
+            'stars' => $validated['stars'],
+            'hotel_video_link' => $validated['hotel_video_link'] ?? null,
+            'hotel_website' => $validated['hotel_website'] ?? null,
+            'check_in' => $validated['check_in'],
+            'check_out' => $validated['check_out'],
+        ]);
 
         // Handle images
-        if (!empty($validated['iamges'])) {
-            foreach ($validated['iamges'] as $iamge) {
-                HotelIamge::create([
+        if (!empty($validated['images'])) {
+            foreach ($validated['images'] as $base64Image) {
+                $imagePath = $this->storeBase64Image($base64Image, 'admin/hotels/images');
+                HotelImage::create([
                     'hotel_id' => $hotel->id,
-                    'iamge' => $iamge, // Respecting the spelling in the database column
+                    'image' => $imagePath,
                 ]);
             }
         }
@@ -159,6 +202,14 @@ class HotelController extends Controller
         ], 500);
     }
 }
+
+    public function deleteHotel($id){
+        $hotel=Hotel::find($id);
+        $hotel->delete();
+        return response()->json([
+            'message' => 'Hotel deleted successfully',
+        ]);
+    }
 
 
 

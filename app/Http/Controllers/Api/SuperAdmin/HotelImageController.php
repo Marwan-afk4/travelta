@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\HotelIamge;
+use App\Models\HotelImage;
 use Illuminate\Http\Request;
 
 class HotelImageController extends Controller
 {
 
     public function getAllHotelImages($hotel_id){
-        $images = HotelIamge::where('hotel_id', $hotel_id)->get();
+        $images = HotelImage::where('hotel_id', $hotel_id)->get();
         $data = [
             'hotel_images' => $images
         ];
@@ -18,7 +18,7 @@ class HotelImageController extends Controller
     }
 
     public function deleteHotelImage($id){
-        $image = HotelIamge::find($id);
+        $image = HotelImage::find($id);
         $image->delete();
         return response()->json([
             'message' => 'Image deleted successfully',

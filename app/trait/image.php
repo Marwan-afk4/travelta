@@ -45,17 +45,17 @@ trait image
         // Check if the request has an array of files
         if ($request->has($fileName)) {
             $uploadedPaths = []; // Array to store the paths of uploaded files
-    
+
             // Loop through each file in the array
             foreach ($request->file($fileName) as $file) {
                 // Store each file in the specified directory
                 $imagePath = $file->store($directory, 'public');
                 $uploadedPaths[] = $imagePath;
             }
-    
+
             return $uploadedPaths; // Return an array of uploaded file paths
         }
-    
+
         return null;
     }
 
@@ -65,8 +65,8 @@ trait image
             Storage::disk('public')->delete($imagePath);
         }
     }
-   
-    public function storeBase64Image($base64Image, $folderPath = 'agent/manuel/receipt')
+
+    public function storeBase64Image($base64Image, $folderPath = 'admin/manuel/receipt')
     {
 
         // Validate if the base64 string has a valid image MIME type
@@ -82,6 +82,7 @@ trait image
             $fileName = uniqid() . '.' . $imageType;
 
             // Define the folder path in storage
+
 
             // Save the image to the storage disk (default is local)
             Storage::disk('public')->put($folderPath . '/' . $fileName, $imageData);
