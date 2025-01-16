@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Hotel;
-use App\Models\HotelIamge;
+use App\Models\HotelImage;
 use App\Models\HotelPolicy;
 use App\Models\Zone;
 use Illuminate\Http\Request;
@@ -58,8 +58,8 @@ class HotelController extends Controller
         'hotel_website' => 'nullable|url',
         'check_in' => 'required',
         'check_out' => 'required',
-        'iamges' => 'nullable|array',
-        'iamges.*' => 'nullable|string', // Assuming image URLs or paths are strings
+        'images' => 'nullable|array',
+        'images.*' => 'nullable|string', // Assuming image URLs or paths are strings
         'policies' => 'nullable|array',
         'policies.*.title' => 'nullable|string',
         'policies.*.description' => 'nullable|string',
@@ -88,7 +88,7 @@ class HotelController extends Controller
     $validated['facilities'] = $validated['facilities'] ?? [];
     $validated['accepted_cards'] = $validated['accepted_cards'] ?? [];
     $validated['themes'] = $validated['themes'] ?? [];
-    $validated['iamges'] = $validated['iamges'] ?? [];
+    $validated['images'] = $validated['images'] ?? [];
 
     DB::beginTransaction();
 
@@ -96,11 +96,10 @@ class HotelController extends Controller
         $hotel = Hotel::create($validated);
 
         // Handle images
-        if (!empty($validated['iamges'])) {
-            foreach ($validated['iamges'] as $iamge) {
-                HotelIamge::create([
-                    'hotel_id' => $hotel->id,
-                    'iamge' => $iamge, // Respecting the spelling in the database column
+        if (!empty($validated['images'])) {
+            foreach ($validated['images'] as $image) {
+                $hotel->images()->create([
+                    'image' => $image, // Respecting the spelling in the database column
                 ]);
             }
         }
