@@ -45,17 +45,17 @@ trait image
         // Check if the request has an array of files
         if ($request->has($fileName)) {
             $uploadedPaths = []; // Array to store the paths of uploaded files
-    
+
             // Loop through each file in the array
             foreach ($request->file($fileName) as $file) {
                 // Store each file in the specified directory
                 $imagePath = $file->store($directory, 'public');
                 $uploadedPaths[] = $imagePath;
             }
-    
+
             return $uploadedPaths; // Return an array of uploaded file paths
         }
-    
+
         return null;
     }
 
@@ -65,7 +65,7 @@ trait image
             Storage::disk('public')->delete($imagePath);
         }
     }
-   
+
     public function storeBase64Image($base64Image)
     {
 

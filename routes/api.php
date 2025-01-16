@@ -116,7 +116,7 @@ use Illuminate\Support\Facades\Route;
 
 //////////////////////////////////////////////// Zone ///////////////////////////////////////////////////////////
 
-        Route::get('/super/zones', [ZoneController::class, 'getZone']);
+        Route::get('/super/zones', [ZoneController::class, 'getZones']);
 
         Route::post('/super/zone/add', [ZoneController::class, 'addZone']);
 
