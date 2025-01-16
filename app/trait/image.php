@@ -66,7 +66,7 @@ trait image
         }
     }
 
-    public function storeBase64Image($base64Image)
+    public function storeBase64Image($base64Image, $folderPath = 'admin/manuel/receipt')
     {
 
         // Validate if the base64 string has a valid image MIME type
@@ -82,7 +82,7 @@ trait image
             $fileName = uniqid() . '.' . $imageType;
 
             // Define the folder path in storage
-            $folderPath = 'admin/manuel/receipt'; // You can modify this to any subfolder in the storage/app directory
+
 
             // Save the image to the storage disk (default is local)
             Storage::disk('public')->put($folderPath . '/' . $fileName, $imageData);

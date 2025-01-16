@@ -219,5 +219,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('/super/hotels', [HotelController::class, 'getHotel']);
 
         Route::post('/super/hotel/add', [HotelController::class, 'storeHotel']);
+
+        Route::delete('/super/hotel/delete/{id}', [HotelController::class, 'deleteHotel']);
 });
 

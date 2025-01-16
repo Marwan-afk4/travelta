@@ -160,6 +160,14 @@ class HotelController extends Controller
     }
 }
 
+    public function deleteHotel($id){
+        $hotel=Hotel::find($id);
+        $hotel->delete();
+        return response()->json([
+            'message' => 'Hotel deleted successfully',
+        ]);
+    }
+
 
 
 }
