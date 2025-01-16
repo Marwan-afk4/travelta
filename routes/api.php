@@ -210,7 +210,7 @@ use Illuminate\Support\Facades\Route;
 
 ////////////////////////////////////////////////// Hotel Policy ///////////////////////////////////////////////////////////
 
-        Route::get('/super/hOtelPolicIes', [HotelPoliciesController::class, 'getAllPolicies']);
+        Route::get('/super/hOtelPolicIes', [HotelPoliciesController::class, 'getHotelPolicies']);
 
         Route::delete('/super/hotelPolicY/deLetE/{id}', [HotelPoliciesController::class, 'deletePolicy']);
 
