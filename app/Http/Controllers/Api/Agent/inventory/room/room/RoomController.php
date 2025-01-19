@@ -119,6 +119,7 @@ class RoomController extends Controller
     }
 
     public function lists(Request $request){
+        // room/lists
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -158,6 +159,9 @@ class RoomController extends Controller
     }
 
     public function hotel_lists(Request $request){
+        // room/hotel_lists
+        // Keys
+        // hotel_id
         $validation = Validator::make($request->all(), [
             'hotel_id' => 'required|exists:hotels,id',
         ]);
