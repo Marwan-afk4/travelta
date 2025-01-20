@@ -28,6 +28,10 @@ class RoomAvailabilityController extends Controller
         ]);
     }
 
+    public function room_availability(){
+        
+    }
+
     public function create(){
         
     }
