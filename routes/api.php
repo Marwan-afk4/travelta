@@ -16,21 +16,20 @@ use App\Http\Controllers\Api\SuperAdmin\HotelPoliciesController;
 use App\Http\Controllers\Api\SuperAdmin\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\PaymentMethodController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
+use App\Http\Controllers\Api\SuperAdmin\RoomDataController;
 use App\Http\Controllers\Api\SuperAdmin\ServicesController;
 use App\Http\Controllers\Api\SuperAdmin\SignupApproveController;
-use App\Http\Controllers\Api\SuperAdmin\Subscription;
 use App\Http\Controllers\Api\SuperAdmin\SubscriptionController;
 use App\Http\Controllers\Api\SuperAdmin\ThemeController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-    Route::post('/register', [Authcontroller::class, 'register']);
-    Route::post('/login', [Authcontroller::class, 'login']);
+Route::post('/register', [Authcontroller::class, 'register']);
+Route::post('/login', [Authcontroller::class, 'login']);
 
-    Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
+Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
         Route::get('/super/users',[UserController::class,'users']);
 
@@ -46,15 +45,13 @@ use Illuminate\Support\Facades\Route;
 
         Route::get('/super/subscribers',[SubscriptionController::class,'subscribers']);
 
-///////////////////////////////////// Subscriptions //////////////////////////////////////////////
-
-        Route::get('/super/plans',[PlanController::class,'plans']);
-
 ///////////////////////////////////////// Plans //////////////////////////////////////////////////
 
         Route::get('/super/plans',[PlanController::class,'plans']);
 
         Route::post('/super/plan/add',[PlanController::class,'addplan']);
+
+        Route::put('/super/plan/update/{id}',[PlanController::class,'updatePlan']);
 
         Route::delete('/super/plan/delete/{id}',[PlanController::class,'deletePlan']);
 
@@ -65,6 +62,8 @@ use Illuminate\Support\Facades\Route;
         Route::post('/super/currancy/add',[CurrancyController::class,'addCurrancy']);
 
         Route::delete('/super/currancy/delete/{id}',[CurrancyController::class,'deleteCurrancy']);
+
+        Route::put('/super/currancy/update/{id}',[CurrancyController::class,'updateCurrancy']);
 
 /////////////////////////////////////////// Department /////////////////////////////////////////////////
 
@@ -204,7 +203,7 @@ use Illuminate\Support\Facades\Route;
 
 //////////////////////////////////////////// Hotel Images ///////////////////////////////////////////////////////////
 
-        Route::get('/super/hOtelImages', [HotelImageController::class, 'getAllHotelImages']);
+        Route::get('/super/hOtelImages/{id}', [HotelImageController::class, 'getAllHotelImages']);
 
         Route::delete('/super/hotElImage/deLete/{id}', [HotelImageController::class, 'deleteHotelImage']);
 
@@ -221,5 +220,15 @@ use Illuminate\Support\Facades\Route;
         Route::post('/super/hotel/add', [HotelController::class, 'storeHotel']);
 
         Route::delete('/super/hotel/delete/{id}', [HotelController::class, 'deleteHotel']);
+
+//////////////////////////////////////////////////// Room Data ///////////////////////////////////////////////////////////
+
+        Route::get('/super/roomData', [RoomDataController::class, 'getRoomData']);
+
+        Route::post('/super/roomData/add', [RoomDataController::class, 'addRoomData']);
+
+        Route::delete('/super/roomData/delete/{id}', [RoomDataController::class, 'deleteRoomData']);
+
+        Route::put('/super/roomData/update/{id}',[RoomDataController::class,'updateRoomData']);
 });
 

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PlanController extends Controller
 {
-
+    protected $updatePlan=['name','description','user_limit','branch_limit','period_in_days','module_type','price','discount_type','discount_value','admin_cost','branch_cost','type'];
 
     public function plans(){
         $affilatePlans=Plan::where('type','affiliate')->get();
@@ -76,6 +76,14 @@ class PlanController extends Controller
         $plan->delete();
         return response()->json([
             'message' => 'Plan deleted successfully',
+        ]);
+    }
+
+    public function UpdatePlan(Request $request,$id){
+        $plan = Plan::find($id);
+        $plan->update($request->only($this->updatePlan));
+        return response()->json([
+            'message' => 'Plan updated successfully',
         ]);
     }
 
