@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\Agent\inventory\room\room\RoomGalleryController;
 use App\Http\Controllers\Api\Agent\inventory\room\room\RoomController;
 use App\Http\Controllers\Api\Agent\inventory\room\room\CreateRoomController;
 use App\Http\Controllers\Api\Agent\inventory\room\room\RoomPricingController;
+use App\Http\Controllers\Api\Agent\inventory\room\room\RoomAvailabilityController;
 
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomTypesController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomAmenityController;
@@ -93,8 +94,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('/cart_data/{id}', 'cart_data');
         Route::post('/cart', 'cart');
         Route::get('/supplier_customer', 'to_b2_filter');
-        Route::get('/service_supplier', 'from_supplier');
-        Route::get('/taxes', 'from_taxes');
+        Route::post('/service_supplier', 'from_supplier');
+        Route::post('/taxes', 'from_taxes');
         Route::get('/lists', 'lists');
     });
 
@@ -130,6 +131,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/item/{id}', 'room');
             Route::put('/status/{id}', 'status');
             Route::put('/accepted/{id}', 'accepted');
+        });
+        Route::controller(RoomAvailabilityController::class)
+        ->prefix('/availability')->group(function(){
+            Route::get('/', 'view');
+            Route::get('item/{id}', 'room_availability');
+            Route::post('add', 'create');
+            Route::post('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
         });
         Route::controller(CreateRoomController::class)
         ->group(function(){
