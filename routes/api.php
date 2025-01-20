@@ -16,14 +16,13 @@ use App\Http\Controllers\Api\SuperAdmin\HotelPoliciesController;
 use App\Http\Controllers\Api\SuperAdmin\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\PaymentMethodController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
+use App\Http\Controllers\Api\SuperAdmin\RoomDataController;
 use App\Http\Controllers\Api\SuperAdmin\ServicesController;
 use App\Http\Controllers\Api\SuperAdmin\SignupApproveController;
-use App\Http\Controllers\Api\SuperAdmin\Subscription;
 use App\Http\Controllers\Api\SuperAdmin\SubscriptionController;
 use App\Http\Controllers\Api\SuperAdmin\ThemeController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -63,6 +62,8 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
         Route::post('/super/currancy/add',[CurrancyController::class,'addCurrancy']);
 
         Route::delete('/super/currancy/delete/{id}',[CurrancyController::class,'deleteCurrancy']);
+
+        Route::put('/super/currancy/update/{id}',[CurrancyController::class,'updateCurrancy']);
 
 /////////////////////////////////////////// Department /////////////////////////////////////////////////
 
@@ -219,5 +220,15 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
         Route::post('/super/hotel/add', [HotelController::class, 'storeHotel']);
 
         Route::delete('/super/hotel/delete/{id}', [HotelController::class, 'deleteHotel']);
+
+//////////////////////////////////////////////////// Room Data ///////////////////////////////////////////////////////////
+
+        Route::get('/super/roomData', [RoomDataController::class, 'getRoomData']);
+
+        Route::post('/super/roomData/add', [RoomDataController::class, 'addRoomData']);
+
+        Route::delete('/super/roomData/delete/{id}', [RoomDataController::class, 'deleteRoomData']);
+
+        Route::put('/super/roomData/update/{id}',[RoomDataController::class,'updateRoomData']);
 });
 
