@@ -127,6 +127,8 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
         Route::get('/super/agents', [AgencyController::class, 'getAgency']);
 
+        Route::get('/super/supliers', [AgencyController::class, 'getSupplier']);
+
         Route::delete('/super/agent/delete/{id}', [AgencyController::class, 'deleteAgency']);
 
         Route::put('/super/agent/update/{id}',[AgencyController::class,'updateAgency']);
