@@ -27,10 +27,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-    Route::post('/register', [Authcontroller::class, 'register']);
-    Route::post('/login', [Authcontroller::class, 'login']);
+Route::post('/register', [Authcontroller::class, 'register']);
+Route::post('/login', [Authcontroller::class, 'login']);
 
-    Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
+Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
         Route::get('/super/users',[UserController::class,'users']);
 
@@ -46,15 +46,13 @@ use Illuminate\Support\Facades\Route;
 
         Route::get('/super/subscribers',[SubscriptionController::class,'subscribers']);
 
-///////////////////////////////////// Subscriptions //////////////////////////////////////////////
-
-        Route::get('/super/plans',[PlanController::class,'plans']);
-
 ///////////////////////////////////////// Plans //////////////////////////////////////////////////
 
         Route::get('/super/plans',[PlanController::class,'plans']);
 
         Route::post('/super/plan/add',[PlanController::class,'addplan']);
+
+        Route::put('/super/plan/update/{id}',[PlanController::class,'updatePlan']);
 
         Route::delete('/super/plan/delete/{id}',[PlanController::class,'deletePlan']);
 
