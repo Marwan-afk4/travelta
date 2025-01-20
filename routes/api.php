@@ -157,6 +157,8 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
         Route::get('/super/pendingPayments', [PaymentController::class, 'getPyamnts']);
 
+        Route::get('super/approvedPayments', [PaymentController::class, 'approvedPayment']);
+
         Route::put('/super/accept-payment/{plan_id}/{id}',[PaymentController::class,'acceptPayment']);
 
         Route::put('/super/payment/reject/{id}',[PaymentController::class,'rejectPayment']);
