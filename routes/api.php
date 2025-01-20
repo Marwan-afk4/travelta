@@ -203,7 +203,7 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
 //////////////////////////////////////////// Hotel Images ///////////////////////////////////////////////////////////
 
-        Route::get('/super/hOtelImages', [HotelImageController::class, 'getAllHotelImages']);
+        Route::get('/super/hOtelImages/{id}', [HotelImageController::class, 'getAllHotelImages']);
 
         Route::delete('/super/hotElImage/deLete/{id}', [HotelImageController::class, 'deleteHotelImage']);
 
