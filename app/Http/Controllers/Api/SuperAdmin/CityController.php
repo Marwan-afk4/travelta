@@ -22,7 +22,7 @@ class CityController extends Controller
     public function addCity(Request $request){
         $validation = Validator::make($request->all(), [
             'name' => 'required|unique:cities,name',
-            'country_id' => 'required|excists:countries,id',
+            'country_id' => 'required|exists:countries,id',
         ]);
         if($validation->fails()){
             return response()->json(['errors' => $validation->errors()], 401);
