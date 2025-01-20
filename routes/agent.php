@@ -19,8 +19,10 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
 
+use App\Http\Controllers\Api\Agent\inventory\room\room\RoomGalleryController;
 use App\Http\Controllers\Api\Agent\inventory\room\room\RoomController;
 use App\Http\Controllers\Api\Agent\inventory\room\room\CreateRoomController;
+use App\Http\Controllers\Api\Agent\inventory\room\room\RoomPricingController;
 
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomTypesController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomAmenityController;
@@ -111,19 +113,35 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::prefix('/room')->group(function(){ 
+        Route::controller(RoomPricingController::class)
+        ->prefix('/pricing')->group(function(){
+            Route::get('/', 'view');
+            Route::get('/item/{id}', 'pricing');
+            Route::post('/add', 'create');
+            Route::post('/update/{id}', 'modify');
+            Route::delete('/delete/{id}', 'delete');
+        });
         Route::controller(RoomController::class)
         ->group(function(){
+            Route::get('/', 'view');
             Route::get('/lists', 'lists');
-            Route::get('/hotel_lists', 'hotel_lists');
+            Route::post('/hotel_lists', 'hotel_lists');
+            Route::post('/duplicate_room/{id}', 'duplicate_room');
+            Route::get('/item/{id}', 'room');
+            Route::put('/status/{id}', 'status');
+            Route::put('/accepted/{id}', 'accepted');
         });
         Route::controller(CreateRoomController::class)
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('item/{id}', 'room_type');
-            Route::put('status/{id}', 'status');
+            Route::get('item/{id}', 'room_type'); 
             Route::post('add', 'create');
             Route::post('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');
+        });
+        Route::controller(RoomGalleryController::class)
+        ->group(function(){
+            Route::get('/gallery/{id}', 'gallery');
+            Route::post('/add_gallery', 'add_gallery');
         });
 
         Route::prefix('/settings')->group(function(){

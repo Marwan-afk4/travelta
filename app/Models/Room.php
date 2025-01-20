@@ -31,6 +31,8 @@ class Room extends Model
         'policy',
         'children_policy',
         'cancelation',
+        'thumbnail',
+        'accepted',
     ];
 
     public function amenity(){
@@ -54,6 +56,10 @@ class Room extends Model
     }
 
     public function free_cancelation(){
-        return $this->belongsToMany(CountryTax::class, 'room_except_tax', 'room_id', 'tax_id');
+        return $this->hasMany(RoomCancel::class, 'room_id');
+    }
+
+    public function gallery(){
+        return $this->hasMany(RoomImages::class, 'room_id');
     }
 }
