@@ -210,6 +210,7 @@ class ManualBookingController extends Controller
         $customers = $this->customer_data
         ->where($role, $agent_id)
         ->with('customer')
+        ->get()
         ->pluck('customer');
         $suppliers = $this->supplier_agent
         ->select('id', 'agent')
