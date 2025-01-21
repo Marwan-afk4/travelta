@@ -25,6 +25,10 @@ class RoomAvailabilityRequest extends FormRequest
     {
         return [
             'room_id' => ['required', 'exists:rooms,id'],
+            'rooms' => ['required', 'array'],
+            'rooms.*.from' => ['required', 'date'],
+            'rooms.*.to' => ['required', 'date'],
+            'rooms.*.quantity' => ['required', 'numeric'],
         ];
     }
 
