@@ -106,12 +106,17 @@ class LeadController extends Controller
                 'faild' => 'You add lead before'
             ], 400);
         }
+        $customer = $this->customer
+        ->where('id', $request->customer_id)
+        ->first();
         
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
             $this->customer_data
             ->create([
                 'customer_id' => $request->customer_id,
                 'affilate_id' => $agent_id,
+                'name' => $customer->name,
+                'phone' => $customer->phone,
             ]);
         } 
         else {
@@ -119,6 +124,8 @@ class LeadController extends Controller
             ->create([
                 'customer_id' => $request->customer_id,
                 'agent_id' => $agent_id,
+                'name' => $customer->name,
+                'phone' => $customer->phone,
             ]);
         }
 
@@ -134,7 +141,12 @@ class LeadController extends Controller
         // name, phone, email, gender
         $leadRequest = $request->only($this->leadRequest);
         $customer = $this->customer
-        ->create($leadRequest);
+        ->where('phone', $request->phone)
+        ->first();
+        if (empty($customer)) {
+            $customer = $this->customer
+            ->create($leadRequest);
+        }
         
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -150,6 +162,8 @@ class LeadController extends Controller
             ->create([
                 'customer_id' => $customer->id,
                 'affilate_id' => $agent_id,
+                'name' => $request->name,
+                'phone' => $request->phone,
             ]);
         } 
         else {
@@ -157,6 +171,8 @@ class LeadController extends Controller
             ->create([
                 'customer_id' => $customer->id,
                 'agent_id' => $agent_id,
+                'name' => $request->name,
+                'phone' => $request->phone,
             ]);
         }
         

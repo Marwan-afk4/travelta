@@ -241,6 +241,7 @@ class RoomController extends Controller
     }
 
     public function duplicate_room(Request $request, $id){
+        // /room/duplicate_room/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
