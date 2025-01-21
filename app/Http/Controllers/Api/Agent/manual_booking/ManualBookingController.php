@@ -684,7 +684,7 @@ class ManualBookingController extends Controller
             ];
             $data[] = $arr;
         }
-   
+
         return response()->json([
             'data' => $data,
         ]);
@@ -719,6 +719,12 @@ class ManualBookingController extends Controller
         }
         else{
             $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
         }
         $manuel_data_cart = $this->manuel_data_cart
         ->where('id', $request->cart_id)
@@ -760,6 +766,7 @@ class ManualBookingController extends Controller
             'total_price' => $manuelRequest['total_price'] ?? null,
             'currency_id' => $manuelRequest['currency_id'] ?? null,
             'to_supplier_id' => $manuelRequest['to_supplier_id'] ?? null,
+            'to_customer_id' => $manuelRequest['to_customer_id'] ?? null,
             $role => $agent_id,
             'code' => $code,
             'payment_type' => $request->payment_type,
@@ -968,6 +975,17 @@ class ManualBookingController extends Controller
                     ]);
                 }
             }
+            $this->customer_data
+            ->where('customer_id ', $request->to_customer_id)
+            ->where($role, $agent_id)
+            ->update([
+                'type' => 'customer'
+            ]);
+            $this->customers
+            ->where('id ', $request->to_customer_id)
+            ->update([
+                'role' => 'customer'
+            ]);
              $this->manuel_data_cart
             ->where('id', $request->cart_id)
             ->delete();
