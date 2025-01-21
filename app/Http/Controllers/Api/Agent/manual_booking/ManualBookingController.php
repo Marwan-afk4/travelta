@@ -164,6 +164,60 @@ class ManualBookingController extends Controller
         ]);
     }
 
+
+    public function mobile_lists(Request $request){
+        // https://travelta.online/agent/manual_booking/mobile_lists
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        $cities = $this->cities
+        ->get();
+        $contries = $this->contries
+        ->get();
+        $services = $this->services
+        ->get();
+        $financial_accounting = $this->financial_accounting
+        ->get();
+        $adult_title = [
+            'MR',
+            'MISS',
+            'MRS',
+        ];
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'affilate_id';
+        }
+        $currencies = $this->currency
+        ->where($role, $agent_id)
+        ->get();
+        $suppliers = $this->supplier_agent
+        ->select('id', 'agent')
+        ->where($role, $agent_id)
+        ->get();
+        $taxes = $this->taxes
+        ->where('country_id', $request->country_id)
+        ->get();
+
+        return response()->json([
+            'cities' => $cities,
+            'contries' => $contries,
+            'services' => $services,
+            'currencies' => $currencies,
+            'adult_title' => $adult_title,
+            'financial_accounting' => $financial_accounting,
+            'suppliers' => $suppliers,
+            'taxes' => $taxes,
+        ]);
+    }
+
     public function to_b2_filter(Request $request){
         // https://travelta.online/agent/manual_booking/supplier_customer
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
