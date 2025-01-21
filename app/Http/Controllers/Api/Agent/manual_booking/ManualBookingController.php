@@ -180,8 +180,6 @@ class ManualBookingController extends Controller
         ->get();
         $contries = $this->contries
         ->get();
-        $services = $this->services
-        ->get();
         $financial_accounting = $this->financial_accounting
         ->get();
         $adult_title = [
@@ -196,11 +194,18 @@ class ManualBookingController extends Controller
             $role = 'agent_id';
         }
         $currencies = $this->currency
+        ->select('id', 'name')
         ->where($role, $agent_id)
         ->get();
         $suppliers = $this->supplier_agent
         ->select('id', 'agent')
         ->where($role, $agent_id)
+        ->get();
+        $services = $this->services
+        ->with('suppliers')
+        ->whereHas('suppliers', function($query) use($role, $agent_id){
+            $query->where($role, $agent_id);
+        })
         ->get();
         $taxes = $this->taxes
         ->get();
