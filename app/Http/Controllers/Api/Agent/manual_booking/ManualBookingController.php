@@ -193,7 +193,7 @@ class ManualBookingController extends Controller
             $role = 'affilate_id';
         } 
         else {
-            $role = 'affilate_id';
+            $role = 'agent_id';
         }
         $currencies = $this->currency
         ->where($role, $agent_id)
@@ -203,7 +203,6 @@ class ManualBookingController extends Controller
         ->where($role, $agent_id)
         ->get();
         $taxes = $this->taxes
-        ->where('country_id', $request->country_id)
         ->get();
 
         return response()->json([
