@@ -25,7 +25,7 @@ class ManuelBookingRequest extends FormRequest
     {
         return [
             'to_supplier_id' => ['exists:supplier_agents,id'],
-            'to_customer_id' => ['exists:customer_data,id'],
+            'to_customer_id' => ['exists:customers,id'],
             'from_supplier_id' => ['required', 'exists:supplier_agents,id'],
             'from_service_id' => ['required', 'exists:services,id'],
             'cost' => ['required', 'numeric'],

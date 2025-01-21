@@ -207,6 +207,14 @@ class ManualBookingController extends Controller
         ->get();
         $taxes = $this->taxes
         ->get();
+        $customers = $this->customer_data
+        ->where($role, $agent_id)
+        ->with('customer')
+        ->pluck('customer');
+        $suppliers = $this->supplier_agent
+        ->select('id', 'agent')
+        ->where($role, $agent_id)
+        ->get();
 
         return response()->json([
             'cities' => $cities,
@@ -216,6 +224,8 @@ class ManualBookingController extends Controller
             'adult_title' => $adult_title,
             'financial_accounting' => $financial_accounting,
             'taxes' => $taxes,
+            'customers' => $customers,
+            'suppliers' => $suppliers,
         ]);
     }
 

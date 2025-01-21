@@ -12,6 +12,8 @@ class CustomerData extends Model
         'agent_id',
         'total_booking',
         'type',
+        'name',
+        'phone',
     ];
 
     public function customer(){
