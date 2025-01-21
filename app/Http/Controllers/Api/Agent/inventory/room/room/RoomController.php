@@ -185,7 +185,7 @@ class RoomController extends Controller
         ]);
     }
 
-    public function room_list(Request $request, $id){
+    public function room_list(Request $request){
         // room/room_list
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -204,7 +204,6 @@ class RoomController extends Controller
         }
         $room = $this->room
         ->with('amenity', 'agencies', 'supplement', 'taxes', 'except_taxes', 'free_cancelation')
-        ->where('id', $id)
         ->where($agent_type, $agent_id)
         ->get();
 
