@@ -204,7 +204,9 @@ class ManualBookingController extends Controller
         $services = $this->services
         ->with('suppliers')
         ->whereHas('suppliers', function($query) use($role, $agent_id){
-            $query->where($role, $agent_id);
+            $query
+            ->select('id', 'agent')
+            ->where($role, $agent_id);
         })
         ->get();
         $taxes = $this->taxes
