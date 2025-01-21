@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\Authcontroller;
 use App\Http\Controllers\Api\SuperAdmin\AcceptedCardsController;
+use App\Http\Controllers\Api\SuperAdmin\AffilateController;
 use App\Http\Controllers\Api\SuperAdmin\AgencyController;
 use App\Http\Controllers\Api\SuperAdmin\BookingController;
 use App\Http\Controllers\Api\SuperAdmin\CityController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Api\SuperAdmin\SubscriptionController;
 use App\Http\Controllers\Api\SuperAdmin\ThemeController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
+use App\Models\AffilateAgent;
 use Illuminate\Support\Facades\Route;
 
 
@@ -132,6 +134,14 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
         Route::delete('/super/agent/delete/{id}', [AgencyController::class, 'deleteAgency']);
 
         Route::put('/super/agent/update/{id}',[AgencyController::class,'updateAgency']);
+
+///////////////////////////////////////////////// Affilate ///////////////////////////////////////////////////////////
+
+        Route::get('/super/affilates', [AffilateController::class, 'getAffilate']);
+
+        Route::get('/super/freelancers', [AffilateController::class, 'getFreelancer']);
+
+        Route::delete('/super/affilate/delete/{id}', [AffilateController::class, 'deleteAffilateFreelance']);
 
 ////////////////////////////////////////////// Approve Signup Request ///////////////////////////////////////////////////
 
