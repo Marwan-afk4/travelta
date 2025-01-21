@@ -215,7 +215,6 @@ class ManualBookingController extends Controller
             'currencies' => $currencies,
             'adult_title' => $adult_title,
             'financial_accounting' => $financial_accounting,
-            'suppliers' => $suppliers,
             'taxes' => $taxes,
         ]);
     }
