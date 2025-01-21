@@ -196,11 +196,7 @@ class ManualBookingController extends Controller
         $currencies = $this->currency
         ->select('id', 'name')
         ->where($role, $agent_id)
-        ->get();
-        $suppliers = $this->supplier_agent
-        ->select('id', 'agent')
-        ->where($role, $agent_id)
-        ->get();
+        ->get(); 
         $services = $this->services
         ->with('suppliers')
         ->whereHas('suppliers', function($query) use($role, $agent_id){
