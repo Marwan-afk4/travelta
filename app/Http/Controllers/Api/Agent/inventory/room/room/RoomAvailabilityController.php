@@ -28,7 +28,7 @@ class RoomAvailabilityController extends Controller
         ]);
     }
 
-    public function room_availability(){
+    public function room_availability($id){
         
     }
 

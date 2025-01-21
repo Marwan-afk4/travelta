@@ -89,6 +89,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::controller(ManualBookingController::class)->prefix('manual_booking')->group(function(){
         Route::post('/', 'booking');
+        Route::get('/mobile_lists', 'mobile_lists');
         Route::get('/items', 'manuel_bookings');
         Route::delete('/cart/delete/{id}', 'delete_cart');
         Route::get('/cart_data/{id}', 'cart_data');
@@ -116,7 +117,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('/room')->group(function(){ 
         Route::controller(RoomPricingController::class)
         ->prefix('/pricing')->group(function(){
-            Route::get('/', 'view');
+            Route::post('/', 'view');
             Route::get('/item/{id}', 'pricing');
             Route::post('/add', 'create');
             Route::post('/update/{id}', 'modify');
@@ -134,7 +135,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(RoomAvailabilityController::class)
         ->prefix('/availability')->group(function(){
-            Route::get('/', 'view');
+            Route::post('/', 'view');
             Route::get('item/{id}', 'room_availability');
             Route::post('add', 'create');
             Route::post('update/{id}', 'modify');
