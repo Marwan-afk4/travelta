@@ -117,7 +117,7 @@ class UserController extends Controller
     }
 
     public function deleteuser($id){
-        $user=User::find($id);
+        $user=Customer::find($id);
         $legal_papers = LegalPaper::where('user_id', $user->id)
         ->get();
         foreach ($legal_papers as $item) {
