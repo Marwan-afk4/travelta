@@ -126,6 +126,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(RoomController::class)
         ->group(function(){
             Route::get('/', 'view');
+            Route::get('/room_list', 'room_list');
             Route::get('/lists', 'lists');
             Route::post('/hotel_lists', 'hotel_lists');
             Route::post('/duplicate_room/{id}', 'duplicate_room');
