@@ -127,6 +127,8 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
         Route::get('/super/agents', [AgencyController::class, 'getAgency']);
 
+        Route::get('/super/supliers', [AgencyController::class, 'getSupplier']);
+
         Route::delete('/super/agent/delete/{id}', [AgencyController::class, 'deleteAgency']);
 
         Route::put('/super/agent/update/{id}',[AgencyController::class,'updateAgency']);
@@ -154,6 +156,8 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 //////////////////////////////////////////////// Pending Payments ///////////////////////////////////////////////////////////
 
         Route::get('/super/pendingPayments', [PaymentController::class, 'getPyamnts']);
+
+        Route::get('super/approvedPayments', [PaymentController::class, 'approvedPayment']);
 
         Route::put('/super/accept-payment/{plan_id}/{id}',[PaymentController::class,'acceptPayment']);
 

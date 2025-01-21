@@ -22,8 +22,8 @@ class ZoneController extends Controller
     public function addZone(Request $request){
         $validation = Validator::make($request->all(), [
             'name'=>'required|unique:zones,name',
-            'country_id' => 'required|excists:countries,id',
-            'city_id' => 'required|excists:cities,id',
+            'country_id' => 'required|exists:countries,id',
+            'city_id' => 'required|exists:cities,id',
         ]);
         if($validation->fails()){
             return response()->json(['errors' => $validation->errors()], 401);

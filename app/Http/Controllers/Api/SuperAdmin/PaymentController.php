@@ -14,9 +14,40 @@ use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
+//pending payment
     public function getPyamnts()
     {
         $payments = ManualPayment::where('status', 'pending')->get();
+        $data = $payments->map(function ($payment) {
+            return [
+                'payment_id' => $payment->id,
+                'payment_method_id' => $payment->payment_method_id,
+                'payment_method_name' => $payment->paymentMethod->name,
+                'affilate_agent_id' => $payment->affilate_agent_id ?? null,
+                'affilate_agent_name' => $payment->affilate_agent
+            ? $payment->affilate_agent->f_name . ' ' . $payment->affilate_agent->l_name
+            : null,
+                'affilate_agent_email' => $payment->affilate_agent->email ?? null,
+                'affilate_agent_phone' => $payment->affilate_agent->phone ?? null,
+                'agent_id' => $payment->agency_id ?? null,
+                'agent_name' => $payment->agent->name ?? null,
+                'agent_email' => $payment->agent->email ?? null,
+                'agent_phone' => $payment->agent->phone ?? null,
+                'plan_id' => $payment->plan_id,
+                'plan_name' => $payment->plan->name,
+                'plan_price' => $payment->plan->price_after_discount,
+                'start_date' => $payment->start_date,
+                'end_date' => $payment->end_date,
+                'receipt' => $payment->receipt
+            ];
+        });
+        return response()->json(['payments' => $data]);
+    }
+
+//approved payment
+    public function approvedPayment(){
+
+        $payments = ManualPayment::where('status', 'approved')->get();
         $data = $payments->map(function ($payment) {
             return [
                 'payment_id' => $payment->id,
@@ -116,7 +147,7 @@ class PaymentController extends Controller
                 'end_date' => $payment->end_date,
                 'price_cycle' => $plan->period_in_days,
             ]);
-        } 
+        }
         elseif (!empty($payment->agency_id)) {
             $affilate = Agent::
             where('id', $payment->agency_id)
@@ -127,7 +158,7 @@ class PaymentController extends Controller
                 'price_cycle' => $plan->period_in_days,
             ]);
         }
-        
+
         return response()->json(['message' => 'payment accepted successfually']);
     }
 
