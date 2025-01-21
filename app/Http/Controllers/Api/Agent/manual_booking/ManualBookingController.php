@@ -196,13 +196,11 @@ class ManualBookingController extends Controller
         $currencies = $this->currency
         ->select('id', 'name')
         ->where($role, $agent_id)
-        ->get();
-        $suppliers = $this->supplier_agent
-        ->select('id', 'agent')
-        ->where($role, $agent_id)
-        ->get();
+        ->get(); 
         $services = $this->services
-        ->with('suppliers')
+        ->with(['suppliers' => function($query){
+            $query->select('supplier_agents.id', 'agent');
+        }])
         ->whereHas('suppliers', function($query) use($role, $agent_id){
             $query->where($role, $agent_id);
         })
@@ -217,7 +215,6 @@ class ManualBookingController extends Controller
             'currencies' => $currencies,
             'adult_title' => $adult_title,
             'financial_accounting' => $financial_accounting,
-            'suppliers' => $suppliers,
             'taxes' => $taxes,
         ]);
     }

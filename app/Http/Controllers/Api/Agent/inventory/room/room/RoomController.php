@@ -185,6 +185,34 @@ class RoomController extends Controller
         ]);
     }
 
+    public function room_list(Request $request, $id){
+        // room/room_list
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
+        }
+        else{
+            $agent_type = 'agent_id';
+        }
+        $room = $this->room
+        ->with('amenity', 'agencies', 'supplement', 'taxes', 'except_taxes', 'free_cancelation')
+        ->where('id', $id)
+        ->where($agent_type, $agent_id)
+        ->get();
+
+        return response()->json([
+            'room' => $room
+        ]);
+    }
+
     public function room(Request $request, $id){
         // room/item/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
