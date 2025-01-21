@@ -141,7 +141,7 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
         Route::get('/super/freelancers', [AffilateController::class, 'getFreelancer']);
 
-        Route::delete('/super/affilate/delete/{id}', [AffilateController::class, 'deleteAffilateFreelance']);
+        Route::delete('/super/affilateFreelance/delete/{id}', [AffilateController::class, 'deleteAffilateFreelance']);
 
 ////////////////////////////////////////////// Approve Signup Request ///////////////////////////////////////////////////
 
