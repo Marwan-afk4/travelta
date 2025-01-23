@@ -18,7 +18,7 @@ class ManuelFlightResource extends JsonResource
             'supplier_from_name' => $this->from_supplier->agent ?? null,
             'supplier_from_email' => json_decode($this->emails) ?? $this->emails,
             'supplier_from_phone' => json_decode($this->phones) ?? $this->phones,
-            'country' => $this->country->name,
+            'country' => $this->country->name ?? null,
             'total_price' => number_format($this->total_price, 2, '.', ''),
             'to_name' => $this->to_client->name ?? null,
             'to_role' => $this->to_client->agent ? 'Supplier' : 'Customer',
