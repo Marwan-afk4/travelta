@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class BookingEngine extends Model
 {
-
-
     protected $fillable = [
         'room_id',
         'check_in',

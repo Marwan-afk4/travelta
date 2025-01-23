@@ -139,7 +139,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::post('/', 'view');
             Route::get('item/{id}', 'room_availability');
             Route::post('add', 'create');
-            Route::post('update/{id}', 'modify');
+            Route::post('update', 'modify');
             Route::delete('delete/{id}', 'delete');
         });
         Route::controller(CreateRoomController::class)
@@ -153,6 +153,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         ->group(function(){
             Route::get('/gallery/{id}', 'gallery');
             Route::post('/add_gallery', 'add_gallery');
+            Route::delete('/delete_gallery/{id}', 'delete');
         });
 
         Route::prefix('/settings')->group(function(){

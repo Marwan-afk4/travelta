@@ -15,6 +15,7 @@ class RoomGalleryController extends Controller
     use image;
 
     public function gallery($id){
+        // room/gallery/{id}
         $images = $this->room_image
         ->select('id', 'thumbnail')
         ->where('status', true)
@@ -27,6 +28,7 @@ class RoomGalleryController extends Controller
     }
 
     public function add_gallery(Request $request){
+        // room/add_gallery
         // Keys
         // images[], status, room_id
         $validation = Validator::make($request->all(), [
@@ -54,6 +56,7 @@ class RoomGalleryController extends Controller
     }
 
     public function delete($id){
+        // room/delete_gallery/{id}
         $image = $this->room_image
         ->where('id', $id)
         ->first();
