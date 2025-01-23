@@ -164,7 +164,6 @@ class ManualBookingController extends Controller
         ]);
     }
 
-
     public function mobile_lists(Request $request){
         // https://travelta.online/agent/manual_booking/mobile_lists
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
