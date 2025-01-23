@@ -22,37 +22,67 @@ class RoomAvailabilityController extends Controller
             'room_id' => 'required|exists:rooms,id',
             'year' => 'required|numeric',
         ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
+        
+        if ($validation->fails()) {
+            return response()->json(['errors' => $validation->errors()], 401);
         }
-        $room_availability = $this->room_availability
-        ->where('room_id', $request->room_id)
-        ->get();
+        
+        $roomId = $request->room_id;
         $year = $request->year;
-
+        
+        // Define the start and end dates for the year
         $startOfYear = Carbon::createFromDate($year)->startOfYear();
         $endOfYear = Carbon::createFromDate($year)->endOfYear();
+        
+        // Fetch all room availability for the room in the year
+        $roomAvailability = $this->room_availability
+            ->where('room_id', $roomId)
+            ->where(function ($query) use ($startOfYear, $endOfYear) {
+                $query->whereBetween('from', [$startOfYear, $endOfYear])
+                    ->orWhereBetween('to', [$startOfYear, $endOfYear])
+                    ->orWhere(function ($subQuery) use ($startOfYear, $endOfYear) {
+                        $subQuery->where('from', '<=', $startOfYear)
+                                ->where('to', '>=', $endOfYear);
+                    });
+            })
+            ->get();
+        
+        // Fetch all bookings for the room in the year
+        $bookings = $this->booking_engine
+            ->where('room_id', $roomId)
+            ->where(function ($query) use ($startOfYear, $endOfYear) {
+                $query->whereBetween('check_in', [$startOfYear, $endOfYear])
+                    ->orWhereBetween('check_out', [$startOfYear, $endOfYear])
+                    ->orWhere(function ($subQuery) use ($startOfYear, $endOfYear) {
+                        $subQuery->where('check_in', '<=', $startOfYear)
+                                ->where('check_out', '>=', $endOfYear);
+                    });
+            })
+            ->get();
+        
+        // Create a date range for the year
         $dates = $startOfYear->toPeriod($endOfYear);
         $availability = [];
-
+        
+        // Process the data in memory
         foreach ($dates as $date) {
-            $date = Carbon::parse($date)->format('Y-m-d');
-            $quantity = $this->room_availability
-            ->where('room_id', $request->room_id)
-            ->where('from', '<=', $date)
-            ->where('to', '>=', $date)
-            ->sum('quantity') - 
-            $this->booking_engine
-            ->where('room_id', $request->room_id)
-            ->where('check_in', '<=', $date)
-            ->where('check_out', '>=', $date)
-            ->sum('quantity');
+            $dateStr = $date->format('Y-m-d');
+            
+            // Calculate available quantity
+            $availableQuantity = $roomAvailability->filter(function ($availability) use ($dateStr) {
+                return $availability->from <= $dateStr && $availability->to >= $dateStr;
+            })->sum('quantity');
+        
+            $bookedQuantity = $bookings->filter(function ($booking) use ($dateStr) {
+                return $booking->check_in <= $dateStr && $booking->check_out >= $dateStr;
+            })->sum('quantity');
+        
             $availability[] = [
-                'date' => $date,
-                'quantity' => $quantity,
+                'date' => $dateStr,
+                'quantity' => $availableQuantity - $bookedQuantity,
             ];
         }
-
+        
         return response()->json([
             'availability' => $availability
         ]);
