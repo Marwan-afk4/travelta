@@ -14,4 +14,12 @@ class BookingEngine extends Model
         'check_out',
         'quantity',
     ];
+
+    public function room(){
+        return $this->belongsTo(Room::class);
+    }
+
+    public function room_availability(){
+        return $this->hasMany(RoomAvailability::class, 'room_id');
+    }
 }
