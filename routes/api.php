@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\SuperAdmin\AcceptedCardsController;
 use App\Http\Controllers\Api\SuperAdmin\AffilateController;
 use App\Http\Controllers\Api\SuperAdmin\AgencyController;
 use App\Http\Controllers\Api\SuperAdmin\BookingController;
+use App\Http\Controllers\Api\SuperAdmin\BookingEngine;
 use App\Http\Controllers\Api\SuperAdmin\CityController;
 use App\Http\Controllers\Api\SuperAdmin\CountryController;
 use App\Http\Controllers\Api\SuperAdmin\CurrancyController;
@@ -197,7 +198,7 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
 //////////////////////////////////////////// Accepted Cards ///////////////////////////////////////////////////////////
 
-        Route::get('/super/acceptedCards', [AcceptedCardsController::class, 'getCards']);
+        Route::get('/super/acceptedCards', [AcceptedCardsController::class, 'getAllCards']);
 
         Route::post('/super/acceptedCard/add', [AcceptedCardsController::class, 'addCard']);
 
@@ -244,5 +245,9 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
         Route::delete('/super/roomData/delete/{id}', [RoomDataController::class, 'deleteRoomData']);
 
         Route::put('/super/roomData/update/{id}',[RoomDataController::class,'updateRoomData']);
+
+//////////////////////////////////////////////// Booking engine ///////////////////////////////////////////////////////////
+
+        Route::post('/super/bookingEngine', [BookingEngine::class, 'bookroom']);
 });
 
