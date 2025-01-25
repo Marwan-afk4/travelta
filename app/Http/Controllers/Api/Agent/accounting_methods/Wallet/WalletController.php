@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Agent\accounting\Wallet;
+namespace App\Http\Controllers\Api\Agent\accounting_methods\Wallet;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

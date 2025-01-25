@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Agent\accounting\financial;
+namespace App\Http\Controllers\Api\Agent\accounting_methods\financial;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
