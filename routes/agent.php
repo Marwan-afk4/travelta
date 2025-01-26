@@ -127,7 +127,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         ->prefix('/pricing')->group(function(){
             Route::post('/', 'view');
             Route::get('/item/{id}', 'pricing');
-            Route::post('/duplicate/{id}', 'duplicate');
+            Route::put('/duplicate/{id}', 'duplicate');
             Route::post('/add', 'create');
             Route::post('/update/{id}', 'modify');
             Route::delete('/delete/{id}', 'delete');
@@ -138,7 +138,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/room_list', 'room_list');
             Route::get('/lists', 'lists');
             Route::post('/hotel_lists', 'hotel_lists');
-            Route::post('/duplicate_room/{id}', 'duplicate_room');
+            Route::put('/duplicate_room/{id}', 'duplicate_room');
             Route::get('/item/{id}', 'room');
             Route::put('/status/{id}', 'status');
             Route::put('/accepted/{id}', 'accepted');
