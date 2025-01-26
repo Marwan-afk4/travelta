@@ -152,8 +152,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::delete('delete/{id}', 'delete');
         });
         Route::controller(CreateRoomController::class)
-        ->group(function(){
-            Route::get('item/{id}', 'room_type'); 
+        ->group(function(){ 
             Route::post('add', 'create');
             Route::post('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');

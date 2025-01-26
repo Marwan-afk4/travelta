@@ -9,11 +9,12 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\ManuelBooking;
 use App\Models\FinantiolAcounting;
+use App\Models\PaymentsCart;
 
 class BookingPaymentController extends Controller
 {
     public function __construct(private ManuelBooking $manuel_bookings,
-    private FinantiolAcounting $financial_accounting){}
+    private FinantiolAcounting $financial_accounting, private PaymentsCart $payment_cart){}
 
     public function search(Request $request){
         $validation = Validator::make($request->all(), [

@@ -14,6 +14,9 @@ class PaymentsCart extends Model
         'image',
         'status',
     ];
+    protected $appends = ['not_paid'];
 
-    // public function 
+    public function getNotPaidAttribute(){
+        return $this->attributes['amount'] - $this->attributes['payment'];
+    }
 }
