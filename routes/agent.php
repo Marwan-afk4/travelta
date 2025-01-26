@@ -127,7 +127,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         ->prefix('/pricing')->group(function(){
             Route::post('/', 'view');
             Route::get('/item/{id}', 'pricing');
-            Route::get('/duplicate/{id}', 'duplicate');
+            Route::post('/duplicate/{id}', 'duplicate');
             Route::post('/add', 'create');
             Route::post('/update/{id}', 'modify');
             Route::delete('/delete/{id}', 'delete');

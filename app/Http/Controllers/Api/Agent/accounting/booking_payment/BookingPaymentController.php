@@ -6,15 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\ManuelBookingResource;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 use App\Models\ManuelBooking;
 use App\Models\FinantiolAcounting;
-use App\Models\PaymentsCart;
+use App\Models\BookingPayment;
 
 class BookingPaymentController extends Controller
 {
     public function __construct(private ManuelBooking $manuel_bookings,
-    private FinantiolAcounting $financial_accounting){}
+    private FinantiolAcounting $financial_accounting, private BookingPayment $booking_payment){}
 
     public function search(Request $request){
         $validation = Validator::make($request->all(), [
@@ -47,6 +48,7 @@ class BookingPaymentController extends Controller
         ->first();
         $data = collect([]);
         if (!empty($booking)) {
+            $data['id'] = $booking->id;
             $data['to_client'] = $booking->to_client->name;
             $data['code'] = $booking->code;
             $data['to_phone'] = $booking->to_client->phones[0] ?? $booking->to_client->phones ?? $booking->to_client->phone;
@@ -81,5 +83,31 @@ class BookingPaymentController extends Controller
             'remaining_payment' => $remaining_payment,
             'payments' => $payments,
         ]);
+    }
+
+    public function add_payment(Request $request){
+        $validation = Validator::make($request->all(), [
+            'manuel_booking_id',
+        ]);
+        if ($validation->fails()) {
+            return response()->json(['errors' => $validation->errors()], 401);
+        }
+        // manuel_booking_id
+        // payments[date, amount, financial_accounting_id]
+        $payments = is_string($request->payments) ? json_decode($request->payments): $request->payments;
+        foreach ($payments as $item) {
+            $code = Str::random(8);
+            $booking_payment_item = $this->booking_payment
+            ->where('code', $code)
+            ->first();
+            while (empty($booking_payment_item)) {
+                $code = Str::random(8);
+                $booking_payment_item = $this->booking_payment
+                ->where('code', $code)
+                ->first();
+            }
+            // $this->booking_payment
+            // ->
+        }
     }
 }
