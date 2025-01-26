@@ -204,7 +204,7 @@ class RoomController extends Controller
         }
         $room = $this->room
         ->with('amenity', 'agencies', 'supplement', 'taxes', 'except_taxes', 'free_cancelation',
-        'hotel', 'currency', 'hotel_meal')
+        'hotel', 'currency', 'hotel_meal', 'room_type')
         ->where($agent_type, $agent_id)
         ->get();
 

@@ -17,6 +17,7 @@ class RoomPricingController extends Controller
     private CurrencyAgent $currency, private RoomPricingData $pricing_data){}
 
     public function view(Request $request){
+        // room/pricing
         $validation = Validator::make($request->all(), [
             'room_id' => 'required|exists:rooms,id',
         ]);
@@ -57,6 +58,7 @@ class RoomPricingController extends Controller
     }
 
     public function pricing($id){
+        // room/pricing/item/{id}
         $pricing = $this->pricing
         ->where('id', $id)
         ->with('currency', 'pricing_data')
@@ -67,11 +69,26 @@ class RoomPricingController extends Controller
         ]);
     }
 
-    public function duplicate(Request $request){
-        
+    public function duplicate(Request $request, $id){
+        // room/pricing/duplicate/{id}
+        $pricing = $this->pricing
+        ->where('id', $id) 
+        ->first();
+        if (empty($pricing)) {
+            return response()->json([
+                'errors' => 'id is wrong'
+            ], 400);
+        }
+        $this->pricing
+        ->create($pricing->toArray());
+
+        return response()->json([
+            'success' => 'You duplicated room success'
+        ]);
     }
 
     public function create(RoomPricingRequest $request){
+        // room/pricing/add
         $room_pricing = $request->validated();
         $pricing = $this->pricing
         ->create($room_pricing);
@@ -82,6 +99,7 @@ class RoomPricingController extends Controller
     }
 
     public function modify(RoomPricingRequest $request, $id){
+        // room/pricing/update/{id}
         $room_pricing = $request->validated();
         $pricing = $this->pricing
         ->where('room_id', $request->room_id)
@@ -95,6 +113,7 @@ class RoomPricingController extends Controller
     }
 
     public function delete($id){
+        // room/pricing/delete/{id}
         $this->pricing
         ->where('id', $id)
         ->delete();
