@@ -10,7 +10,7 @@ class BookingPayment extends Model
         'manuel_booking_id',
         'date',
         'amount',
-        'financial_accounting_id',
+        'financial_id',
         'code',
     ];
 

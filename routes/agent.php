@@ -74,7 +74,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('accounting')->group(function(){
         Route::controller(BookingPaymentController::class)->prefix('booking')->group(function(){
-            Route::get('/search', 'search'); 
+            Route::get('/search', 'search');
+            Route::post('/payment', 'add_payment');
         });
     });
 

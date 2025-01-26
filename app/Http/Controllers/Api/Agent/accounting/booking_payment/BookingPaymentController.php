@@ -11,11 +11,13 @@ use Illuminate\Support\Str;
 use App\Models\ManuelBooking;
 use App\Models\FinantiolAcounting;
 use App\Models\BookingPayment;
+use App\Models\PaymentsCart;
 
 class BookingPaymentController extends Controller
 {
     public function __construct(private ManuelBooking $manuel_bookings,
-    private FinantiolAcounting $financial_accounting, private BookingPayment $booking_payment){}
+    private FinantiolAcounting $financial_accounting, private BookingPayment $booking_payment,
+    private PaymentsCart $payment_cart){}
 
     public function search(Request $request){
         $validation = Validator::make($request->all(), [
@@ -87,7 +89,8 @@ class BookingPaymentController extends Controller
 
     public function add_payment(Request $request){
         $validation = Validator::make($request->all(), [
-            'manuel_booking_id',
+            'manuel_booking_id' => ['required', 'exists:manuel_bookings,id'],
+            'payments' => ['required'],
         ]);
         if ($validation->fails()) {
             return response()->json(['errors' => $validation->errors()], 401);
@@ -100,14 +103,52 @@ class BookingPaymentController extends Controller
             $booking_payment_item = $this->booking_payment
             ->where('code', $code)
             ->first();
-            while (empty($booking_payment_item)) {
+            while (!empty($booking_payment_item)) {
                 $code = Str::random(8);
                 $booking_payment_item = $this->booking_payment
                 ->where('code', $code)
                 ->first();
             }
-            // $this->booking_payment
-            // ->
+            $this->booking_payment
+            ->create([
+                'manuel_booking_id' => $request->manuel_booking_id,
+                'date' => date('Y-m-d'),
+                'amount' => $item->amount,
+                'financial_id' => $item->financial_accounting_id,
+                'code' => $code,
+            ]);
+            $payment_carts = $this->payment_cart
+            ->where('manuel_booking_id', $request->manuel_booking_id)
+            ->orderBy('date')
+            ->get();
+            $amount = $item->amount;
+            foreach ($payment_carts as $element) {
+                if ($element->due_payment <= $amount) {
+                    $this->payment_cart
+                    ->where('id', $element->id)
+                    ->update([
+                        'payment' => $element->amount,
+                        'status' => 'approve',
+                    ]);
+                    $amount -= $element->due_payment;
+                }
+                elseif ($amount > 0) {
+                    $this->payment_cart
+                    ->where('id', $element->id)
+                    ->update([
+                        'payment' => $amount + $element->payment,
+                        'status' => 'approve',
+                    ]);
+                    $amount = 0;
+                }
+                else{
+                    break;
+                }
+            }
         }
+
+        return response()->json([
+            'success' => 'You add payment success'
+        ]);
     }
 }
