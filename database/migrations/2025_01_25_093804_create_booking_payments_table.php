@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('booking_payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('manuel_booking_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('currency_id')->nullable()->constrained('currency_agents')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('financial_id')->nullable()->constrained('finantiol_acountings')->onUpdate('cascade')->onDelete('set null');
             $table->float('amount');
             $table->date('date');
+            $table->string('code');
             $table->timestamps();
         });
     }

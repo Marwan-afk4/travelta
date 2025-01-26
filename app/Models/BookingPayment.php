@@ -11,6 +11,6 @@ class BookingPayment extends Model
         'date',
         'amount',
         'financial_accounting_id',
-        'currency_id',
+        'code',
     ];
 }

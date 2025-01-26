@@ -14,7 +14,7 @@ use App\Models\PaymentsCart;
 class BookingPaymentController extends Controller
 {
     public function __construct(private ManuelBooking $manuel_bookings,
-    private FinantiolAcounting $financial_accounting, private PaymentsCart $payment_cart){}
+    private FinantiolAcounting $financial_accounting){}
 
     public function search(Request $request){
         $validation = Validator::make($request->all(), [
@@ -60,6 +60,11 @@ class BookingPaymentController extends Controller
         ->where($role, $agent_id)
         ->where('currency_id', $booking->currency_id )
         ->get();
+        $due_payment = $booking->payments_cart
+        ->where('date', '<=', date('Y-m-d'))
+        ->sum('due_payment');
+        $remaining_payment = $booking->payments_cart
+        ->sum('due_payment');
 
         return response()->json([
             'booking' => $data,
@@ -67,6 +72,8 @@ class BookingPaymentController extends Controller
             'currency' => $booking->currency->name,
             'total' => $booking->manuel_cart[0]?->total ?? $booking->total_price,
             'paid' => ($booking->manuel_cart->where('status', 'approve')[0]?->payment ?? 0) + ($booking->payments_cart->where('status', 'approve')->sum('payment')),
+            'due_payment' => $due_payment,
+            'remaining_payment' => $remaining_payment,
         ]);
     }
 }
