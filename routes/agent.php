@@ -74,14 +74,16 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('accounting')->group(function(){
         Route::controller(BookingPaymentController::class)->prefix('booking')->group(function(){
-            Route::get('/search', 'search');
+            Route::post('/search', 'search');
             Route::post('/payment', 'add_payment');
+            Route::get('/invoice/{id}', 'invoice');
         });
     });
 
     Route::controller(FinancialController::class)->prefix('financial')->group(function(){
         Route::get('/', 'view');
         Route::get('item/{id}', 'financial');
+        Route::post('transfer', 'transfer');
         Route::put('status/{id}', 'status');
         Route::post('add', 'create');
         Route::post('update/{id}', 'modify');

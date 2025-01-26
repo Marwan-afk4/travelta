@@ -20,6 +20,9 @@ class BookingPaymentController extends Controller
     private PaymentsCart $payment_cart){}
 
     public function search(Request $request){
+        // /accounting/booking/search
+        // Keys
+        // code
         $validation = Validator::make($request->all(), [
             'code' => 'required',
         ]);
@@ -74,20 +77,56 @@ class BookingPaymentController extends Controller
         $remaining_payment = $booking->payments_cart
         ->sum('due_payment');
         $payments = $booking->payments;
+        $remaining_list = $booking->payments_cart
+        ->select('id', 'date', 'due_payment')
+        ->where('due_payment', '>', 0);
 
         return response()->json([
             'booking' => $data,
             'financial_accounting' => $financial_accounting,
             'currency' => $booking->currency->name,
             'total' => $booking->manuel_cart[0]?->total ?? $booking->total_price,
-            'paid' => ($booking->manuel_cart->where('status', 'approve')[0]?->payment ?? 0) + ($booking->payments_cart->where('status', 'approve')->sum('payment')),
+            'paid' => ($booking->manuel_cart[0]?->payment ?? 0) + ($booking->payments_cart->sum('payment')),
             'due_payment' => $due_payment,
             'remaining_payment' => $remaining_payment,
             'payments' => $payments,
+            'remaining_list' => array_values($remaining_list->toArray()),
         ]);
     }
 
+    public function invoice(Request $request, $id){
+        // /accounting/booking/invoice/{id}
+        $booking_payment = $this->booking_payment
+        ->where('id', $id)
+        ->with('financial')
+        ->first();
+        $client = [];
+        $manuel_booking = $booking_payment->manuel_booking;
+        if (!empty($manuel_booking->to_supplier_id)) {
+            $manuel_booking = $manuel_booking->to_client;
+            $client['name'] = $manuel_booking->name;
+            $client['phone'] = $manuel_booking->phones[0] ?? $manuel_booking->phones;
+            $client['email'] = $manuel_booking->emails[0] ?? $manuel_booking->emails;
+        }
+        else{
+            $manuel_booking = $manuel_booking->to_client;
+            $client['name'] = $manuel_booking->name;
+            $client['phone'] = $manuel_booking->phone;
+            $client['email'] = $manuel_booking->email;
+        }
+        $booking_payment->makeHidden('manuel_booking');
+
+        return response()->json([
+            'booking_payment' => $booking_payment,
+            'client' => $client
+        ]);
+    }
+    
     public function add_payment(Request $request){
+        // /accounting/booking/payment
+        // Keys
+        // manuel_booking_id
+        // payments[date, amount, financial_accounting_id]
         $validation = Validator::make($request->all(), [
             'manuel_booking_id' => ['required', 'exists:manuel_bookings,id'],
             'payments' => ['required'],
@@ -95,8 +134,6 @@ class BookingPaymentController extends Controller
         if ($validation->fails()) {
             return response()->json(['errors' => $validation->errors()], 401);
         }
-        // manuel_booking_id
-        // payments[date, amount, financial_accounting_id]
         $payments = is_string($request->payments) ? json_decode($request->payments): $request->payments;
         foreach ($payments as $item) {
             $code = Str::random(8);
