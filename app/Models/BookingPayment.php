@@ -13,4 +13,9 @@ class BookingPayment extends Model
         'financial_accounting_id',
         'code',
     ];
+
+    public function financial(){
+        return $this->belongsTo(FinantiolAcounting::class, 'financial_accounting_id');
+
+    }
 }

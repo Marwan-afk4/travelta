@@ -39,7 +39,10 @@ class BookingPaymentController extends Controller
             $role = 'agent_id';
         }
         $booking = $this->manuel_bookings
-        ->with('hotel', 'bus', 'flight', 'tour', 'visa', 'adults', 'children')
+        ->with(['hotel', 'bus', 'flight', 'tour', 'visa', 'adults', 'children', 
+        'payments.financial' => function($query){
+            $query->select('name');
+        }])
         ->where('code', $request->code )
         ->first();
         $data = collect([]);
@@ -59,12 +62,14 @@ class BookingPaymentController extends Controller
         $financial_accounting = $this->financial_accounting 
         ->where($role, $agent_id)
         ->where('currency_id', $booking->currency_id )
+        ->where('status', 1)
         ->get();
         $due_payment = $booking->payments_cart
         ->where('date', '<=', date('Y-m-d'))
         ->sum('due_payment');
         $remaining_payment = $booking->payments_cart
         ->sum('due_payment');
+        $payments = $booking->payments;
 
         return response()->json([
             'booking' => $data,
