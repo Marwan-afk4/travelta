@@ -35,7 +35,7 @@ class RoomRequest extends FormRequest
             'room_type_id' => ['required', 'exists:room_types,id'],
             'hotel_id' => ['required', 'exists:hotels,id'],
             'hotel_meal_id' => ['required', 'exists:hotel_meals,id'],
-            'currency_id' => ['required', 'exists:currency_agents,id'],
+            'currency_id' => ['exists:currency_agents,id'],
             'b2c_markup' => ['required', 'numeric'],
             'b2e_markup' => ['required', 'numeric'],
             'b2b_markup' => ['required', 'numeric'],

@@ -79,6 +79,7 @@ class BookingPaymentController extends Controller
             'paid' => ($booking->manuel_cart->where('status', 'approve')[0]?->payment ?? 0) + ($booking->payments_cart->where('status', 'approve')->sum('payment')),
             'due_payment' => $due_payment,
             'remaining_payment' => $remaining_payment,
+            'payments' => $payments,
         ]);
     }
 }
