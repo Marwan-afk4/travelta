@@ -66,8 +66,7 @@ trait image
         }
     }
 
-    public function storeBase64Image($base64Image, $folderPath = 'admin/manuel/receipt')
-    {
+    public function storeBase64Image($base64Image, $folderPath = 'admin/manuel/receipt'){
 
         // Validate if the base64 string has a valid image MIME type
         if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {

@@ -25,12 +25,20 @@ use App\Http\Controllers\Api\SuperAdmin\SubscriptionController;
 use App\Http\Controllers\Api\SuperAdmin\ThemeController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
-use App\Models\AffilateAgent;
 use Illuminate\Support\Facades\Route;
 
 
 Route::post('/register', [Authcontroller::class, 'register']);
 Route::post('/login', [Authcontroller::class, 'login']);
+
+////////////////////////////////////////// Bookings Engine //////////////////////////////////////////////////
+
+        Route::post('/super/bookingEngine', [BookingEngine::class, 'bookroom']);
+
+        Route::post('/super/avalibleRooms', [BookingEngine::class, 'getAvailableRooms']);
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
@@ -246,8 +254,7 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
         Route::put('/super/roomData/update/{id}',[RoomDataController::class,'updateRoomData']);
 
-//////////////////////////////////////////////// Booking engine ///////////////////////////////////////////////////////////
 
-        Route::post('/super/bookingEngine', [BookingEngine::class, 'bookroom']);
+
 });
 
