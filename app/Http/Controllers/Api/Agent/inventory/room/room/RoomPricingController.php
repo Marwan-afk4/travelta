@@ -18,6 +18,15 @@ class RoomPricingController extends Controller
     public function __construct(private RoomPricing $pricing, private Group $groups,
     private CurrencyAgent $currency, private RoomPricingData $pricing_data,
     private Nationality $nationalities){}
+    protected $pricingRequest =[
+        'pricing_data_id',
+        'room_id',
+        'currency_id',
+        'name',
+        'from',
+        'to',
+        'price', 
+    ];
 
     public function view(Request $request, $id){
         // room/pricing/{id}
@@ -95,7 +104,7 @@ class RoomPricingController extends Controller
         // room/pricing/add 
         // Keys
         // pricing_data_id, room_id, currency_id, name, from, to, price, groups_id[], nationality_id[]
-        $room_pricing = $request->validated();
+        $room_pricing = $request->only($this->pricingRequest);
         $pricing = $this->pricing
         ->create($room_pricing);
         $groups_id = $request->groups_id;
@@ -110,7 +119,7 @@ class RoomPricingController extends Controller
 
     public function modify(RoomPricingRequest $request, $id){
         // room/pricing/update/{id}
-        $room_pricing = $request->validated();
+        $room_pricing = $request->only($this->pricingRequest);
         $pricing = $this->pricing
         ->where('room_id', $request->room_id)
         ->where('id', $id)
