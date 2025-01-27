@@ -119,6 +119,8 @@ class RoomPricingController extends Controller
 
     public function modify(RoomPricingRequest $request, $id){
         // room/pricing/update/{id}
+        // Keys
+        // pricing_data_id, room_id, currency_id, name, from, to, price, groups_id[], nationality_id[]
         $room_pricing = $request->only($this->pricingRequest);
         $pricing = $this->pricing
         ->where('room_id', $request->room_id)
