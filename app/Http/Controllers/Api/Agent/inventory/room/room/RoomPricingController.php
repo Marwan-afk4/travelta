@@ -94,6 +94,8 @@ class RoomPricingController extends Controller
         }
         $this->pricing
         ->create($pricing->toArray());
+        $pricing->groups()->attach($pricing->groups->pluck('id')->toArray());
+        $pricing->nationality()->attach($pricing->nationality->pluck('id')->toArray());
 
         return response()->json([
             'success' => 'You duplicated room success'
