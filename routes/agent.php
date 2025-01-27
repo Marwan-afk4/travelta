@@ -12,8 +12,10 @@ use App\Http\Controllers\Api\Agent\supplier\SupplierController;
 
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
-use App\Http\Controllers\Api\Agent\accounting\Wallet\WalletController;
-use App\Http\Controllers\Api\Agent\accounting\financial\FinancialController;
+use App\Http\Controllers\Api\Agent\accounting\booking_payment\BookingPaymentController;
+
+use App\Http\Controllers\Api\Agent\accounting_methods\Wallet\WalletController;
+use App\Http\Controllers\Api\Agent\accounting_methods\financial\FinancialController;
 
 use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
@@ -70,9 +72,18 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::delete('delete/{id}', 'delete');
     });
 
+    Route::prefix('accounting')->group(function(){
+        Route::controller(BookingPaymentController::class)->prefix('booking')->group(function(){
+            Route::post('/search', 'search');
+            Route::post('/payment', 'add_payment');
+            Route::get('/invoice/{id}', 'invoice');
+        });
+    });
+
     Route::controller(FinancialController::class)->prefix('financial')->group(function(){
         Route::get('/', 'view');
         Route::get('item/{id}', 'financial');
+        Route::post('transfer', 'transfer');
         Route::put('status/{id}', 'status');
         Route::post('add', 'create');
         Route::post('update/{id}', 'modify');
@@ -117,8 +128,9 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('/room')->group(function(){ 
         Route::controller(RoomPricingController::class)
         ->prefix('/pricing')->group(function(){
-            Route::post('/', 'view');
+            Route::get('/{id}', 'view');
             Route::get('/item/{id}', 'pricing');
+            Route::put('/duplicate/{id}', 'duplicate');
             Route::post('/add', 'create');
             Route::post('/update/{id}', 'modify');
             Route::delete('/delete/{id}', 'delete');
@@ -129,7 +141,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/room_list', 'room_list');
             Route::get('/lists', 'lists');
             Route::post('/hotel_lists', 'hotel_lists');
-            Route::post('/duplicate_room/{id}', 'duplicate_room');
+            Route::put('/duplicate_room/{id}', 'duplicate_room');
             Route::get('/item/{id}', 'room');
             Route::put('/status/{id}', 'status');
             Route::put('/accepted/{id}', 'accepted');
@@ -143,8 +155,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::delete('delete/{id}', 'delete');
         });
         Route::controller(CreateRoomController::class)
-        ->group(function(){
-            Route::get('item/{id}', 'room_type'); 
+        ->group(function(){ 
             Route::post('add', 'create');
             Route::post('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');

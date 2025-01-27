@@ -14,4 +14,9 @@ class PaymentsCart extends Model
         'image',
         'status',
     ];
+    protected $appends = ['due_payment'];
+
+    public function getDuePaymentAttribute(){
+        return $this->attributes['amount'] - $this->attributes['payment'];
+    }
 }

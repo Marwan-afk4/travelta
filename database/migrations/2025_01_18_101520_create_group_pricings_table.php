@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('group_pricings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('room_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('pricing_id')->nullable()->constrained('room_pricings')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('group_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });

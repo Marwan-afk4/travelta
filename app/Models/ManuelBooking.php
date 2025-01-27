@@ -28,6 +28,22 @@ class ManuelBooking extends Model
     ];
     protected $appends = ['to_client'];
 
+    public function payments(){
+        return $this->hasMany(BookingPayment::class, 'manuel_booking_id');
+    }
+
+    public function currency(){
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
+
+    public function manuel_cart(){
+        return $this->hasMany(ManuelCart::class);
+    }
+
+    public function payments_cart(){
+        return $this->hasMany(PaymentsCart::class);
+    }
+
     public function taxes(){
         return $this->belongsToMany(Tax::class, 'manuel_taxes', 'manuel_id', 'tax_id');
     }

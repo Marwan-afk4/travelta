@@ -12,12 +12,14 @@ use App\Models\Room;
 use App\Models\Supplement;
 use App\Models\RoomAgency;
 use App\Models\RoomCancel;
+use App\Models\Hotel;
 
 class CreateRoomController extends Controller
 {
     use image;
     public function __construct(private Room $room, private Supplement $supplements,
-    private RoomAgency $room_agency, private RoomCancel $room_cancelation){}
+    private RoomAgency $room_agency, private RoomCancel $room_cancelation,
+    private Hotel $hotels){}
     protected $roomRequest = [
         'description',
         'status',
@@ -77,7 +79,12 @@ class CreateRoomController extends Controller
         else{
             $agent_type = 'agent_id';
         }
+        $hotel = $this->hotels
+        ->where('id', $request->hotel_id)
+        ->first();
         $roomRequest = $request->only($this->roomRequest);
+        $roomRequest['country_id'] = $hotel->country_id;
+        $roomRequest['city_id'] = $hotel->city_id;
         if (!is_string($request->thumbnail)) {
             $image_path = $this->upload($request, 'thumbnail', 'agent/inventory/room/thumbnail');
             $roomRequest['thumbnail'] = $image_path;
@@ -185,12 +192,17 @@ class CreateRoomController extends Controller
         else{
             $agent_type = 'agent_id';
         }
+        $hotel = $this->hotels
+        ->where('id', $request->hotel_id)
+        ->first();
         $roomRequest = $request->only($this->roomRequest);
         $roomRequest[$agent_type] = $agent_id;
         $room = $this->room
         ->where('id', $id)
         ->where($agent_type, $agent_id)
-        ->first();        
+        ->first();  
+        $roomRequest['country_id'] = $hotel->country_id;
+        $roomRequest['city_id'] = $hotel->city_id;      
         if (!is_string($request->thumbnail)) {
             $image_path = $this->update_image($request, $room->thumbnail, 'thumbnail', 'agent/inventory/room/thumbnail');
             $roomRequest['thumbnail'] = $image_path;

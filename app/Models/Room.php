@@ -10,6 +10,8 @@ class Room extends Model
         'agent_id',
         'affilate_id',
         'description',
+        'country_id',
+        'city_id',
         'status',
         'price_type',
         'price',
@@ -34,6 +36,27 @@ class Room extends Model
         'thumbnail',
         'accepted',
     ];
+    protected $appends = ['thumbnail_link'];
+
+    public function currency(){
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
+    
+    public function room_type(){
+        return $this->belongsTo(RoomType::class, 'room_type_id');
+    }
+
+    public function hotel(){
+        return $this->belongsTo(Hotel::class);
+    }
+
+    public function hotel_meal(){
+        return $this->belongsTo(HotelMeal::class, 'hotel_meal_id');
+    }
+
+    public function getThumbnailLinkAttribute(){
+        return url('storage/' . $this->attributes['thumbnail']);
+    }
 
     public function amenity(){
         return $this->belongsToMany(RoomAmenity::class, 'amenities_room', 'room_id', 'amenity_id');
