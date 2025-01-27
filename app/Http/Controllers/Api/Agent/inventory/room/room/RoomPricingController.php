@@ -92,10 +92,10 @@ class RoomPricingController extends Controller
                 'errors' => 'id is wrong'
             ], 400);
         }
-        $this->pricing
+        $new_pricing = $this->pricing
         ->create($pricing->toArray());
-        $pricing->groups()->attach($pricing->groups->pluck('id')->toArray());
-        $pricing->nationality()->attach($pricing->nationality->pluck('id')->toArray());
+        $new_pricing->groups()->attach($pricing->groups->pluck('id')->toArray());
+        $new_pricing->nationality()->attach($pricing->nationality->pluck('id')->toArray());
 
         return response()->json([
             'success' => 'You duplicated room success'
