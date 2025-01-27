@@ -128,7 +128,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('/room')->group(function(){ 
         Route::controller(RoomPricingController::class)
         ->prefix('/pricing')->group(function(){
-            Route::post('/', 'view');
+            Route::get('/{id}', 'view');
             Route::get('/item/{id}', 'pricing');
             Route::put('/duplicate/{id}', 'duplicate');
             Route::post('/add', 'create');

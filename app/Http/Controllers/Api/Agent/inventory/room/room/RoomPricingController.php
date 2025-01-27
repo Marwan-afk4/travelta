@@ -10,20 +10,17 @@ use App\Http\Requests\api\agent\inventory\room\room\RoomPricingRequest;
 use App\Models\RoomPricing;
 use App\Models\CurrencyAgent;
 use App\Models\RoomPricingData;
+use App\Models\Group;
+use App\Models\Nationality;
 
 class RoomPricingController extends Controller
 {
-    public function __construct(private RoomPricing $pricing,
-    private CurrencyAgent $currency, private RoomPricingData $pricing_data){}
+    public function __construct(private RoomPricing $pricing, private Group $groups,
+    private CurrencyAgent $currency, private RoomPricingData $pricing_data,
+    private Nationality $nationalities){}
 
-    public function view(Request $request){
-        // room/pricing
-        $validation = Validator::make($request->all(), [
-            'room_id' => 'required|exists:rooms,id',
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
-        }
+    public function view(Request $request, $id){
+        // room/pricing/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -46,14 +43,21 @@ class RoomPricingController extends Controller
         $pricing_data = $this->pricing_data
         ->get();
         $pricing = $this->pricing
-        ->where('room_id', $request->room_id)
+        ->where('room_id', $id)
         ->with('currency', 'pricing_data')
+        ->get();
+        $groups = $this->groups
+        ->where($role, $agent_id)
+        ->get();
+        $nationalities = $this->nationalities
         ->get();
 
         return response()->json([
             'currencies' => $currencies,
             'pricing_data' => $pricing_data,
             'pricing' => $pricing,
+            'groups' => $groups,
+            'nationalities' => $nationalities,
         ]);
     }
 
@@ -88,7 +92,9 @@ class RoomPricingController extends Controller
     }
 
     public function create(RoomPricingRequest $request){
-        // room/pricing/add
+        // room/pricing/add 
+        // Keys
+        // pricing_data_id, room_id, currency_id, name, from, to, price, groups_id[], nationality_id[]
         $room_pricing = $request->validated();
         $pricing = $this->pricing
         ->create($room_pricing);

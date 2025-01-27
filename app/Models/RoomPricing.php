@@ -23,4 +23,8 @@ class RoomPricing extends Model
     public function pricing_data(){
         return $this->belongsTo(RoomPricingData::class, 'pricing_data_id');
     }
+
+    public function groups(){
+        return $this->belongsToMany(RoomPricingData::class, 'pricing_data_id');
+    }
 }
