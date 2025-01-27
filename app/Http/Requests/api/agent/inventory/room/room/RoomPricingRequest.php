@@ -32,6 +32,8 @@ class RoomPricingRequest extends FormRequest
             'from' => ['required', 'date'],
             'to' => ['required', 'date'],
             'price' => ['required', 'numeric'],
+            'groups_id' => ['required', 'exists:groups,id'],
+            'nationality_id' => ['required', 'exists:nationalities,id'],
         ];
     }
 

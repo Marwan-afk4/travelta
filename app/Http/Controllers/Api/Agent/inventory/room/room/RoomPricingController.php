@@ -44,7 +44,7 @@ class RoomPricingController extends Controller
         ->get();
         $pricing = $this->pricing
         ->where('room_id', $id)
-        ->with('currency', 'pricing_data')
+        ->with('currency', 'pricing_data', 'groups', 'nationality')
         ->get();
         $groups = $this->groups
         ->where($role, $agent_id)
@@ -98,6 +98,10 @@ class RoomPricingController extends Controller
         $room_pricing = $request->validated();
         $pricing = $this->pricing
         ->create($room_pricing);
+        $groups_id = $request->groups_id;
+        $nationality_id = $request->nationality_id;
+        $pricing->groups()->attach($groups_id);
+        $pricing->nationality()->attach($nationality_id);
 
         return response()->json([
             'success' => $pricing
@@ -112,6 +116,10 @@ class RoomPricingController extends Controller
         ->where('id', $id)
         ->first();
         $pricing->update($room_pricing);
+        $groups_id = $request->groups_id;
+        $nationality_id = $request->nationality_id;
+        $pricing->groups()->sync($groups_id);
+        $pricing->nationality()->sync($nationality_id);
 
         return response()->json([
             'success' => $pricing
