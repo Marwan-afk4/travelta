@@ -10,6 +10,8 @@ class Room extends Model
         'agent_id',
         'affilate_id',
         'description',
+        'country_id',
+        'city_id',
         'status',
         'price_type',
         'price',
