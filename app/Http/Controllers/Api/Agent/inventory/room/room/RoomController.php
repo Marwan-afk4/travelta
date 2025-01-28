@@ -271,7 +271,7 @@ class RoomController extends Controller
             ], 400);
         }
         $room = $room->toArray();
-        $room['duplicated'] = $room['id'];
+        $room['duplicated'] = is_numeric($room['duplicated']) ?$room['duplicated']:$room['id'];
         $new_room = $this->room
         ->create($room);
         if (!empty($room->amenity)) {
