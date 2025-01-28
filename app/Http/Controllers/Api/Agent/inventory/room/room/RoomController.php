@@ -208,6 +208,7 @@ class RoomController extends Controller
         ->where($agent_type, $agent_id)
         ->get();
         $room = $room->sortBy('order');
+        $room = array_values($room->toArray());
 
         return response()->json([
             'room' => $room
