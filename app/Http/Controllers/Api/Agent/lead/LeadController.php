@@ -134,8 +134,7 @@ class LeadController extends Controller
         ]);
     }
 
-    public function create(LeadRequest $request){
-        // مفيش edit احنا بنديله رسالة تأكيد بالمعلومات 
+    public function create(LeadRequest $request){ 
         // /leads/add
         // Keys
         // name, phone, email, gender
@@ -180,6 +179,52 @@ class LeadController extends Controller
             'success' => $customer
         ]);
     }
+
+    // public function modify(LeadRequest $request){ 
+    //     // /leads/update
+    //     // Keys
+    //     // name, phone, email, gender
+    //     $leadRequest = $request->only($this->leadRequest);
+    //     $customer = $this->customer
+    //     ->where('phone', $request->phone)
+    //     ->first();
+    //     if (empty($customer)) {
+    //         $customer = $this->customer
+    //         ->create($leadRequest);
+    //     }
+        
+    //     if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+    //         $agent_id = $request->user()->affilate_id;
+    //     }
+    //     elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+    //         $agent_id = $request->user()->agent_id;
+    //     }
+    //     else{
+    //         $agent_id = $request->user()->id;
+    //     }
+    //     if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
+    //         $this->customer_data
+    //         ->create([
+    //             'customer_id' => $customer->id,
+    //             'affilate_id' => $agent_id,
+    //             'name' => $request->name,
+    //             'phone' => $request->phone,
+    //         ]);
+    //     } 
+    //     else {
+    //         $this->customer_data
+    //         ->create([
+    //             'customer_id' => $customer->id,
+    //             'agent_id' => $agent_id,
+    //             'name' => $request->name,
+    //             'phone' => $request->phone,
+    //         ]);
+    //     }
+        
+    //     return response()->json([
+    //         'success' => $customer
+    //     ]);
+    // }
 
     public function delete(Request $request, $id){
         // /leads/delete/{id}

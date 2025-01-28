@@ -35,11 +35,22 @@ class Room extends Model
         'cancelation',
         'thumbnail',
         'accepted',
+        'duplicated',
     ];
-    protected $appends = ['thumbnail_link'];
+    protected $appends = ['thumbnail_link', 'order'];
 
     public function currency(){
         return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
+
+    public function getOrderAttribute(){
+        if (!empty($this->attributes['duplicated']) && is_numeric($this->attributes['duplicated'])) {
+            return $this->attributes['duplicated'];
+        } 
+        else {
+            return $this->attributes['id'];
+        }
+        
     }
     
     public function room_type(){
