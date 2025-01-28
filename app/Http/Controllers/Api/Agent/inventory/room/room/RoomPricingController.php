@@ -74,7 +74,7 @@ class RoomPricingController extends Controller
         // room/pricing/item/{id}
         $pricing = $this->pricing
         ->where('id', $id)
-        ->with('currency', 'pricing_data')
+        ->with('currency', 'pricing_data', 'groups', 'nationality')
         ->first();
 
         return response()->json([
