@@ -8,8 +8,7 @@ class RequestHotel extends Model
 {
     protected $fillable = [
         'check_in',
-        'check_out',
-        'manuel_booking_id',
+        'check_out', 
         'nights',
         'hotel_name',
         'room_type',

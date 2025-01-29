@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('request_hotels', function (Blueprint $table) {
             $table->id();
+            $table->date('check_in')->nullable();
+            $table->date('check_out')->nullable(); 
+            $table->foreignId(column: 'request_booking_id')->nullable()->constrained('request_bookings')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('nights')->nullable();
+            $table->string('hotel_name')->nullable();
+            $table->string('room_type')->nullable();
+            $table->integer('room_quantity')->nullable();
+            $table->integer('adults')->nullable();
+            $table->integer('childreen')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

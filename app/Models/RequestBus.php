@@ -9,7 +9,6 @@ class RequestBus extends Model
     protected $fillable = [
         'from',
         'to',
-        'request_booking_id',
         'departure',
         'arrival',
         'adults',
@@ -19,6 +18,7 @@ class RequestBus extends Model
         'bus',
         'bus_number',
         'driver_phone',
+        'request_booking_id',
         'notes',
     ];
 }

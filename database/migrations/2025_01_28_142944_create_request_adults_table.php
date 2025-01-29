@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('request_adults', function (Blueprint $table) {
             $table->id();
+            $table->foreignId(column: 'request_booking_id')->nullable()->constrained('request_bookings')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('title')->nullable();
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->timestamps();
         });
     }

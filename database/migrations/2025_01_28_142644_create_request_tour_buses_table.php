@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('request_tour_buses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId(column: 'request_tour_id')->nullable()->constrained('request_tours')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('transportation')->nullable();
+            $table->integer('seats')->nullable();
             $table->timestamps();
         });
     }
