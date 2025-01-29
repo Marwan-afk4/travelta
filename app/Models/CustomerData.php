@@ -14,6 +14,8 @@ class CustomerData extends Model
         'type',
         'name',
         'phone',
+        'email',
+        'gender',
     ];
 
     public function customer(){

@@ -7,5 +7,5 @@ use Illuminate\Http\Request;
 
 class CreateRequestController extends Controller
 {
-    //
+    public function __construct(){}
 }

@@ -38,18 +38,28 @@ class LeadController extends Controller
             ->where('type', 'lead')
             ->where('affilate_id', $agent_id)
             ->with('customer')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->id = $item->customer->id; // Set customer_data.id to customers.id
+                $item->makeHidden('customer');
+                return $item;
+            });
         } 
         else {
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('agent_id', $agent_id)
             ->with('customer')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->id = $item->customer->id; // Set customer_data.id to customers.id
+                $item->makeHidden('customer');
+                return $item;
+            });
         }
         
         return response()->json([
-            'leads' => $leads->pluck('customer')
+            'leads' => $leads
         ]);
     }
 
@@ -163,6 +173,8 @@ class LeadController extends Controller
                 'affilate_id' => $agent_id,
                 'name' => $request->name,
                 'phone' => $request->phone,
+                'email' => $request->email ?? null,
+                'gender' => $request->gender ?? null,
             ]);
         } 
         else {
@@ -172,6 +184,8 @@ class LeadController extends Controller
                 'agent_id' => $agent_id,
                 'name' => $request->name,
                 'phone' => $request->phone,
+                'email' => $request->email ?? null,
+                'gender' => $request->gender ?? null,
             ]);
         }
         
