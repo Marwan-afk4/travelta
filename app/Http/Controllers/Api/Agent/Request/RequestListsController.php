@@ -36,7 +36,11 @@ class RequestListsController extends Controller
         ->where($role, $agent_id)
         ->with('customer')
         ->get()
-        ->pluck('customer');
+        ->map(function ($item) {
+            $item->id = $item->customer->id; // Set customer_data.id to customers.id
+            $item->makeHidden('customer');
+            return $item;
+        });
         $admins_agent = $this->admin_agents
         ->where($role, $agent_id)
         ->get();
