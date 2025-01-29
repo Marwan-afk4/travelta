@@ -17,6 +17,7 @@ class RequestListsController extends Controller
     private CurrencyAgent $currency){}
 
     public function lists(){
+        // agent/request/lists
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
