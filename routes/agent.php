@@ -88,7 +88,11 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/lists', 'lists'); 
         });
         Route::controller(CreateRequestController::class)->group(function(){
-            Route::post('/add_hotel', 'add_hotel'); 
+            Route::post('/add_hotel', 'add_hotel');
+            Route::post('/add_bus', 'add_bus');
+            Route::post('/add_visa', 'add_visa');
+            Route::post('/add_flight', 'add_flight');
+            Route::post('/add_tour', 'add_tour');
         });
     });
 
