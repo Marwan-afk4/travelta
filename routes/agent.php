@@ -85,7 +85,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('request')->group(function(){
         Route::controller(RequestListsController::class)->group(function(){ 
-            Route::post('/lists', 'lists'); 
+            Route::get('/lists', 'lists'); 
         });
         Route::controller(CreateRequestController::class)->group(function(){
             Route::post('/add_hotel', 'add_hotel'); 
