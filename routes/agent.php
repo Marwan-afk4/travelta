@@ -21,6 +21,9 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
 
+use App\Http\Controllers\Api\Agent\Request\CreateRequestController;
+use App\Http\Controllers\Api\Agent\Request\RequestListsController;
+
 use App\Http\Controllers\Api\Agent\inventory\room\room\RoomGalleryController;
 use App\Http\Controllers\Api\Agent\inventory\room\room\RoomController;
 use App\Http\Controllers\Api\Agent\inventory\room\room\CreateRoomController;
@@ -77,6 +80,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::post('/search', 'search');
             Route::post('/payment', 'add_payment');
             Route::get('/invoice/{id}', 'invoice');
+        });
+    });
+
+    Route::prefix('request')->group(function(){
+        Route::controller(RequestListsController::class)->group(function(){ 
+        });
+        Route::controller(CreateRequestController::class)->group(function(){
+            Route::post('/add_hotel', 'add_hotel'); 
         });
     });
 

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId(column: 'request_booking_id')->nullable()->constrained('request_bookings')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('age')->nullable();
-            $table->integer('first_name')->nullable();
-            $table->integer('last_name')->nullable();
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->timestamps();
         });
     }
