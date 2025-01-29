@@ -16,7 +16,7 @@ class RequestListsController extends Controller
     private AdminAgent $admin_agents, private Service $services,
     private CurrencyAgent $currency){}
 
-    public function lists(){
+    public function lists(Request $request){
         // agent/request/lists
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
