@@ -354,7 +354,8 @@ class CreateRequestController extends Controller
         // agent/request/add_tour
         // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
         // priority, stages, 
-        // tour, type => [domestic, international],  flight_date, adult_price, child_price, adults, childreen, notes
+        // tour, type => [domestic, international],  flight_date, adult_price, child_price, 
+        // adults, childreen, notes
         // tour_bus [transportation, seats]
         // tour_hotels [destination, hotel_name, room_type, check_in, check_out, nights]
         // adult_data => [{title, first_name, last_name}]

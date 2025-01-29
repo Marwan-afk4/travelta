@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('destination')->nullable();
             $table->string('hotel_name')->nullable();
-            $table->foreignId(column: 'request_booking_id')->nullable()->constrained('request_bookings')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId(column: 'request_tour_id')->nullable()->constrained('request_tours')->onUpdate('cascade')->onDelete('cascade');
             $table->string('room_type')->nullable();
             $table->date('check_in')->nullable();
             $table->date('check_out')->nullable(); 
