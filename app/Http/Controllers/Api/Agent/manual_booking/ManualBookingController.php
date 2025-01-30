@@ -896,6 +896,7 @@ class ManualBookingController extends Controller
                             'transportation' => $item->transportation,
                             'manuel_tour_id' => $manuel_tour->id,
                             'seats' => $item->seats,
+                            'departure' => $item->departure ?? null,
                         ]);
                     }
             }
