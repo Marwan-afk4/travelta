@@ -374,7 +374,8 @@ class ManualBookingController extends Controller
                     'country' => 'required',
                     'travel_date' => 'required|date', 
                     'appointment_date' => 'date',
-                    'number' => 'required|numeric', 
+                    'adults' => 'required|numeric',
+                    'childreen' => 'required|numeric',
                 ]);
                 if($validation->fails()){
                     return response()->json(['errors'=>$validation->errors()], 401);
@@ -485,7 +486,8 @@ class ManualBookingController extends Controller
                 "country_visa"=> $manuel_data_cart->country ?? null,
                 "travel_date"=> $manuel_data_cart->travel_date ??null,
                 "appointment_date"=> $manuel_data_cart->appointment_date ?? null,
-                "number"=> $manuel_data_cart->number ?? null, 
+                "childreen" =>  $manuel_data_cart->childreen ?? null,
+                "adults" =>  $manuel_data_cart->adults ?? null,
                 "notes"=> $manuel_data_cart->notes ?? null,
                 "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
                 "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
@@ -615,7 +617,8 @@ class ManualBookingController extends Controller
                     "country_visa"=> $manuel_item->country ?? null,
                     "travel_date"=> $manuel_item->travel_date ??null,
                     "appointment_date"=> $manuel_item->appointment_date ?? null,
-                    "number"=> $manuel_item->number ?? null, 
+                    "childreen" =>  $manuel_data_cart->childreen ?? null,
+                    "adults" =>  $manuel_data_cart->adults ?? null,
                     "notes"=> $manuel_item->notes ?? null,
                     "adults_data" =>  json_decode($manuel_item->adults_data ?? '[]') ?? [],
                     "children_data" =>  json_decode($manuel_item->children_data ?? '[]') ?? [],
@@ -836,7 +839,8 @@ class ManualBookingController extends Controller
                     'travel_date' => $manuel_data_cart['travel_date'] ?? null,
                     'appointment_date' => $manuel_data_cart['appointment_date'] ?? null,
                     'notes' => $manuel_data_cart['notes'] ?? null,
-                    'number' => $manuel_data_cart['number'] ?? null,
+                    "childreen" =>  $manuel_data_cart['childreen'] ?? null,
+                    "adults" =>  $manuel_data_cart['adults'] ?? null, 
                 ];
                 $visaRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_visa = $this->manuel_visa
