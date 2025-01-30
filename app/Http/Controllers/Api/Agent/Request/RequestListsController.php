@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Api\Agent\Request;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use App\Http\Resources\HotelRequestResource;
+use App\Http\Resources\BusRequestResource;
+use App\Http\Resources\FlightRequestResource;
+use App\Http\Resources\TourRequestResource;
+use App\Http\Resources\VisaRequestResource;
 
 use App\Models\CustomerData;
 use App\Models\AdminAgent;
@@ -91,9 +96,32 @@ class RequestListsController extends Controller
         ->with('hotel', 'customer', 'admin_agent', 'currency')
         ->whereHas('hotel')
         ->get();
+        $buses = $this->request_booking
+        ->where($role, $agent_id)
+        ->with('bus', 'customer', 'admin_agent', 'currency')
+        ->whereHas('bus')
+        ->get();
+        $flights = $this->request_booking
+        ->where($role, $agent_id)
+        ->with('flight', 'customer', 'admin_agent', 'currency')
+        ->whereHas('flight')
+        ->get();
+        $visas = $this->request_booking
+        ->where($role, $agent_id)
+        ->with('flight', 'customer', 'admin_agent', 'currency')
+        ->whereHas('flight')
+        ->get();
 
         $hotels = HotelRequestResource::collection($hotels);
+        $buses = BusRequestResource::collection($buses);
+        $flights = FlightRequestResource::collection($flights);
+        $visas = VisaRequestResource::collection($visas);
+
         return response()->json([
+            'hotels' => $hotels,
+            'buses' => $buses,
+            'flights' => $flights,
+            'visas' => $visas,
             'hotels' => $hotels,
         ]);
     }

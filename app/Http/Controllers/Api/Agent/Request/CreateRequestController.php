@@ -384,10 +384,10 @@ class CreateRequestController extends Controller
         // priority, stages, 
         // tour, type => [domestic, international],  flight_date, adult_price, child_price, 
         // adults, childreen, notes
-        // tour_bus [transportation, seats]
+        // tour_bus [transportation, seats, departure => if flight]
         // tour_hotels [destination, hotel_name, room_type, check_in, check_out, nights]
         // adult_data => [{title, first_name, last_name}]
-        // child_data => [{age, first_name, last_name}] 
+        // child_data => [{age, first_name, last_name}]
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -441,6 +441,7 @@ class CreateRequestController extends Controller
                     'request_tour_id' => $request_tour->id,
                     'transportation' => $item->transportation,
                     'seats' => $item->seats,
+                    'departure' => $item->departure ?? null,
                 ]);
             }
             foreach ($tour_hotels as $item) {
