@@ -66,4 +66,8 @@ class RequestListsController extends Controller
             'countries' => $countries,
         ]);
     }
+
+    public function view(){
+        
+    }
 }

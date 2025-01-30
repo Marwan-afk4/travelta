@@ -12,6 +12,7 @@ class ManuelVisa extends Model
         'appointment_date',
         'notes',
         'manuel_booking_id',
-        'number',
+        'adults',
+        'childreen',
     ];
 }
