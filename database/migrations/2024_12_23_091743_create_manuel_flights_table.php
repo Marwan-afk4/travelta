@@ -20,8 +20,8 @@ return new class extends Migration
             $table->datetime('arrival')->nullable();
             $table->string('class')->nullable();
             $table->string('adults')->nullable();
-            $table->string('childreen')->nullable();
-            $table->string('infants')->nullable();
+            $table->integer('adults')->nullable();;
+            $table->integer('childreen')->nullable();;
             $table->string('airline')->nullable();
             $table->string('ticket_number')->nullable();
             $table->float('adult_price')->nullable();
