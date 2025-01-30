@@ -94,6 +94,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::post('/add_visa', 'add_visa');
             Route::post('/add_flight', 'add_flight');
             Route::post('/add_tour', 'add_tour');
+            Route::put('/priority/{id}', 'priority');
+            Route::put('/stages/{id}', 'stages');
         });
     });
 

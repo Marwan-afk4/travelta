@@ -94,22 +94,26 @@ class RequestListsController extends Controller
         }
         $hotels = $this->request_booking
         ->where($role, $agent_id)
-        ->with('hotel', 'customer', 'admin_agent', 'currency')
+        ->with('hotel', 'customer', 'admin_agent', 'currency') 
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
         ->whereHas('hotel')
         ->get();
         $buses = $this->request_booking
         ->where($role, $agent_id)
         ->with('bus', 'customer', 'admin_agent', 'currency')
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
         ->whereHas('bus')
         ->get();
         $flights = $this->request_booking
         ->where($role, $agent_id)
         ->with('flight', 'customer', 'admin_agent', 'currency')
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
         ->whereHas('flight')
         ->get();
         $visas = $this->request_booking
         ->where($role, $agent_id)
         ->with('visa', 'customer', 'admin_agent', 'currency')
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
         ->whereHas('visa')
         ->get();
         $tours = $this->request_booking
@@ -117,6 +121,7 @@ class RequestListsController extends Controller
         ->with(['tour' => function($query) {
             return $query->with('bus', 'hotel');
         }, 'customer', 'admin_agent', 'currency'])
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
         ->whereHas('tour')
         ->get();
 

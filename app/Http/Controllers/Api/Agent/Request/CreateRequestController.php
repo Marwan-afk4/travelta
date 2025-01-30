@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Agent\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\api\agent\booking_request\BookingRequestRequest;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\RequestBooking;
 use App\Models\RequestAdult;
@@ -466,5 +467,75 @@ class CreateRequestController extends Controller
                 'errors' => 'Something Errors'
             ], 400);
         }
+    }
+
+    public function priority(Request $request, $id){
+        // /request/priority/{id}
+        $validation = Validator::make($request->all(), [
+            'priority' => 'required|in:Low,Normal,High',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $request_booking = $this->request_booking
+        ->where('id', $id)
+        ->where($role, $agent_id)
+        ->update([
+            'priority' => $request->priority
+        ]);
+
+        return response()->json([
+            'success' => 'You update data success'
+        ]);
+    }
+
+    public function stages(Request $request, $id){
+        // /request/stages/{id}
+        $validation = Validator::make($request->all(), [
+            'stages' => 'required|in:Pending,Price quotation,Negotiation,Won,Won Canceled,Lost',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $request_booking = $this->request_booking
+        ->where('id', $id)
+        ->where($role, $agent_id)
+        ->update([
+            'stages' => $request->stages
+        ]);
+
+        return response()->json([
+            'success' => 'You update data success'
+        ]);
     }
 }
