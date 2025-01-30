@@ -4,18 +4,21 @@ namespace App\Http\Controllers\Api\Agent\Request;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\HotelRequestResource;
 
 use App\Models\CustomerData;
 use App\Models\AdminAgent;
 use App\Models\Service;
 use App\Models\CurrencyAgent;
 use App\Models\Country;
+use App\Models\RequestBooking;
 
 class RequestListsController extends Controller
 {
     public function __construct(private CustomerData $customer_data, 
     private AdminAgent $admin_agents, private Service $services,
-    private CurrencyAgent $currency, private Country $countries){}
+    private CurrencyAgent $currency, private Country $countries,
+    private RequestBooking $request_booking){}
 
     public function lists(Request $request){
         // agent/request/lists
@@ -67,7 +70,31 @@ class RequestListsController extends Controller
         ]);
     }
 
-    public function view(){
-        
+    public function view(Request $request){
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $hotels = $this->request_booking
+        ->where($role, $agent_id)
+        ->with('hotel', 'customer', 'admin_agent', 'currency')
+        ->whereHas('hotel')
+        ->get();
+
+        $hotels = HotelRequestResource::collection($hotels);
+        return response()->json([
+            'hotels' => $hotels,
+        ]);
     }
 }

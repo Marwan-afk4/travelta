@@ -489,8 +489,12 @@ class ManualBookingController extends Controller
                 "childreen" =>  $manuel_data_cart->childreen ?? null,
                 "adults" =>  $manuel_data_cart->adults ?? null,
                 "notes"=> $manuel_data_cart->notes ?? null,
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "adults_data" => is_string($manuel_data_cart->adults_data) ? 
+                json_decode($manuel_data_cart->adults_data ?? '[]') ?? []
+                : $manuel_data_cart->adults_data,
+                "children_data" => is_string($manuel_data_cart->children_data) ?
+                 json_decode($manuel_data_cart->children_data ?? '[]') ?? []
+                 : $manuel_data_cart->children_data,
             ];
         }
         elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
@@ -918,7 +922,7 @@ class ManualBookingController extends Controller
                         'title' => $item->title,
                         'first_name' => $item->first_name,
                         'last_name' => $item->last_name,
-                    ]);
+                    ]); 
                 }
             }
             if (isset($manuel_data_cart['child_data']) && !empty($manuel_data_cart['child_data'])) {

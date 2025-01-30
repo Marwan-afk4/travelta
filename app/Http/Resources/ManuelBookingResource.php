@@ -13,8 +13,7 @@ class ManuelBookingResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {
-        
+    { 
         return (object)[
             'supplier_from_name' => $this->from_supplier->agent ?? null,
             'supplier_from_email' => json_decode($this->from_supplier->emails)[0] ?? $this->from_supplier->emails,

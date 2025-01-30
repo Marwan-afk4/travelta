@@ -17,4 +17,12 @@ class RequestTour extends Model
         'request_booking_id',
         'notes',
     ];
+
+    public function tour_bus(){
+        return $this->hasMany(RequestTourBus::class, 'request_tour_id');
+    }
+
+    public function tour_hotel(){
+        return $this->hasMany(RequestTourHotel::class, 'request_tour_id');
+    }
 }
