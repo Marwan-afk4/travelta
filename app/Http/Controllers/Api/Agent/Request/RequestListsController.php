@@ -9,12 +9,13 @@ use App\Models\CustomerData;
 use App\Models\AdminAgent;
 use App\Models\Service;
 use App\Models\CurrencyAgent;
+use App\Models\Country;
 
 class RequestListsController extends Controller
 {
     public function __construct(private CustomerData $customer_data, 
     private AdminAgent $admin_agents, private Service $services,
-    private CurrencyAgent $currency){}
+    private CurrencyAgent $currency, private Country $countries){}
 
     public function lists(Request $request){
         // agent/request/lists
@@ -52,6 +53,8 @@ class RequestListsController extends Controller
         ->get();
         $priority = ['Low', 'Normal', 'High'];
         $stages = ['Pending', 'Price quotation', 'Negotiation', 'Won', 'Won Canceled', 'Lost'];
+        $countries = $this->countries
+        ->get();
 
         return response()->json([
             'customers' => $customers,
@@ -60,6 +63,7 @@ class RequestListsController extends Controller
             'currencies' => $currencies,
             'priority' => $priority,
             'stages' => $stages,
+            'countries' => $countries,
         ]);
     }
 }

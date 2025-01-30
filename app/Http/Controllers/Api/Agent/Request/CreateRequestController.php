@@ -147,33 +147,40 @@ class CreateRequestController extends Controller
         $request_booking = $this->request_booking
         ->create($requestBookingRequest);
 
-        $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
-        $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
-        foreach ($adult_data as $item) {
-            $this->request_adults
-            ->create([
-                'title' => $item->title,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        foreach ($child_data as $item) {
-            $this->request_children
-            ->create([
-                'age' => $item->age,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        $hotelRequest['request_booking_id'] = $request_booking->id;
-        $this->request_hotel
-        ->create($hotelRequest);
+        try {
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            foreach ($adult_data as $item) {
+                $this->request_adults
+                ->create([
+                    'title' => $item->title,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            foreach ($child_data as $item) {
+                $this->request_children
+                ->create([
+                    'age' => $item->age,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            $hotelRequest['request_booking_id'] = $request_booking->id;
+            $this->request_hotel
+            ->create($hotelRequest);
 
-        return response()->json([
-            'success' => 'You add data success'
-        ]);
+            return response()->json([
+                'success' => 'You add data success'
+            ]); 
+        } catch (\Throwable $th) {
+            $request_booking->delete();
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
     }
 
     public function add_bus(BookingRequestRequest $request){
@@ -205,33 +212,40 @@ class CreateRequestController extends Controller
         $request_booking = $this->request_booking
         ->create($requestBookingRequest);
 
-        $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
-        $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
-        foreach ($adult_data as $item) {
-            $this->request_adults
-            ->create([
-                'title' => $item->title,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        foreach ($child_data as $item) {
-            $this->request_children
-            ->create([
-                'age' => $item->age,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        $busRequest['request_booking_id'] = $request_booking->id;
-        $this->request_bus
-        ->create($busRequest);
+        try{
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            foreach ($adult_data as $item) {
+                $this->request_adults
+                ->create([
+                    'title' => $item->title,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            foreach ($child_data as $item) {
+                $this->request_children
+                ->create([
+                    'age' => $item->age,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            $busRequest['request_booking_id'] = $request_booking->id;
+            $this->request_bus
+            ->create($busRequest);
 
-        return response()->json([
-            'success' => 'You add data success'
-        ]);
+            return response()->json([
+                'success' => 'You add data success'
+            ]);
+        } catch (\Throwable $th) {
+            $request_booking->delete();
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
     }
 
     public function add_visa(BookingRequestRequest $request){
@@ -262,33 +276,40 @@ class CreateRequestController extends Controller
         $request_booking = $this->request_booking
         ->create($requestBookingRequest);
 
-        $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
-        $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
-        foreach ($adult_data as $item) {
-            $this->request_adults
-            ->create([
-                'title' => $item->title,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        foreach ($child_data as $item) {
-            $this->request_children
-            ->create([
-                'age' => $item->age,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        $visaRequest['request_booking_id'] = $request_booking->id;
-        $this->request_visa
-        ->create($visaRequest);
+        try{
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            foreach ($adult_data as $item) {
+                $this->request_adults
+                ->create([
+                    'title' => $item->title,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            foreach ($child_data as $item) {
+                $this->request_children
+                ->create([
+                    'age' => $item->age,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            $visaRequest['request_booking_id'] = $request_booking->id;
+            $this->request_visa
+            ->create($visaRequest);
 
-        return response()->json([
-            'success' => 'You add data success'
-        ]);
+            return response()->json([
+                'success' => 'You add data success'
+            ]);
+        } catch (\Throwable $th) {
+            $request_booking->delete();
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
     }
 
     public function add_flight(BookingRequestRequest $request){
@@ -321,33 +342,40 @@ class CreateRequestController extends Controller
         $request_booking = $this->request_booking
         ->create($requestBookingRequest);
 
-        $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
-        $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
-        foreach ($adult_data as $item) {
-            $this->request_adults
-            ->create([
-                'title' => $item->title,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        foreach ($child_data as $item) {
-            $this->request_children
-            ->create([
-                'age' => $item->age,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        $flightRequest['request_booking_id'] = $request_booking->id;
-        $this->request_flight
-        ->create($flightRequest);
+        try{
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            foreach ($adult_data as $item) {
+                $this->request_adults
+                ->create([
+                    'title' => $item->title,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            foreach ($child_data as $item) {
+                $this->request_children
+                ->create([
+                    'age' => $item->age,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            $flightRequest['request_booking_id'] = $request_booking->id;
+            $this->request_flight
+            ->create($flightRequest);
 
-        return response()->json([
-            'success' => 'You add data success'
-        ]);
+            return response()->json([
+                'success' => 'You add data success'
+            ]);
+        } catch (\Throwable $th) {
+            $request_booking->delete();
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
     }
 
     public function add_tour(BookingRequestRequest $request){
@@ -381,54 +409,61 @@ class CreateRequestController extends Controller
         $request_booking = $this->request_booking
         ->create($requestBookingRequest);
 
-        $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
-        $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
-        foreach ($adult_data as $item) {
-            $this->request_adults
-            ->create([
-                'title' => $item->title,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        foreach ($child_data as $item) {
-            $this->request_children
-            ->create([
-                'age' => $item->age,
-                'first_name' => $item->first_name,
-                'last_name' => $item->last_name, 
-                'request_booking_id' => $request_booking->id
-            ]);
-        }
-        $tourRequest['request_booking_id'] = $request_booking->id;
-        $request_tour = $this->request_tour
-        ->create($tourRequest);
-        $tour_bus = is_string($request->tour_bus) ? json_decode($request->tour_bus): $request->tour_bus;
-        $tour_hotels = is_string($request->tour_hotels) ? json_decode($request->tour_hotels): $request->tour_hotels;
-        foreach ($tour_bus as $item) {
-            $this->request_tour_bus
-            ->create([
-                'request_tour_id' => $request_tour->id,
-                'transportation' => $item->transportation,
-                'seats' => $item->seats,
-            ]);
-        }
-        foreach ($tour_hotels as $item) {
-            $this->request_tour_hotel
-            ->create([
-                'request_tour_id' => $request_tour->id,
-                'destination' => $item->destination,
-                'hotel_name' => $item->hotel_name,
-                'room_type' => $item->room_type,
-                'check_in' => $item->check_in,
-                'check_out' => $item->check_out,
-                'nights' => $item->nights,
-            ]);
-        }
+        try{
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            foreach ($adult_data as $item) {
+                $this->request_adults
+                ->create([
+                    'title' => $item->title,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            foreach ($child_data as $item) {
+                $this->request_children
+                ->create([
+                    'age' => $item->age,
+                    'first_name' => $item->first_name,
+                    'last_name' => $item->last_name, 
+                    'request_booking_id' => $request_booking->id
+                ]);
+            }
+            $tourRequest['request_booking_id'] = $request_booking->id;
+            $request_tour = $this->request_tour
+            ->create($tourRequest);
+            $tour_bus = is_string($request->tour_bus) ? json_decode($request->tour_bus): $request->tour_bus;
+            $tour_hotels = is_string($request->tour_hotels) ? json_decode($request->tour_hotels): $request->tour_hotels;
+            foreach ($tour_bus as $item) {
+                $this->request_tour_bus
+                ->create([
+                    'request_tour_id' => $request_tour->id,
+                    'transportation' => $item->transportation,
+                    'seats' => $item->seats,
+                ]);
+            }
+            foreach ($tour_hotels as $item) {
+                $this->request_tour_hotel
+                ->create([
+                    'request_tour_id' => $request_tour->id,
+                    'destination' => $item->destination,
+                    'hotel_name' => $item->hotel_name,
+                    'room_type' => $item->room_type,
+                    'check_in' => $item->check_in,
+                    'check_out' => $item->check_out,
+                    'nights' => $item->nights,
+                ]);
+            }
 
-        return response()->json([
-            'success' => 'You add data success'
-        ]);
+            return response()->json([
+                'success' => 'You add data success'
+            ]);
+        } catch (\Throwable $th) {
+            $request_booking->delete();
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
     }
 }
