@@ -470,7 +470,7 @@ class CreateRequestController extends Controller
     }
 
     public function priority(Request $request, $id){
-        // /request/priority/{id}
+        // /agent/request/priority/{id}
         $validation = Validator::make($request->all(), [
             'priority' => 'required|in:Low,Normal,High',
         ]);
@@ -505,7 +505,7 @@ class CreateRequestController extends Controller
     }
 
     public function stages(Request $request, $id){
-        // /request/stages/{id}
+        // /agent/request/stages/{id}
         $validation = Validator::make($request->all(), [
             'stages' => 'required|in:Pending,Price quotation,Negotiation,Won,Won Canceled,Lost',
         ]);
