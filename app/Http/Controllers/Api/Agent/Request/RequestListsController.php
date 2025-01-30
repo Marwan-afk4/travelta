@@ -76,6 +76,7 @@ class RequestListsController extends Controller
     }
 
     public function view(Request $request){
+        // agent/request
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -108,21 +109,39 @@ class RequestListsController extends Controller
         ->get();
         $visas = $this->request_booking
         ->where($role, $agent_id)
-        ->with('flight', 'customer', 'admin_agent', 'currency')
-        ->whereHas('flight')
+        ->with('visa', 'customer', 'admin_agent', 'currency')
+        ->whereHas('visa')
+        ->get();
+        $tours = $this->request_booking
+        ->where($role, $agent_id)
+        ->with(['tour' => function($query) {
+            return $query->with('bus', 'hotel');
+        }, 'customer', 'admin_agent', 'currency'])
+        ->whereHas('tour')
         ->get();
 
         $hotels = HotelRequestResource::collection($hotels);
         $buses = BusRequestResource::collection($buses);
         $flights = FlightRequestResource::collection($flights);
         $visas = VisaRequestResource::collection($visas);
-
+        $tours = TourRequestResource::collection($tours); 
+        $current = [
+            'hotels' => array_values($hotels->whereIn('stages', ['Pending', 'Price quotation', 'Negotiation'])->toArray()),
+            'buses' => array_values($buses->whereIn('stages', ['Pending', 'Price quotation', 'Negotiation'])->toArray()),
+            'flights' => array_values($flights->whereIn('stages', ['Pending', 'Price quotation', 'Negotiation'])->toArray()),
+            'visas' => array_values($visas->whereIn('stages', ['Pending', 'Price quotation', 'Negotiation'])->toArray()),
+            'tours' => array_values($tours->whereIn('stages', ['Pending', 'Price quotation', 'Negotiation'])->toArray()),
+        ];
+        $history = [
+            'hotels' => array_values($hotels->whereIn('stages', ['Won', 'Won Canceled', 'Lost'])->toArray()),
+            'buses' => array_values($buses->whereIn('stages', ['Won', 'Won Canceled', 'Lost'])->toArray()),
+            'flights' => array_values($flights->whereIn('stages', ['Won', 'Won Canceled', 'Lost'])->toArray()),
+            'visas' => array_values($visas->whereIn('stages', ['Won', 'Won Canceled', 'Lost'])->toArray()),
+            'tours' => array_values($tours->whereIn('stages', ['Won', 'Won Canceled', 'Lost'])->toArray()),
+        ];
         return response()->json([
-            'hotels' => $hotels,
-            'buses' => $buses,
-            'flights' => $flights,
-            'visas' => $visas,
-            'hotels' => $hotels,
+            'current' => $current,
+            'history' => $history, 
         ]);
     }
 }

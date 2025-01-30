@@ -18,11 +18,11 @@ class RequestTour extends Model
         'notes',
     ];
 
-    public function tour_bus(){
+    public function bus(){
         return $this->hasMany(RequestTourBus::class, 'request_tour_id');
     }
 
-    public function tour_hotel(){
+    public function hotel(){
         return $this->hasMany(RequestTourHotel::class, 'request_tour_id');
     }
 }
