@@ -22,6 +22,10 @@ class RequestBooking extends Model
         return $this->belongsTo(Customer::class, 'customer_id');
     }
 
+    public function service(){
+        return $this->belongsTo(Service::class, 'service_id');
+    }
+
     public function admin_agent(){
         return $this->belongsTo(AdminAgent::class, 'admin_agent_id');
     }

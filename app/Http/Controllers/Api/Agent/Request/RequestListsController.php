@@ -10,6 +10,7 @@ use App\Http\Resources\BusRequestResource;
 use App\Http\Resources\FlightRequestResource;
 use App\Http\Resources\TourRequestResource;
 use App\Http\Resources\VisaRequestResource;
+use App\Http\Resources\BookingRequestResource;
 
 use App\Models\CustomerData;
 use App\Models\AdminAgent;
@@ -148,5 +149,56 @@ class RequestListsController extends Controller
             'current' => $current,
             'history' => $history, 
         ]);
+    }
+
+    public function request_item(Request $request, $id){
+        // /agent/request/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $request_booking = $this->request_booking
+        ->where('id', $id)
+        ->where($role, $agent_id)
+        ->with(['customer', 'admin_agent', 'currency',
+        'service', 'adults', 'children', 'hotel', 'bus', 
+        'flight', 'tour' => function($query){
+            return $query->with('bus', 'hotel');
+        }, 'visa'])
+        ->first();
+        
+        $request_booking = [
+            'id' => $request_booking->id ?? null,
+            'to_name' => $request_booking->customer?->name ?? null, 
+            'to_phone' => $request_booking->customer?->phone ?? null,
+            'agent' => $request_booking->admin_agent?->name ?? null,
+            'currecy' => $request_booking->currency->name ?? null,
+            'service' => $request_booking->service->service_name ?? null,
+            'adults' => $request_booking->adults ?? null,
+            'children' => $request_booking->children ?? null,
+            'hotel' => $request_booking->hotel ?? null,
+            'bus' => $request_booking->bus ?? null,
+            'flight' => $request_booking->flight ?? null,
+            'visa' => $request_booking->visa ?? null,
+            'tour' => $request_booking->expected_tour ?? null,
+
+            'expected_revenue' => $request_booking->expected_revenue ?? null,
+            'priority' => $request_booking->priority ?? null,
+            'stages' => $request_booking->stages ?? null,
+        ];
+        return response()->json([
+            'request' => $request_booking
+        ]); 
     }
 }
