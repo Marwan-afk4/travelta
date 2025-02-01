@@ -542,7 +542,7 @@ class CreateRequestController extends Controller
     public function notes(Request $request, $id){
         // /agent/request/notes/{id}
         $validation = Validator::make($request->all(), [
-            'notes' => 'required|in:Pending,Price quotation,Negotiation,Won,Won Canceled,Lost',
+            'notes' => 'required',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -565,9 +565,43 @@ class CreateRequestController extends Controller
         $request_booking = $this->request_booking
         ->where('id', $id)
         ->where($role, $agent_id)
-        ->update([
-            'stages' => $request->stages
-        ]);
+        ->first();
+
+        if ($request_booking->hotel) {
+            $request_booking
+            ->hotel
+            ->update([
+                'notes' => $request->notes
+            ]);
+        }
+        elseif ($request_booking->bus) {
+            $request_booking
+            ->bus
+            ->update([
+                'notes' => $request->notes
+            ]);
+        }
+        elseif ($request_booking->flight) {
+            $request_booking
+            ->flight
+            ->update([
+                'notes' => $request->notes
+            ]);
+        }
+        elseif ($request_booking->tour) {
+            $request_booking
+            ->tour
+            ->update([
+                'notes' => $request->notes
+            ]);
+        }
+        elseif ($request_booking->visa) {
+            $request_booking
+            ->visa
+            ->update([
+                'notes' => $request->notes
+            ]);
+        }
 
         return response()->json([
             'success' => 'You update data success'
