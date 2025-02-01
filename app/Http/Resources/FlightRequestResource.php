@@ -24,8 +24,8 @@ class FlightRequestResource extends JsonResource
             'priority' => $this->priority,
             'stages' => $this->stages,
             'currecy' => $this->currency->name,
-            'notes' => $this->notes ?? null,
             
+            'notes' => $this->flight->notes ?? null,
             'flight_type' => $this->flight->type ?? null,
             'flight_direction' => $this->flight->direction ?? null,
             'depature' => $this->flight->departure ?? null,

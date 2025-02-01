@@ -22,10 +22,10 @@ class TourRequestResource extends JsonResource
             'service' => 'Hotel',
             'revenue' => $this->expected_revenue,
             'priority' => $this->priority,
-            'stages' => $this->stages,
-            'notes' => $this->notes ?? null,
+            'stages' => $this->stages, 
             'currecy' => $this->currency->name,
             
+            'notes' => $this->tour->notes ?? null,
             'tour_name' => $this->tour->tour ?? null,
             'tour_type' => $this->tour->type ?? null , 
             'tour_hotels' => $this->tour->hotel->select('destination', 'hotel_name', 'room_type', 'check_in', 'check_out', 'nights') ,

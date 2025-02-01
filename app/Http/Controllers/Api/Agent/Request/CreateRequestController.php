@@ -540,9 +540,9 @@ class CreateRequestController extends Controller
     }
 
     public function notes(Request $request, $id){
-        // /agent/request/stages/{id}
+        // /agent/request/notes/{id}
         $validation = Validator::make($request->all(), [
-            'stages' => 'required|in:Pending,Price quotation,Negotiation,Won,Won Canceled,Lost',
+            'notes' => 'required|in:Pending,Price quotation,Negotiation,Won,Won Canceled,Lost',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);

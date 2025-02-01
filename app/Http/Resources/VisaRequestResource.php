@@ -22,10 +22,10 @@ class VisaRequestResource extends JsonResource
             'service' => 'Hotel',
             'revenue' => $this->expected_revenue,
             'priority' => $this->priority,
-            'stages' => $this->stages,
-            'notes' => $this->notes ?? null,
+            'stages' => $this->stages, 
             'currecy' => $this->currency->name,
             
+            'notes' => $this->visa->notes ?? null,
             'no_adults' => $this->visa->adults,
             'no_children' => $this->visa->childreen,
             'country_name' => $this->visa->country ?? null,
