@@ -97,6 +97,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::put('/priority/{id}', 'priority');
             Route::put('/stages/{id}', 'stages');
             Route::put('/notes/{id}', 'notes');
+            Route::delete('/delete/{id}', 'delete');
         });
     });
 
