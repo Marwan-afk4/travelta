@@ -8,6 +8,7 @@ use App\Http\Requests\api\agent\booking_request\BookingRequestRequest;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\RequestBooking;
+use App\Models\RequestStage;
 use App\Models\RequestAdult;
 use App\Models\RequestChild;
 use App\Models\RequestHotel;
@@ -30,7 +31,8 @@ class CreateRequestController extends Controller
     private RequestTour $request_tour,
     private RequestVisa $request_visa,
     private RequestTourBus $request_tour_bus,
-    private RequestTourHotel $request_tour_hotel){}
+    private RequestTourHotel $request_tour_hotel,
+    private RequestStage $request_stage){}
 
     protected $requestBookingRequest = [
         'customer_id',
@@ -117,6 +119,13 @@ class CreateRequestController extends Controller
         'childreen',
         'notes',
         // 'request_booking_id',
+    ]; 
+    protected $stageRequest = [
+        'stages',
+        'action',
+        'priority',
+        'follow_up_date',
+        'result',
     ];
 
     public function add_hotel(BookingRequestRequest $request){
@@ -506,11 +515,52 @@ class CreateRequestController extends Controller
 
     public function stages(Request $request, $id){
         // /agent/request/stages/{id}
+        // Keys
+        // stages, action, priority, follow_up_date, result, 
+        // if action = message => key => send_by
+        // if action = assign_request => key => admin_agent_id
+        // if stages = Won => key => code
+        // if stages = Lost => key => lost_reason
         $validation = Validator::make($request->all(), [
             'stages' => 'required|in:Pending,Price quotation,Negotiation,Won,Won Canceled,Lost',
+            'action' => 'required|in:call,message,assign_request',
+            'priority' => 'nullable|in:hot,warm,cold',
+            'follow_up_date' => 'date',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->action == 'message') {
+            $validation = Validator::make($request->all(), [ 
+                'send_by' => 'required',
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            }
+        }
+        elseif ($request->action == 'assign_request') {
+            $validation = Validator::make($request->all(), [ 
+                'admin_agent_id' => 'required|exists:admin_agents,id',
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            }
+        }
+        if ($request->stages == 'Won') {
+            $validation = Validator::make($request->all(), [ 
+                'code' => 'required|unique:request_bookings,code',
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            }
+        }
+        if ($request->stages == 'Lost') {
+            $validation = Validator::make($request->all(), [ 
+                'lost_reason' => 'required',
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            }
         }
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -527,6 +577,38 @@ class CreateRequestController extends Controller
         else {
             $role = 'agent_id';
         }
+        $stageRequest = $request->only($this->stageRequest);
+        $stageRequest['request_booking_id'] = $id;
+        if ($request->action == 'message') { 
+            $stageRequest['send_by'] = $request->send_by;
+        }
+        elseif ($request->action == 'assign_request') { 
+            $request_booking = $this->request_booking
+            ->where('id', $id)
+            ->where($role, $agent_id)
+            ->update([
+                'admin_agent_id' => $request->admin_agent_id
+            ]);
+        }
+        if ($request->stages == 'Won') { 
+            $request_booking = $this->request_booking
+            ->where('id', $id)
+            ->where($role, $agent_id)
+            ->update([
+                'code' => $request->code
+            ]);
+        }
+        if ($request->stages == 'Lost') { 
+            $request_booking = $this->request_booking
+            ->where('id', $id)
+            ->where($role, $agent_id)
+            ->update([
+                'lost_reason' => $request->lost_reason
+            ]);
+        }
+        $this->request_stage
+        ->create($stageRequest);
+        
         $request_booking = $this->request_booking
         ->where('id', $id)
         ->where($role, $agent_id)

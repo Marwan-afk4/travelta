@@ -175,7 +175,7 @@ class RequestListsController extends Controller
         'service', 'adults', 'children', 'hotel', 'bus', 
         'flight', 'tour' => function($query){
             return $query->with('bus', 'hotel');
-        }, 'visa'])
+        }, 'visa', 'stage_data'])
         ->first();
         
         $request_booking = [
@@ -196,6 +196,7 @@ class RequestListsController extends Controller
             'expected_revenue' => $request_booking->expected_revenue ?? null,
             'priority' => $request_booking->priority ?? null,
             'stages' => $request_booking->stages ?? null,
+            'stage_data' => $request_booking->stage_data ?? null,
         ];
         return response()->json([
             'request' => $request_booking

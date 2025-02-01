@@ -16,7 +16,13 @@ class RequestBooking extends Model
         'expected_revenue',
         'priority',
         'stages',
+        'lost_reason',
+        'code',
     ];
+
+    public function stage_data(){
+        return $this->hasMany(RequestStage::class, 'request_booking_id');
+    }
 
     public function customer(){
         return $this->belongsTo(Customer::class, 'customer_id');
