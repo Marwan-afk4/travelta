@@ -24,6 +24,7 @@ class BusRequestResource extends JsonResource
             'priority' => $this->priority,
             'stages' => $this->stages,
             'currecy' => $this->currency->name,
+            'notes' => $this->notes ?? null,
             
             'from' => $this->bus->from ?? null,
             'to' => $this->bus->to ?? null,

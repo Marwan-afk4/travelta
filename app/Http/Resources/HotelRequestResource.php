@@ -24,6 +24,7 @@ class HotelRequestResource extends JsonResource
             'priority' => $this->priority,
             'stages' => $this->stages,
             'currecy' => $this->currency->name,
+            'notes' => $this->notes ?? null,
 
             'hotel_name' => $this->hotel->hotel_name ?? null,
             'check_in' => $this->hotel->check_in ?? null,
