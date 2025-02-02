@@ -270,13 +270,32 @@ class RequestListsController extends Controller
         $data = $data->merge($visas);
         $data = $data->merge($tours);
 
-        $pending = array_values($data->where('stages', 'Pending')->toArray());
-        $price_quotation = array_values($data->where('stages', 'Price quotation')->toArray());
-        $negotiation = array_values($data->where('stages', 'Negotiation')->toArray());
+        $pending = $data->where('stages', 'Pending')->values();
+        $price_quotation = $data->where('stages', 'Price quotation')->values();
+        $negotiation = $data->where('stages', 'Negotiation')->values();
+
+        $all_requests_count = $pending->count() + $price_quotation->count() + $negotiation->count();
+        $pending_requests_count = $pending->count();
+        $quotation_requests_count = $price_quotation->count();
+        $negotiation_requests_count = $negotiation->count();
+        $all_requests_revenue = $data->whereIn('stages', ['Pending', 'Price quotation', 'Negotiation'])
+        ->sum('expected_revenue');
+        $pending_requests_revenue = $pending->sum('expected_revenue');
+        $quotation_requests_revenue = $price_quotation->sum('expected_revenue');
+        $negotiation_requests_revenue = $negotiation->sum('expected_revenue');
+
         return response()->json([
             'pending' => $pending,
             'price_quotation' => $price_quotation,
             'negotiation' => $negotiation,
+            'all_requests_count' => $all_requests_count,
+            'pending_requests_count' => $pending_requests_count,
+            'quotation_requests_count' => $quotation_requests_count,
+            'negotiation_requests_count' => $negotiation_requests_count,
+            'all_requests_revenue' => $all_requests_revenue,
+            'pending_requests_revenue' => $pending_requests_revenue,
+            'quotation_requests_revenue' => $quotation_requests_revenue,
+            'negotiation_requests_revenue' => $negotiation_requests_revenue,
         ]);
     }
 }

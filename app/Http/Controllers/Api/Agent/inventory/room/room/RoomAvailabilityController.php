@@ -116,6 +116,11 @@ class RoomAvailabilityController extends Controller
     }
 
     public function modify(Request $request){
+        // agent/room/availability/update
+        // Keys
+        // room_id, 
+        // rooms [{from, to, quantity}]
+        // add_rooms [{from, to, quantity}]
         $validation = Validator::make($request->all(), [
             'room_id' => ['required', 'exists:rooms,id'],
             'rooms.*.from' => ['required', 'date'],

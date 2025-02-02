@@ -16,7 +16,7 @@ class TourResource extends JsonResource
     {
         return [ 
             'id' => $this->id,
-            'revenue' => $this->expected_revenue,
+            'revenue' => (float)$this->expected_revenue,
             'service' => 'Tour',
             'stages' => $this->stages,
             'currecy' => $this->currency->name,

@@ -16,7 +16,7 @@ class BusResource extends JsonResource
     {
         return [ 
             'id' => $this->id,
-            'revenue' => $this->expected_revenue,
+            'revenue' => (float)$this->expected_revenue,
             'service' => 'Bus',
             'stages' => $this->stages,
             'currecy' => $this->currency->name,
