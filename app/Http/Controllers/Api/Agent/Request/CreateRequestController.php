@@ -515,11 +515,13 @@ class CreateRequestController extends Controller
 
     public function stages(Request $request, $id){
         // /agent/request/stages/{id}
+        // Stages = Pending, Price quotation, Negotiation
         // Keys
-        // stages, action, priority, follow_up_date, result, 
+        // stages => [Pending,Price quotation,Negotiation,Won,Won Canceled,Lost], 
+        // action => [call,message,assign_request], follow_up_date, result, 
         // if action = message => key => send_by
         // if action = assign_request => key => admin_agent_id
-        // Stages = Won, Lost
+        // Stages = Won, Lost, Won Canceled
         // Keys
         // stages
         // if stages = Won => key => code
