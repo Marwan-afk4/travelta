@@ -459,8 +459,12 @@ class ManualBookingController extends Controller
                 "room_quantity" => $manuel_data_cart->room_quantity ?? null,
                 "childreen" =>  $manuel_data_cart->childreen ?? null,
                 "adults" =>  $manuel_data_cart->adults ?? null,
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "adults_data" =>  is_string($manuel_data_cart->adults_data) ?
+                json_decode($manuel_data_cart->adults_data ?? '[]') ?? []
+                : $manuel_data_cart->adults_data,
+                "children_data" => is_string($manuel_data_cart->children_data) ?
+                json_decode($manuel_data_cart->children_data ?? '[]') ?? []
+                : $manuel_data_cart->children_data,
             ];
         }
         elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
@@ -477,8 +481,12 @@ class ManualBookingController extends Controller
                 "bus" => $manuel_data_cart->bus ?? null,
                 "bus_number" => $manuel_data_cart->bus_number ?? null,
                 "driver_phone" => $manuel_data_cart->driver_phone ?? null, 
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "adults_data" => is_string($manuel_data_cart->adults_data) ? 
+                json_decode($manuel_data_cart->adults_data ?? '[]') ?? [] :
+                $manuel_data_cart->adults_data,
+                "children_data" => is_string($manuel_data_cart->children_data) ? 
+                json_decode($manuel_data_cart->children_data ?? '[]') ?? []
+                : $manuel_data_cart->children_data,
             ];
         }
         elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
