@@ -519,12 +519,14 @@ class CreateRequestController extends Controller
         // stages, action, priority, follow_up_date, result, 
         // if action = message => key => send_by
         // if action = assign_request => key => admin_agent_id
+        // Stages = Won, Lost
+        // Keys
+        // stages
         // if stages = Won => key => code
         // if stages = Lost => key => lost_reason
         $validation = Validator::make($request->all(), [
             'stages' => 'required|in:Pending,Price quotation,Negotiation,Won,Won Canceled,Lost',
-            'action' => 'required|in:call,message,assign_request',
-            'priority' => 'nullable|in:hot,warm,cold',
+            'action' => 'in:call,message,assign_request',
             'follow_up_date' => 'date',
         ]);
         if($validation->fails()){
@@ -579,10 +581,10 @@ class CreateRequestController extends Controller
         }
         $stageRequest = $request->only($this->stageRequest);
         $stageRequest['request_booking_id'] = $id;
-        if ($request->action == 'message') { 
+        if ($request->action && $request->action == 'message') { 
             $stageRequest['send_by'] = $request->send_by;
         }
-        elseif ($request->action == 'assign_request') { 
+        elseif ($request->action && $request->action == 'assign_request') { 
             $request_booking = $this->request_booking
             ->where('id', $id)
             ->where($role, $agent_id)
@@ -606,8 +608,10 @@ class CreateRequestController extends Controller
                 'lost_reason' => $request->lost_reason
             ]);
         }
-        $this->request_stage
-        ->create($stageRequest);
+        if ($request->stages != 'Lost' && $request->stages != 'Won' &&  $request->stages != 'Won Canceled') {
+            $this->request_stage
+            ->create($stageRequest);
+        }
         
         $request_booking = $this->request_booking
         ->where('id', $id)
