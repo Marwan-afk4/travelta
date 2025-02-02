@@ -509,7 +509,9 @@ class ManualBookingController extends Controller
             $flight = [	
                 "type" => $manuel_data_cart->type ?? null, 
                 "direction" =>  $manuel_data_cart->direction ?? null,
-                "from_to" =>  json_decode($manuel_data_cart->from_to ?? '[]') ?? [],
+                "from_to" =>  is_string($manuel_data_cart->from_to) ? 
+                json_decode($manuel_data_cart->from_to ?? '[]') ?? [] : 
+                $manuel_data_cart->from_to,
                 "departure" =>  $manuel_data_cart->departure ?? null,
                 "arrival" => $manuel_data_cart->arrival ?? null,   
                 "class" =>  $manuel_data_cart->class ?? null,
@@ -521,8 +523,12 @@ class ManualBookingController extends Controller
                 "adult_price" => $manuel_data_cart->adult_price ?? null, 
                 "child_price" => $manuel_data_cart->child_price ?? null, 
                 "ref_pnr" =>  $manuel_data_cart->ref_pnr ?? null,
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "adults_data" => is_string($manuel_data_cart->adults_data) ?
+                json_decode($manuel_data_cart->adults_data ?? '[]') ?? []
+                : $manuel_data_cart->adults_data,
+                "children_data" => is_string($manuel_data_cart->children_data) ? 
+                json_decode($manuel_data_cart->children_data ?? '[]') ?? [] :
+                $manuel_data_cart->children_data,
             ];
         }
         elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
@@ -534,10 +540,18 @@ class ManualBookingController extends Controller
                 "adults" => $manuel_data_cart->adults ?? null, 
                 "childreen" => $manuel_data_cart->childreen ?? null, 
                 "flight_date" => $manuel_data_cart->flight_date ?? null, 
-                "tour_buses" => json_decode($manuel_data_cart->tour_buses ?? '[]') ?? [], 
-                "tour_hotels" => json_decode($manuel_data_cart->tour_hotels ?? '[]') ?? [], 
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "tour_buses" => is_string($manuel_data_cart->tour_buses) 
+                ? json_decode($manuel_data_cart->tour_buses ?? '[]') ?? []:
+                $manuel_data_cart->tour_buses, 
+                "tour_hotels" => is_string($manuel_data_cart->tour_hotels) 
+                ? json_decode($manuel_data_cart->tour_hotels ?? '[]') ?? []:
+                $manuel_data_cart->tour_hotels, 
+                "adults_data" =>  is_string($manuel_data_cart->adults_data) 
+                ? json_decode($manuel_data_cart->adults_data ?? '[]') ?? []:
+                $manuel_data_cart->adults_data,
+                "children_data" =>  is_string($manuel_data_cart->children_data) 
+                ? json_decode($manuel_data_cart->children_data ?? '[]') ?? []:
+                $manuel_data_cart->children_data,
             ];
         }
         $arr = [
