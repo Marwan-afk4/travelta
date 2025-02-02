@@ -187,6 +187,7 @@ class RoomAvailabilityController extends Controller
     }
 
     public function delete($id){
+        // agent/room/availability/delete/{id}
         $this->room_availability
         ->where('id', $id)
         ->delete();
