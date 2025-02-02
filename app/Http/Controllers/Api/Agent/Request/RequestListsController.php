@@ -11,6 +11,11 @@ use App\Http\Resources\FlightRequestResource;
 use App\Http\Resources\TourRequestResource;
 use App\Http\Resources\VisaRequestResource;
 use App\Http\Resources\BookingRequestResource;
+use App\Http\Resources\Request\BusResource;
+use App\Http\Resources\Request\FlightResource;
+use App\Http\Resources\Request\HotelResource;
+use App\Http\Resources\Request\TourResource;
+use App\Http\Resources\Request\VisaResource;
 
 use App\Models\CustomerData;
 use App\Models\AdminAgent;
@@ -201,5 +206,77 @@ class RequestListsController extends Controller
         return response()->json([
             'request' => $request_booking
         ]); 
+    }
+
+    public function stages(Request $request){
+        // /agent/request/stages_data
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $hotels = $this->request_booking
+        ->where($role, $agent_id)
+        ->with('hotel', 'customer', 'admin_agent', 'currency') 
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
+        ->whereHas('hotel')
+        ->get();
+        $buses = $this->request_booking
+        ->where($role, $agent_id)
+        ->with('bus', 'customer', 'admin_agent', 'currency')
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
+        ->whereHas('bus')
+        ->get();
+        $flights = $this->request_booking
+        ->where($role, $agent_id)
+        ->with('flight', 'customer', 'admin_agent', 'currency')
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
+        ->whereHas('flight')
+        ->get();
+        $visas = $this->request_booking
+        ->where($role, $agent_id)
+        ->with('visa', 'customer', 'admin_agent', 'currency')
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
+        ->whereHas('visa')
+        ->get();
+        $tours = $this->request_booking
+        ->where($role, $agent_id)
+        ->with(['tour' => function($query) {
+            return $query->with('bus', 'hotel');
+        }, 'customer', 'admin_agent', 'currency'])
+        ->orderByRaw("FIELD(priority, 'High', 'Normal', 'Low')")
+        ->whereHas('tour')
+        ->get();
+  
+        $hotels = HotelResource::collection($hotels);
+        $buses = BusResource::collection($buses);
+        $flights = FlightResource::collection($flights);
+        $visas = VisaResource::collection($visas);
+        $tours = TourResource::collection($tours);
+        $data = collect([]);
+        $data = $data->merge($hotels);
+        $data = $data->merge($buses);
+        $data = $data->merge($flights);
+        $data = $data->merge($visas);
+        $data = $data->merge($tours);
+
+        $pending = array_values($data->where('stages', 'Pending')->toArray());
+        $price_quotation = array_values($data->where('stages', 'Price quotation')->toArray());
+        $negotiation = array_values($data->where('stages', 'Negotiation')->toArray());
+        return response()->json([
+            'pending' => $pending,
+            'price_quotation' => $price_quotation,
+            'negotiation' => $negotiation,
+        ]);
     }
 }

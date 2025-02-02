@@ -19,7 +19,7 @@ class FlightRequestResource extends JsonResource
             'to_name' => $this->customer?->name ?? null, 
             'to_phone' => $this->customer?->phone ?? null,
             'agent' => $this->admin_agent?->name,
-            'service' => 'Hotel',
+            'service' => 'Flight',
             'revenue' => $this->expected_revenue,
             'priority' => $this->priority,
             'stages' => $this->stages,

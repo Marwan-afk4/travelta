@@ -87,6 +87,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(RequestListsController::class)->group(function(){ 
             Route::get('/lists', 'lists');
             Route::get('/', 'view');
+            Route::get('/stages_data', 'stages');
             Route::get('/item/{id}', 'request_item');
         });
         Route::controller(CreateRequestController::class)->group(function(){
