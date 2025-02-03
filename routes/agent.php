@@ -34,6 +34,8 @@ use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomTypesController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomAmenityController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomExtraController;
 
+use App\Http\Controllers\Api\Agent\invoice\InvoiceController;
+
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
 use App\Http\Controllers\Api\Agent\settings\GroupController;
@@ -73,6 +75,12 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('add', 'create');
         Route::post('update/{id}', 'modify');
         Route::delete('delete/{id}', 'delete');
+    });
+
+    Route::prefix('invoice')->group(function(){
+        Route::controller(InvoiceController::class)->group(function(){
+            Route::get('/', 'invoice'); 
+        });
     });
 
     Route::prefix('accounting')->group(function(){
