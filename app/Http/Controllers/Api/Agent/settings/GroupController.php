@@ -15,6 +15,7 @@ class GroupController extends Controller
     private Nationality $nationalities){}
     
     public function view(){
+        // /settings/group
         $groups = $this->groups
         ->with('nationalities')
         ->get();
@@ -28,6 +29,7 @@ class GroupController extends Controller
     }
     
     public function group($id){
+        // /settings/group/item/{id}
         $group = $this->groups
         ->with('nationalities')
         ->where('id', $id)
@@ -39,6 +41,9 @@ class GroupController extends Controller
     }
 
     public function create(GroupRequest $request){
+        // /settings/group/add
+        // Keys
+        // name, nationalities[]
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -68,6 +73,9 @@ class GroupController extends Controller
     }
 
     public function modify(GroupRequest $request, $id){
+        // /settings/group/update/{id}
+        // Keys
+        // name, nationalities[]
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -99,6 +107,7 @@ class GroupController extends Controller
     }
 
     public function delete(Request $request, $id){
+        // /settings/group/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }

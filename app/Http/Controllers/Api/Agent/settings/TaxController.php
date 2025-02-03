@@ -47,6 +47,9 @@ class TaxController extends Controller
     }
 
     public function create(TaxRequest $request){
+        // /settings/tax/add
+        // Keys
+        // name, country_id, type, amount
         $taxRequest = $request->validated();
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -74,6 +77,9 @@ class TaxController extends Controller
     }
 
     public function modify(TaxRequest $request, $id){
+        // /settings/tax/update/{id}
+        // Keys
+        // name, country_id, type, amount
         $taxRequest = $request->validated(); 
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -103,6 +109,7 @@ class TaxController extends Controller
     }
 
     public function delete(Request $request, $id){
+        // /settings/tax/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
