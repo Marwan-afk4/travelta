@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('legal_papers', function (Blueprint $table) {
-            $table->id();
-            $table->longText('image');
-            $table->foreignId('user_id')->nullable()->constrained('customers')->onDelete('cascade')->onUpdate('cascade');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('legal_papers')) {
+            Schema::create('legal_papers', function (Blueprint $table) {
+                $table->id();
+                $table->longText('image');
+                $table->foreignId('user_id')->nullable()->constrained('customers')->onDelete('cascade')->onUpdate('cascade');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

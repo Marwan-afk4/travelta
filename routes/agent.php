@@ -227,7 +227,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(TaxController::class)->prefix('tax')->group(function(){
             Route::get('/', 'view');
             Route::post('add', 'create');
-            Route::post('update/{id}', 'modify');
+            Route::put('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');
         });
         Route::controller(CurrencyController::class)->prefix('currency')->group(function(){

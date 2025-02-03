@@ -11,19 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('manuel_hotels', function (Blueprint $table) {
-            $table->id();
-            $table->date('check_in');
-            $table->date('check_out'); 
-            $table->foreignId(column: 'manuel_booking_id')->nullable()->constrained('manuel_bookings')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('nights');
-            $table->string('hotel_name');
-            $table->string('room_type');
-            $table->integer('room_quantity');
-            $table->integer('adults');
-            $table->integer('childreen');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('manuel_hotels')) {
+            Schema::create('manuel_hotels', function (Blueprint $table) {
+                $table->id();
+                $table->date('check_in');
+                $table->date('check_out'); 
+                $table->foreignId(column: 'manuel_booking_id')->nullable()->constrained('manuel_bookings')->onUpdate('cascade')->onDelete('cascade');
+                $table->string('nights');
+                $table->string('hotel_name');
+                $table->string('room_type');
+                $table->integer('room_quantity');
+                $table->integer('adults');
+                $table->integer('childreen');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

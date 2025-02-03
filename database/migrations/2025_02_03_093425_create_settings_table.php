@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('admin_positions')) {
-            Schema::create('admin_positions', function (Blueprint $table) {
-                $table->id();
-                $table->string('name')->notnull();
-                $table->timestamps();
-            });
-        }
+        Schema::create('settings', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('value', 1000);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admin_positions');
+        Schema::dropIfExists('settings');
     }
 };

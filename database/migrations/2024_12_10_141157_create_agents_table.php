@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('agents', function (Blueprint $table) {
+        if (!Schema::hasTable('agents')) {
+            Schema::create('agents', function (Blueprint $table) {
             $table->id();
             $table->foreignId(column: 'plan_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('set null');
             $table->string('name');
@@ -29,7 +30,8 @@ return new class extends Migration
             $table->foreignId(column: 'city_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('set null');
             $table->foreignId(column: 'source_id')->nullable()->constrained('customer_sources')->onUpdate('cascade')->onDelete('set null');
             $table->timestamps();
-        });
+            });
+        }
     }
 
     /**

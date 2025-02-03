@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_sources', function (Blueprint $table) {
-            $table->id();
-            $table->string('source');
-            $table->boolean('status')->default(1);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('customer_sources')) {
+            Schema::create('customer_sources', function (Blueprint $table) {
+                $table->id();
+                $table->string('source');
+                $table->boolean('status')->default(1);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

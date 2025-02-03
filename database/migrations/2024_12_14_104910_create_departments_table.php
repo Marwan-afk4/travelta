@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('departments', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->notnull();
-            $table->string('phone')->notnull()->unique();
-            $table->string('email')->notnull()->unique();
-            $table->string('whatsapp_number')->notnull()->unique();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('departments')) {
+            Schema::create('departments', function (Blueprint $table) {
+                $table->id();
+                $table->string('name')->notnull();
+                $table->string('phone')->notnull()->unique();
+                $table->string('email')->notnull()->unique();
+                $table->string('whatsapp_number')->notnull()->unique();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

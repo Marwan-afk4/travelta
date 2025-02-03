@@ -11,22 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('manuel_buses', function (Blueprint $table) {
-            $table->id();
-            $table->string('from');
-            $table->string('to'); 
-            $table->foreignId(column: 'manuel_booking_id')->nullable()->constrained('manuel_bookings')->onUpdate('cascade')->onDelete('cascade');
-            $table->datetime('departure');
-            $table->datetime('arrival');
-            $table->integer('adults');
-            $table->integer('childreen');
-            $table->float('adult_price');
-            $table->float('child_price');
-            $table->string('bus')->nullable();
-            $table->string('bus_number')->nullable();
-            $table->string('driver_phone')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('manuel_buses')) {
+            Schema::create('manuel_buses', function (Blueprint $table) {
+                $table->id();
+                $table->string('from');
+                $table->string('to'); 
+                $table->foreignId(column: 'manuel_booking_id')->nullable()->constrained('manuel_bookings')->onUpdate('cascade')->onDelete('cascade');
+                $table->datetime('departure');
+                $table->datetime('arrival');
+                $table->integer('adults');
+                $table->integer('childreen');
+                $table->float('adult_price');
+                $table->float('child_price');
+                $table->string('bus')->nullable();
+                $table->string('bus_number')->nullable();
+                $table->string('driver_phone')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

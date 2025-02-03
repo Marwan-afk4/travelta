@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('zones', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->notnull();
-            $table->foreignId('city_id')->constrained()->onDelete('cascade');
-            $table->foreignId('country_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('zones')) {
+            Schema::create('zones', function (Blueprint $table) {
+                $table->id();
+                $table->string('name')->notnull();
+                $table->foreignId('city_id')->constrained()->onDelete('cascade');
+                $table->foreignId('country_id')->constrained()->onDelete('cascade');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
