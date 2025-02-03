@@ -249,7 +249,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view');
             Route::get('item/{id}', 'group');
             Route::post('add', 'create');
-            Route::post('update/{id}', 'modify');
+            Route::put('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');
         });
     });
