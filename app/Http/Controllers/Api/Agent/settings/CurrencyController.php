@@ -36,7 +36,7 @@ class CurrencyController extends Controller
             ->get();
         } 
         $currency = $this->currency
-        ->select('id', 'currancy_symbol')
+        ->select('id', 'currancy_symbol', 'currancy_name')
         ->get();
 
         return response()->json([
