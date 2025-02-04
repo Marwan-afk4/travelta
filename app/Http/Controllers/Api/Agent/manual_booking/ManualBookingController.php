@@ -1001,10 +1001,7 @@ class ManualBookingController extends Controller
                         'financial_id' => $item->payment_method_id,
                         'code' => $code,
                     ]);
-// ___________________________________________________________________________________
-                    $remaining_list = $booking->payments_cart
-                    ->select('id', 'date', 'due_payment')
-                    ->where('due_payment', '>', 0);
+// ___________________________________________________________________________________ \
                     $cartRequest = [
                         'manuel_booking_id' => $manuel_booking->id,
                         'total' => $request->total_cart,
@@ -1062,23 +1059,31 @@ class ManualBookingController extends Controller
                 }
             }
             $customer = $this->customer_data
-            ->where('customer_id ', $request->to_customer_id)
+            ->where('customer_id', $request->to_customer_id)
             ->where($role, $agent_id)
             ->first();
-            $customer->update([
-                'type' => 'customer'
-            ]);
-            $this->customers
-            ->where('id ', $request->to_customer_id)
-            ->update([
-                'role' => 'customer'
-            ]);
+            if (!empty($customer)) {
+                $customer->update([
+                    'type' => 'customer'
+                ]);
+                $this->customers
+                ->where('id ', $request->to_customer_id)
+                ->update([
+                    'role' => 'customer'
+                ]);
+                $customer_name = $customer->name;
+            }
+            else{
+                $customer_name = $this->supplier_agent
+                ->where('id', $request->to_supplier_id)
+                ->first()->agent?? null;
+            }
              $this->manuel_data_cart
             ->where('id', $request->cart_id)
             ->delete();
 
             $data = [];
-            $data['name'] = $customer->name;
+            $data['name'] = $customer_name;
             $data['amount'] = $amount_payment;
             $data['payment_date'] = date('Y-m-d');
             $data['agent'] = $agent_data->name;;
