@@ -9,6 +9,8 @@ use App\Http\Requests\api\agent\manuel_booking\ManuelBookingRequest;
 use App\Http\Requests\api\agent\manuel_booking\CartBookingRequest;
 use Illuminate\Support\Str;
 use App\Http\Resources\ManuelCartResource;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentMail;
 
 use App\Models\CustomerData;
 use App\Models\SupplierAgent;
@@ -33,6 +35,8 @@ use App\Models\ManuelDataCart;
 use App\Models\BookingPayment;
 use App\Models\Customer;
 use App\Models\FinantiolAcounting;
+use App\Models\Agent;
+use App\Models\AffilateAgent;
 use App\trait\image;
 
 class ManualBookingController extends Controller
@@ -48,7 +52,8 @@ class ManualBookingController extends Controller
     private Adult $adults, private Child $child, private ManuelCart $manuel_cart,
     private PaymentsCart $payments_cart, private ManuelDataCart $manuel_data_cart,
     private Customer $customers, private FinantiolAcounting $financial_accounting,
-    private BookingPayment $booking_payment){}
+    private BookingPayment $booking_payment, private Agent $agent,
+    private AffilateAgent $affilate_agent){}
     
     protected $hotelRequest = [
         'check_in',
@@ -742,12 +747,19 @@ class ManualBookingController extends Controller
         
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
+            $agent_data = $this->affilate_agent
+            ->where('id', $request->user()->affilate_id)
+            ->first();
         }
         elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
             $agent_id = $request->user()->agent_id;
+            $agent_data = $this->agent
+            ->where('id', $request->user()->agent_id)
+            ->first();
         }
         else{
             $agent_id = $request->user()->id;
+            $agent_data = $request->user();
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
             $role = 'affilate_id';
@@ -965,10 +977,12 @@ class ManualBookingController extends Controller
             // payment_type, total_cart
             // payment_methods[amount, payment_method_id, image]
             // payments [{amount, date}]
+            $amount_payment = 0;
             if ($request->payment_methods) {
                 $payment_methods = is_string($request->payment_methods) ? 
                 json_decode($request->payment_methods) : $request->payment_methods;
                 foreach ($payment_methods as $item) {
+                    $amount_payment += $item->amount ?? 0;
                     $code = Str::random(8);
                     $booking_payment_item = $this->booking_payment
                     ->where('code', $code)
@@ -1047,10 +1061,11 @@ class ManualBookingController extends Controller
                     ]);
                 }
             }
-            $this->customer_data
+            $customer = $this->customer_data
             ->where('customer_id ', $request->to_customer_id)
             ->where($role, $agent_id)
-            ->update([
+            ->first();
+            $customer->update([
                 'type' => 'customer'
             ]);
             $this->customers
@@ -1062,6 +1077,12 @@ class ManualBookingController extends Controller
             ->where('id', $request->cart_id)
             ->delete();
 
+            $data = [];
+            $data['name'] = $customer->name;
+            $data['amount'] = $amount_payment;
+            $data['payment_date'] = date('Y-m-d');
+            $data['agent'] = $agent_data->name;;
+            Mail::to($agent_mail)->send(new PaymentMail($data));
             return response()->json([
                 'success' => $request->all(),
             ]);
