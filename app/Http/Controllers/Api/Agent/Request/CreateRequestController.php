@@ -609,7 +609,7 @@ class CreateRequestController extends Controller
                 'lost_reason' => $request->lost_reason
             ]);
         }
-        if ($request->stages != 'Lost' && $request->stages != 'Won' &&  $request->stages != 'Won Canceled') {
+        if ($request->action && $request->stages != 'Lost' && $request->stages != 'Won' &&  $request->stages != 'Won Canceled') {
             $this->request_stage
             ->create($stageRequest);
         }
