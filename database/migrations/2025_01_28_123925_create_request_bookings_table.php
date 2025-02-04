@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId(column: 'currency_id')->nullable()->constrained('currency_agents')->onUpdate('cascade')->onDelete('cascade');
             $table->float('expected_revenue')->nullable(); 
             $table->enum('priority', ['Low', 'Normal', 'High']);
-            $table->enum('stages', ['Pending', 'Price quotation', 'Negotiation', 'Won', 'Won Canceled', 'Lost']);
+            $table->enum('stages', ['Pending', 'Price quotation', 'Negotiation', 'Won', 'Won Canceled', 'Lost'])->default('Pending');
             $table->timestamps();
         });
     }
