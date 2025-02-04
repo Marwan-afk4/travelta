@@ -47,6 +47,22 @@
             border-radius: 5px;
             margin-top: 10px;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #0073e6;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -56,11 +72,24 @@
             <p>Dear Team,</p>
             <p>A new payment has been successfully processed.</p>
             <p><strong>Payment Details:</strong></p>
-            <ul>
-                <li><strong>Customer Name:</strong> {{ $data['name'] }}</li>
-                <li><strong>Amount:</strong> ${{ $data['amount'] }}</li>  
-                <li><strong>Date:</strong> {{ {{ $data['payment_date'] }} }}</li>
-            </ul>
+            <table>
+                <tr>
+                    <th>Field</th>
+                    <th>Details</th>
+                </tr>
+                <tr>
+                    <td>{{$data['position']}} Name</td>
+                    <td>{{ $data['name'] }}</td>
+                </tr>
+                <tr>
+                    <td>Amount</td>
+                    <td>${{ $data['amount'] }}</td>
+                </tr>  
+                <tr>
+                    <td>Date</td>
+                    <td>${{ $data['payment_date'] }}</td>
+                </tr>
+            </table>
         </div>
         <div class="footer">
             &copy; {{date('Y')}} {{$data['agent']}} | All rights reserved.

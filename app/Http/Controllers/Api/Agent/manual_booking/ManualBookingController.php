@@ -974,9 +974,10 @@ class ManualBookingController extends Controller
                 }
             }
             // Cart
-            // payment_type, total_cart
+            // payment_type, total_cart, cart_id
             // payment_methods[amount, payment_method_id, image]
             // payments [{amount, date}]
+            // "payment_type":"full","total_cart":"1","payment_methods":"[{\"amount\":200,\"payment_method_id\":9,\"image\":\"\"}]","payments":"[{\"amount\":400,\"date\":\"2025-05-05\"}]","cart_id":"67"}
             $amount_payment = 0;
             if ($request->payment_methods) {
                 $payment_methods = is_string($request->payment_methods) ? 
@@ -1071,23 +1072,25 @@ class ManualBookingController extends Controller
                 ->update([
                     'role' => 'customer'
                 ]);
-                $customer_name = $customer->name;
+                $position = 'Customer';
             }
             else{
-                $customer_name = $this->supplier_agent
+                $customer = $this->supplier_agent
                 ->where('id', $request->to_supplier_id)
                 ->first()->agent?? null;
+                $position = 'Supplier';
             }
-             $this->manuel_data_cart
-            ->where('id', $request->cart_id)
-            ->delete();
 
             $data = [];
-            $data['name'] = $customer_name;
+            $data['name'] = $customers->name;
+            $data['position'] = $position;
             $data['amount'] = $amount_payment;
             $data['payment_date'] = date('Y-m-d');
             $data['agent'] = $agent_data->name;;
-            Mail::to($agent_mail)->send(new PaymentMail($data));
+            Mail::to($agent_data->email)->send(new PaymentMail($data));
+        //     $this->manuel_data_cart
+        //    ->where('id', $request->cart_id)
+        //    ->delete();
             return response()->json([
                 'success' => $request->all(),
             ]);
