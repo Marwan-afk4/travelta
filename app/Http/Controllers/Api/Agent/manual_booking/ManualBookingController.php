@@ -1060,7 +1060,7 @@ class ManualBookingController extends Controller
                 }
             }
             $customer = $this->customer_data
-            ->where('customer_id', $request->to_customer_id)
+            ->where('customer_id', $manuel_data_cart->to_customer_id)
             ->where($role, $agent_id)
             ->first();
             if (!empty($customer)) {
@@ -1068,7 +1068,7 @@ class ManualBookingController extends Controller
                     'type' => 'customer'
                 ]);
                 $this->customers
-                ->where('id ', $request->to_customer_id)
+                ->where('id ', $manuel_data_cart->to_customer_id)
                 ->update([
                     'role' => 'customer'
                 ]);
@@ -1076,13 +1076,13 @@ class ManualBookingController extends Controller
             }
             else{
                 $customer = $this->supplier_agent
-                ->where('id', $request->to_supplier_id)
-                ->first()->agent?? null;
+                ->where('id', $manuel_data_cart->to_supplier_id)
+                ->first();
                 $position = 'Supplier';
             }
 
             $data = [];
-            $data['name'] = $customers->name;
+            $data['name'] = $customer->name;
             $data['position'] = $position;
             $data['amount'] = $amount_payment;
             $data['payment_date'] = date('Y-m-d');
