@@ -121,7 +121,6 @@ class CreateRequestController extends Controller
         // 'request_booking_id',
     ]; 
     protected $stageRequest = [
-        'stages',
         'action',
         'priority',
         'follow_up_date',
@@ -131,7 +130,7 @@ class CreateRequestController extends Controller
     public function add_hotel(BookingRequestRequest $request){
         // agent/request/add_hotel
         // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
-        // priority, stages, 
+        // priority,
         // check_in, check_out,  nights, hotel_name, room_type, room_quantity, adults, 
         // childreen, notes,
         // adult_data => [{title, first_name, last_name}]
@@ -196,7 +195,7 @@ class CreateRequestController extends Controller
     public function add_bus(BookingRequestRequest $request){
         // agent/request/add_bus
         // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
-        // priority, stages, 
+        // priority,
         // from, to, departure, arrival, adults, childreen, 
         // adult_price, child_price, bus, bus_number, driver_phone, notes, 
         // adult_data => [{title, first_name, last_name}]
@@ -261,7 +260,7 @@ class CreateRequestController extends Controller
     public function add_visa(BookingRequestRequest $request){
         // agent/request/add_visa
         // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
-        // priority, stages, 
+        // priority, 
         // country,travel_date,appointment_date,notes, adults,childreen, 
         // adult_data => [{title, first_name, last_name}]
         // child_data => [{age, first_name, last_name}]
@@ -325,7 +324,7 @@ class CreateRequestController extends Controller
     public function add_flight(BookingRequestRequest $request){
         // agent/request/add_flight
         // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
-        // priority, stages, 
+        // priority,
         // 'type' => [domestic, international], 'direction' => [one_way, round_trip, multi_city], 'from_to' => [{'from':'Alex', 'to':'America'}, {'from':'America', 'to':'Italy'}], 'departure', 'arrival', 'class', 'adults', 
         // 'childreen', 'infants', 'airline', 'ticket_number', 'adult_price', 
         // 'child_price', 'ref_pnr',  'notes',
@@ -391,7 +390,7 @@ class CreateRequestController extends Controller
     public function add_tour(BookingRequestRequest $request){
         // agent/request/add_tour
         // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
-        // priority, stages, 
+        // priority,
         // tour, type => [domestic, international],  flight_date, adult_price, child_price, 
         // adults, childreen, notes
         // tour_bus [transportation, seats, departure => if flight]
