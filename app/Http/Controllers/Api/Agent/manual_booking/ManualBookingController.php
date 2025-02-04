@@ -763,7 +763,7 @@ class ManualBookingController extends Controller
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
             $role = 'affilate_id';
-        } 
+        }
         else {
             $role = 'agent_id';
         }

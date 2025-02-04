@@ -15,6 +15,7 @@ class ManuelVisaResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'supplier_from_name' => $this->from_supplier->agent ?? null,
             'supplier_from_email' => is_string($this->from_supplier->emails) ? 
             json_decode($this->from_supplier->emails)[0] ?? $this->from_supplier->emails 
