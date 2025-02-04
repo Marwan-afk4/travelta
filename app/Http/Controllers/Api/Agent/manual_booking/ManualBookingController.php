@@ -30,6 +30,7 @@ use App\Models\Child;
 use App\Models\ManuelCart;
 use App\Models\PaymentsCart;
 use App\Models\ManuelDataCart;
+use App\Models\BookingPayment;
 use App\Models\Customer;
 use App\Models\FinantiolAcounting;
 use App\trait\image;
@@ -46,7 +47,8 @@ class ManualBookingController extends Controller
     private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency,
     private Adult $adults, private Child $child, private ManuelCart $manuel_cart,
     private PaymentsCart $payments_cart, private ManuelDataCart $manuel_data_cart,
-    private Customer $customers, private FinantiolAcounting $financial_accounting){}
+    private Customer $customers, private FinantiolAcounting $financial_accounting,
+    private BookingPayment $booking_payment){}
     
     protected $hotelRequest = [
         'check_in',
@@ -967,6 +969,28 @@ class ManualBookingController extends Controller
                 $payment_methods = is_string($request->payment_methods) ? 
                 json_decode($request->payment_methods) : $request->payment_methods;
                 foreach ($payment_methods as $item) {
+                    $code = Str::random(8);
+                    $booking_payment_item = $this->booking_payment
+                    ->where('code', $code)
+                    ->first();
+                    while (!empty($booking_payment_item)) {
+                        $code = Str::random(8);
+                        $booking_payment_item = $this->booking_payment
+                        ->where('code', $code)
+                        ->first();
+                    }
+                    $this->booking_payment
+                    ->create([
+                        'manuel_booking_id' => $manuel_booking->id,
+                        'date' => date('Y-m-d'),
+                        'amount' => $item->amount ?? 0,
+                        'financial_id' => $item->payment_method_id,
+                        'code' => $code,
+                    ]);
+// ___________________________________________________________________________________
+                    $remaining_list = $booking->payments_cart
+                    ->select('id', 'date', 'due_payment')
+                    ->where('due_payment', '>', 0);
                     $cartRequest = [
                         'manuel_booking_id' => $manuel_booking->id,
                         'total' => $request->total_cart,
@@ -985,6 +1009,25 @@ class ManualBookingController extends Controller
                     ->first();
                     $financial_accounting->balance = $financial_accounting->balance + $item->amount;
                 }
+            }
+            else {
+                $code = Str::random(8);
+                $booking_payment_item = $this->booking_payment
+                ->where('code', $code)
+                ->first();
+                while (!empty($booking_payment_item)) {
+                    $code = Str::random(8);
+                    $booking_payment_item = $this->booking_payment
+                    ->where('code', $code)
+                    ->first();
+                }
+                $this->booking_payment
+                ->create([
+                    'manuel_booking_id' => $manuel_booking->id,
+                    'date' => date('Y-m-d'),
+                    'amount' => 0,
+                    'code' => $code,
+                ]);
             }
             if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
                 $validation = Validator::make($request->all(), [
