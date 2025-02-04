@@ -212,13 +212,11 @@ class BookingPaymentController extends Controller
             }
         }
         $manuel_booking = $booking_payment->manuel_booking;
-        if (empty($manuel_booking->to_customer_id )) {
-       
-            $customer = $manuel_booking->to_customer;
+        $customer = $manuel_booking->to_client;
+        if (empty($manuel_booking->to_customer_id )) { 
             $position = 'Customer';
         }
-        else{
-            $customer = $manuel_booking->to_supplier;
+        else{ 
             $position = 'Supplier';
         } 
         $data = [];
