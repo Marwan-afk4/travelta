@@ -143,9 +143,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::controller(BookingController::class)->prefix('booking')->group(function(){
-        Route::get('/upcoming', 'upcoming');
-        Route::get('/current', 'current');
-        Route::get('/past', 'past');
+        Route::get('/', 'booking'); 
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){

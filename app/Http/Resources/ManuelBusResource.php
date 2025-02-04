@@ -36,7 +36,11 @@ class ManuelBusResource extends JsonResource
             'no_children' => $this->bus->childreen ?? null,
             'bus_name' => $this->bus->bus ?? null,
             'bus_no' => $this->bus->bus_number ?? null,
-            'driver_phone' => $this->bus->driver_phone ?? null,            
+            'driver_phone' => $this->bus->driver_phone ?? null,
+            'created_at' => $this->created_at ?? null,
+            'code' => $this->code ?? null,
+            'payment_status' => $this->payment_type ?? null,
+            'status' => $this->status ?? null,
         ];
     }
 }

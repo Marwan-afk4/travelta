@@ -34,6 +34,10 @@ class ManuelVisaResource extends JsonResource
             'travel_date' => $this->visa->travel_date ?? null,
             'appointment' => $this->visa->appointment_date ?? null,
             'notes' => $this->visa->notes ?? null,
+            'created_at' => $this->created_at ?? null,
+            'code' => $this->code ?? null,
+            'payment_status' => $this->payment_type ?? null,
+            'status' => $this->status ?? null,
         ];
     }
 }

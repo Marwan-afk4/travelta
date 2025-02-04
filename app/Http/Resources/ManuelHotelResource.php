@@ -34,7 +34,11 @@ class ManuelHotelResource extends JsonResource
             'no_nights' => $this->hotel->nights ?? null,
             'room_type' => $this->hotel->room_type ?? null,
             'no_adults' => $this->hotel->adults ?? null,
-            'no_children' => $this->hotel->childreen ?? null,
+            'no_children' => $this->hotel->childreen ?? null,  
+            'created_at' => $this->created_at ?? null,  
+            'code' => $this->code ?? null,  
+            'payment_status' => $this->payment_type ?? null,
+            'status' => $this->status ?? null, 
         ];
     }
 }

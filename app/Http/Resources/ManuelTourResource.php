@@ -33,7 +33,11 @@ class ManuelTourResource extends JsonResource
             'children_no' => $this->tour->childreen  ?? null,
             'adults_no' => $this->tour->adults  ?? null,
             'tour_hotels' => $this->tour->hotel->select('destination', 'hotel_name', 'room_type', 'check_in', 'check_out', 'nights') ,
-            'tour_buses' => $this->tour->bus->select('transportation', 'seats') ,
+            'tour_buses' => $this->tour->bus->select('transportation', 'seats') ,      
+            'created_at' => $this->created_at ?? null,
+            'code' => $this->code ?? null,
+            'payment_status' => $this->payment_type ?? null,
+            'status' => $this->status ?? null,
         ];
     }
 }

@@ -40,6 +40,10 @@ class ManuelFlightResource extends JsonResource
             'airline' => $this->flight->airline ?? null,
             'ticket_no' => $this->flight->ticket_number ?? null,
             'ref_pnr' => $this->flight->ref_pnr ?? null,
+            'created_at' => $this->created_at ?? null,
+            'code' => $this->code ?? null,
+            'payment_status' => $this->payment_type ?? null,
+            'status' => $this->status ?? null,
         ];
     }
 }
