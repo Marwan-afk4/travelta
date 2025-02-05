@@ -37,23 +37,9 @@ class LeadProfileController extends Controller
         $requests = $this->request_booking
         ->where($role, $agent_id)
         ->where('customer_id', $id)
-        ->with(['hotel' => function($query){
-            return $query->select('notes', 'hotel_name', 'check_in', 'check_out',
-            'nights', 'room_type', 'adults', 'childreen');
-        }, 'bus' => function($query){
-            return $query->select('notes', 'from', 'to', 'departure',
-            'arrival', 'adults', 'childreen', 'bus', 'bus_number', 'driver_phone');
-        }, 'flight' => function($query){
-            return $query->select('notes', 'type', 'direction', 'departure',
-            'arrival', 'from_to', 'adults', 'childreen', 'infants', 'class',
-            'airline', 'ticket_number', 'ref_pnr');
-        }, 'tour' => function($query){
-            return $query->select('notes', 'tour', 'type', 'adults', 'childreen')
-            ->with('hotel', 'bus');
-        }, 'visa' =>  function($query){
-            return $query->select('notes', 'adults', 'childreen', 'country',
-            'travel_date', 'appointment_date', 'notes');
-        }])
+        ->with(['hotel', 'bus', 'flight', 'tour' => function($query){
+            return $query->with('hotel', 'bus');
+        }, 'visa' ])
         ->get();
 
         return response()->json([
