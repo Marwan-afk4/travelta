@@ -61,6 +61,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(LeadController::class)->group(function(){
             Route::get('/', 'view');
             Route::get('leads_search', 'leads_search');
+            Route::put('update/{id}', 'modify');
             Route::post('add_lead', 'add_lead');
             Route::post('add', 'create');
             Route::delete('delete/{id}', 'delete');

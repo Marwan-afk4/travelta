@@ -194,6 +194,48 @@ class LeadController extends Controller
         ]);
     }
 
+    public function modify(LeadRequest $request, $id){ 
+        // /leads/update/{id}
+        // Keys
+        // name, phone, email, gender
+        $leadRequest = $request->only($this->leadRequest);
+        $customer = $this->customer
+        ->where('id', $id)
+        ->first();
+        if (empty($customer)) {
+            return response()->json([
+                'errors' => 'lead not found'
+            ], 400);
+        }
+        
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') { 
+            $role = 'affilate_id'; 
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $customer
+        ->update([ 
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'email' => $request->email ?? null,
+            'gender' => $request->gender ?? null,
+        ]);
+        
+        return response()->json([
+            'success' => $customer
+        ]);
+    }
+
     // public function modify(LeadRequest $request){ 
     //     // /leads/update
     //     // Keys

@@ -41,7 +41,7 @@ class SupplierProfileController extends Controller
         'flight', 'tour', 'visa')
         ->where('to_supplier_id', $id)
         ->where($role, $agent_id)
-        ->get(); 
+        ->get();
         $manuel_booking = ManuelBookingResource::collection($manuel_booking);
         $legal_papers = $this->legal_papers
         ->where('supplier_agent_id', $id)
