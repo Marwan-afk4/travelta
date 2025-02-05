@@ -201,8 +201,8 @@ class LeadController extends Controller
         $validation = Validator::make($request->all(), [
             'name' => 'required',
             'gender' => 'required|in:male,female',
-            'phone' => 'required|unique:customers,phone,' . $$id . ',id',
-            'email' => 'required|unique:customers,email,' . $$id . ',id',
+            'phone' => 'required|unique:customers,phone,' . $id . ',id',
+            'email' => 'required|unique:customers,email,' . $id . ',id',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
