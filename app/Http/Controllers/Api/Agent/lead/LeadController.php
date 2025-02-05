@@ -223,13 +223,19 @@ class LeadController extends Controller
                 'errors' => 'lead not found'
             ], 400);
         }
-        $customer
-        ->update([ 
+        $customer_arr = [ 
             'name' => $request->name,
             'phone' => $request->phone,
             'email' => $request->email ?? null,
-            'gender' => $request->gender ?? null,
-        ]);
+            'gender' => $request->gender ?? null, 
+        ];
+        if ($customer->phone != $request->phone) {
+            $parent_customer = $this->customer
+            ->create($leadRequest);
+            $customer_arr['customer_id'] = $parent_customer->id;
+        }
+        $customer
+        ->update($customer_arr);
         
         return response()->json([
             'success' => $customer
