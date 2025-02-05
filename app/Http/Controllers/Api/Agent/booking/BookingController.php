@@ -214,4 +214,8 @@ class BookingController extends Controller
             'past' => $past,
         ]);
     }
+
+    public function details(){
+        
+    }
 }
