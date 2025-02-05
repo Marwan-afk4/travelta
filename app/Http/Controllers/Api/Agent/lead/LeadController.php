@@ -197,17 +197,7 @@ class LeadController extends Controller
     public function modify(LeadRequest $request, $id){ 
         // /leads/update/{id}
         // Keys
-        // name, phone, email, gender
-        $leadRequest = $request->only($this->leadRequest);
-        $customer = $this->customer
-        ->where('id', $id)
-        ->first();
-        if (empty($customer)) {
-            return response()->json([
-                'errors' => 'lead not found'
-            ], 400);
-        }
-        
+        // name, phone, email, gender 
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -222,6 +212,16 @@ class LeadController extends Controller
         } 
         else {
             $role = 'agent_id';
+        }
+        $leadRequest = $request->only($this->leadRequest);
+        $customer = $this->customer_data
+        ->where('customer_id', $id)
+        ->where($role, $agent_id)
+        ->first();
+        if (empty($customer)) {
+            return response()->json([
+                'errors' => 'lead not found'
+            ], 400);
         }
         $customer
         ->update([ 
