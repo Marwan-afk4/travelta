@@ -16,12 +16,14 @@ use App\Models\BookingPayment;
 use App\Models\PaymentsCart;
 use App\Models\Agent;
 use App\Models\AffilateAgent;
+use App\Models\CustomerData;
 
 class BookingPaymentController extends Controller
 {
     public function __construct(private ManuelBooking $manuel_bookings,
     private FinantiolAcounting $financial_accounting, private BookingPayment $booking_payment,
-    private PaymentsCart $payment_cart, private Agent $agent, private AffilateAgent $affilate_agent){}
+    private PaymentsCart $payment_cart, private Agent $agent, private AffilateAgent $affilate_agent,
+    private CustomerData $customer_data){}
 
     public function search(Request $request){
         // /accounting/booking/search
@@ -215,6 +217,13 @@ class BookingPaymentController extends Controller
         $customer = $manuel_booking->to_client;
         if (empty($manuel_booking->to_customer_id )) { 
             $position = 'Customer';
+            $customer = $this->customer_data
+            ->where('customer_id', $manuel_booking->to_customer_id ?? null)
+            ->where($role, $agent_id)
+            ->first();
+            $customer->update([
+                'total_booking' => $amount_payment + $customer->total_booking,
+            ]);
         }
         else{ 
             $position = 'Supplier';

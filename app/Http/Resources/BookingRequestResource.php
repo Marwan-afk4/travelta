@@ -27,7 +27,7 @@ class BookingRequestResource extends JsonResource
             'bus' => $this->bus ?? null,
             'flight' => $this->flight ?? null,
             'visa' => $this->visa ?? null,
-            'tour' => $this->expected_tour ?? null,
+            'tour' => $this->tour ?? null,
 
             'expected_revenue' => $this->expected_revenue ?? null,
             'priority' => $this->priority ?? null,

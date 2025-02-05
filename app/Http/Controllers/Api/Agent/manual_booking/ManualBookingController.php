@@ -1065,7 +1065,8 @@ class ManualBookingController extends Controller
             ->first();
             if (!empty($customer)) {
                 $customer->update([
-                    'type' => 'customer'
+                    'type' => 'customer',
+                    'total_booking' => $amount_payment + $customer->total_booking,
                 ]);
                 $this->customers
                 ->where('id ', $manuel_data_cart['to_customer_id'] ?? null)

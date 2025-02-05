@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AgentAuthController;
 
 use App\Http\Controllers\Api\Agent\lead\LeadController;
+use App\Http\Controllers\Api\Agent\lead\LeadProfileController;
+
 use App\Http\Controllers\Api\Agent\customer\CustomerController;
 use App\Http\Controllers\Api\Agent\supplier\SupplierController;
 
@@ -58,6 +60,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('add_lead', 'add_lead');
         Route::post('add', 'create');
         Route::delete('delete/{id}', 'delete');
+    });
+
+    Route::controller(LeadProfileController::class)->prefix('leads')->group(function(){
+        Route::get('/profile/{id}', 'profile');
     });
     //marwan
     Route::controller(PlanController::class)->prefix('plan')->group(function(){
