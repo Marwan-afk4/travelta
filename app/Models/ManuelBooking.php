@@ -25,6 +25,7 @@ class ManuelBooking extends Model
         'affilate_id',
         'agent_id',
         'status',
+        'special_request',
     ];
     protected $appends = ['to_client'];
 

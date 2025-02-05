@@ -123,7 +123,8 @@ class ManualBookingController extends Controller
         'country_id',
         'city_id',
         'mark_up' ,
-        'mark_up_type'
+        'mark_up_type',
+        'special_request'
     ];
 
     public function lists(Request $request){
@@ -567,6 +568,7 @@ class ManualBookingController extends Controller
             "mark_up_type"=> $manuel_data_cart->mark_up_type,
             "mark_up"=> $manuel_data_cart->mark_up,
             "price"=> $manuel_data_cart->price,
+            'special_request' => $manuel_data_cart->special_request ?? null,
             "country"=> $this->contries->where('id', $manuel_data_cart->country_id)->first()->name ?? null,
             "city"=> $this->cities->where('id', $manuel_data_cart->city_id ?? 0)->first()->name ?? null,
             "currency"=> $this->currency->where('id', $manuel_data_cart->currency_id ?? 0)->first()->name ?? null,
@@ -698,6 +700,7 @@ class ManualBookingController extends Controller
                 "from_service"=>  $service,
                 "mark_up_type"=> $manuel_item->mark_up_type,
                 "mark_up"=> $manuel_item->mark_up,
+                'special_request' => $manuel_item->special_request ?? null,
                 "price"=> $manuel_item->price,
                 "country"=> $this->contries->where('id', $manuel_item->country_id)->first()->name ?? null,
                 "city"=> $this->cities->where('id', $manuel_item->city_id ?? 0)->first()->name ?? null,
@@ -797,6 +800,7 @@ class ManualBookingController extends Controller
         ->create([
             'from_supplier_id' => $manuelRequest['from_supplier_id'] ?? null,
             'from_service_id' => $manuelRequest['from_service_id'] ?? null,
+            'special_request' => $manuelRequest['special_request'] ?? null,
             'mark_up_type' => $manuelRequest['mark_up_type'] ?? null,
             'mark_up' => $manuelRequest['mark_up'] ?? null,
             'price' => $manuelRequest['price'] ?? null,
