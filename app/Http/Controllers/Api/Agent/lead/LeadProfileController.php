@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Agent\Lead;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\BookingRequestResource;
 
 use App\Models\CustomerData;
 use App\Models\RequestBooking;
@@ -39,8 +40,9 @@ class LeadProfileController extends Controller
         ->where('customer_id', $id)
         ->with(['hotel', 'bus', 'flight', 'tour' => function($query){
             return $query->with('hotel', 'bus');
-        }, 'visa' ])
+        }, 'visa', 'customer', 'admin_agent', 'currency', 'service'])
         ->get();
+        $requests = BookingRequestResource::collection($requests);
 
         return response()->json([
             'customer_info' => $customer_info,
