@@ -215,7 +215,60 @@ class BookingController extends Controller
         ]);
     }
 
-    public function details(){
-        
+    public function details(Request $request, $id){
+        // https://travelta.online/agent/booking/details/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
+        }
+        else{
+            $agent_type = 'agent_id';
+        }
+
+        $manuel_booking = $this->manuel_booking
+        ->with(['payments.financial' => function($query){
+            $query->select('id', 'name');
+        }])
+        ->where('id', $id)
+        ->where($agent_type, $agent_id)
+        ->first();
+        if (empty($manuel_booking)) {
+            return response()->json([
+                'errors' => 'Manuel booking not found'
+            ], 400);
+        }
+        $traveler = null;
+        $data = $manuel_booking->to_client;
+        if (!empty($manuel_booking->to_supplier_id)) {
+            $traveler['id'] = $data->id;
+            $traveler['name'] = $data->agent;
+            $traveler['phone'] = is_string($data->phones) ? json_decode($data->phones)[0] 
+            ?? $data->phones: $data->phones[0];
+            $traveler['email'] = is_string($data->emails) ? json_decode($data->emails)[0] 
+            ?? $data->emails: $data->emails[0];
+            $traveler['position'] = 'Supplier';
+        }
+        else{
+            $traveler['id'] = $data->id;
+            $traveler['name'] = $data->name;
+            $traveler['phone'] = $data->phone;
+            $traveler['email'] = $data->email;
+            $traveler['position'] = 'Customer';
+        }
+        $payments = $manuel_booking->payments;
+
+        return response()->json([
+            'manuel_booking' => $manuel_booking,
+            'traveler' => $traveler,
+            'payments' => $payments,
+        ]);
     }
 }

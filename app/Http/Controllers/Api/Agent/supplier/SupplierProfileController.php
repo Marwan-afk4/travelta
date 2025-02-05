@@ -39,7 +39,7 @@ class SupplierProfileController extends Controller
         $manuel_booking = $this->manuel_booking
         ->with('from_supplier', 'country', 'hotel', 'bus',
         'flight', 'tour', 'visa')
-        ->where('to_customer_id', $id)
+        ->where('to_supplier_id', $id)
         ->where($role, $agent_id)
         ->get(); 
         $manuel_booking = ManuelBookingResource::collection($manuel_booking);

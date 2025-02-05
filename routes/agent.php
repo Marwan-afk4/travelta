@@ -161,6 +161,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::controller(BookingController::class)->prefix('booking')->group(function(){
         Route::get('/', 'booking'); 
+        Route::get('/details/{id}', 'details'); 
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){
