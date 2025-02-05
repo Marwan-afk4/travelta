@@ -15,6 +15,7 @@ class LeadProfileController extends Controller
     private RequestBooking $request_booking){}
 
     public function profile(Request $request, $id){
+        // https://travelta.online/agent/leads/profile/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
