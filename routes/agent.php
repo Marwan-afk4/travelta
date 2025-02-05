@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\Agent\lead\LeadController;
 use App\Http\Controllers\Api\Agent\lead\LeadProfileController;
 
 use App\Http\Controllers\Api\Agent\customer\CustomerController;
+use App\Http\Controllers\Api\Agent\customer\CustomerProfileController;
+
 use App\Http\Controllers\Api\Agent\supplier\SupplierController;
 
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
@@ -54,16 +56,18 @@ Route::controller(AgentAuthController::class)->group(function(){
 
 
 Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
-    Route::controller(LeadController::class)->prefix('leads')->group(function(){
-        Route::get('/', 'view');
-        Route::get('leads_search', 'leads_search');
-        Route::post('add_lead', 'add_lead');
-        Route::post('add', 'create');
-        Route::delete('delete/{id}', 'delete');
-    });
+    Route::prefix('leads')->group(function(){
+        Route::controller(LeadController::class)->group(function(){
+            Route::get('/', 'view');
+            Route::get('leads_search', 'leads_search');
+            Route::post('add_lead', 'add_lead');
+            Route::post('add', 'create');
+            Route::delete('delete/{id}', 'delete');
+        });
 
-    Route::controller(LeadProfileController::class)->prefix('leads')->group(function(){
-        Route::get('/profile/{id}', 'profile');
+        Route::controller(LeadProfileController::class)->group(function(){
+            Route::get('/profile/{id}', 'profile');
+        });
     });
     //marwan
     Route::controller(PlanController::class)->prefix('plan')->group(function(){
@@ -156,8 +160,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('/', 'view');
     });
 
-    Route::controller(CustomerController::class)->prefix('customer')->group(function(){
-        Route::get('/', 'view');
+    Route::prefix('customer')->group(function(){
+        Route::controller(CustomerController::class)->group(function(){
+            Route::get('/', 'view');
+        });
+        Route::controller(CustomerProfileController::class)->group(function(){
+            Route::get('/profile/{id}', 'profile');
+        });
     });
 
     Route::prefix('/room')->group(function(){ 
