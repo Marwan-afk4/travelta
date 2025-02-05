@@ -15,7 +15,7 @@ class BookingPayment extends Model
     ];
 
     public function financial(){
-        return $this->belongsTo(FinantiolAcounting::class, 'financial_accounting_id');
+        return $this->belongsTo(FinantiolAcounting::class, 'financial_id');
     }
 
     public function manuel_booking(){

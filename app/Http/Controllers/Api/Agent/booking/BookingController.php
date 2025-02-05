@@ -232,11 +232,12 @@ class BookingController extends Controller
         else{
             $agent_type = 'agent_id';
         }
-
         $manuel_booking = $this->manuel_booking
-        ->with(['payments.financial' => function($query){
-            $query->select('id', 'name');
-        }])
+        ->with([
+            'payments.financial' => function ($query) {
+                $query->select('id', 'name');
+            }
+        ])
         ->where('id', $id)
         ->where($agent_type, $agent_id)
         ->first();
@@ -269,6 +270,14 @@ class BookingController extends Controller
             'manuel_booking' => $manuel_booking,
             'traveler' => $traveler,
             'payments' => $payments,
+        ]);
+    }
+
+    public function special_request(Request $request, $id){
+        $this->manuel_booking
+        ->where('id', $id)
+        ->update([
+            'special_request' => $request->special_request
         ]);
     }
 }

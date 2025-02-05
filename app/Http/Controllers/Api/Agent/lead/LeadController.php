@@ -194,10 +194,19 @@ class LeadController extends Controller
         ]);
     }
 
-    public function modify(LeadRequest $request, $id){ 
+    public function modify(Request $request, $id){ 
         // /leads/update/{id}
         // Keys
         // name, phone, email, gender 
+        $validation = Validator::make($request->all(), [
+            'name' => 'required',
+            'gender' => 'required|in:male,female',
+            'phone' => 'required|unique:customers,phone,except,' . $id,
+            'email' => 'required|unique:customers,email,except,' . $id,
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
