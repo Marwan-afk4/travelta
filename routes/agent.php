@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Agent\customer\CustomerController;
 use App\Http\Controllers\Api\Agent\customer\CustomerProfileController;
 
 use App\Http\Controllers\Api\Agent\supplier\SupplierController;
+use App\Http\Controllers\Api\Agent\supplier\SupplierProfileController;
 
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
@@ -79,12 +80,18 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('/make_payment', 'makePayment');
     });
 
-    Route::controller(SupplierController::class)->prefix('supplier')->group(function(){
-        Route::get('/', 'view');
-        Route::get('item/{id}', 'supplier');
-        Route::post('add', 'create');
-        Route::post('update/{id}', 'modify');
-        Route::delete('delete/{id}', 'delete');
+    Route::prefix('supplier')->group(function(){
+        Route::controller(SupplierController::class)->group(function(){
+            Route::get('/', 'view');
+            Route::get('item/{id}', 'supplier');
+            Route::post('add', 'create');
+            Route::post('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
+        });
+
+        Route::controller(SupplierProfileController::class)->group(function(){
+            Route::get('/profile/{id}', 'profile'); 
+        });
     });
 
     Route::prefix('invoice')->group(function(){

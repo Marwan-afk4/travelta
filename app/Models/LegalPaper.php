@@ -12,7 +12,8 @@ class LegalPaper extends Model
         'agent_id',
         'affilate_id',
         'user_id',
-        'customer_id'
+        'customer_id',
+        'supplier_agent_id',
     ];
     protected $appends = ['image_link'];
 
