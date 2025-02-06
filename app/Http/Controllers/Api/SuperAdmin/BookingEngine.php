@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BookingEngine as ModelsBookingEngine;
+use App\Models\City;
+use App\Models\Country;
 use App\Models\CustomerBookingengine;
 use App\Models\Hotel;
 use App\Models\Room;
@@ -16,6 +18,38 @@ use Illuminate\Support\Facades\Validator;
 
 class BookingEngine extends Controller
 {
+    public function gethotels(){
+        $hotels = Hotel::all();
+        $data = $hotels->map(function ($hotel) {
+            return [
+                'id' => $hotel->id,
+                'name' => $hotel->hotel_name,
+            ];
+        });
+        return response()->json(['hotels' => $data]);
+    }
+
+    public function getcities(){
+        $cities = City::all();
+        $data = $cities->map(function ($city) {
+            return [
+                'id' => $city->id,
+                'name' => $city->name,
+            ];
+        });
+        return response()->json(['cities' => $data]);
+    }
+
+    public function getcountries(){
+        $countries = Country::all();
+        $data = $countries->map(function ($country) {
+            return [
+                'id' => $country->id,
+                'name' => $country->name,
+            ];
+        });
+        return response()->json(['countries' => $data]);
+    }
 
     public function getAvailableRooms(Request $request)
 {
@@ -100,7 +134,7 @@ class BookingEngine extends Controller
 
             $results[] = [
                 'hotel_id' => $hotel->id,
-                'hotel_name' => $hotel->name,
+                'hotel_name' => $hotel->hotel_name,
                 'city' => $hotel->city->name,
                 'country' => $hotel->city->country->name,
                 'available_rooms' => $availableRooms,

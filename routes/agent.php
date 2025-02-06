@@ -44,7 +44,7 @@ use App\Http\Controllers\Api\Agent\invoice\InvoiceController;
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
 use App\Http\Controllers\Api\Agent\settings\GroupController;
-
+use App\Http\Controllers\Api\SuperAdmin\BookingEngine;
 use App\Http\Controllers\Api\SuperAdmin\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
 
@@ -80,7 +80,17 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('/payment_methods', 'getPaymentMethods');
         Route::post('/make_payment', 'makePayment');
     });
+///////marwan start
+    Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookroom']);
 
+    Route::post('/agent/avalibleRooms', [BookingEngine::class, 'getAvailableRooms']);
+
+    Route::get('/gethotels', [BookingEngine::class, 'getHotels']);
+
+    Route::get('/getcities', [BookingEngine::class, 'getCities']);
+
+    Route::get('/getcountries', [BookingEngine::class, 'getCountries']);
+///////marwan end
     Route::prefix('supplier')->group(function(){
         Route::controller(SupplierController::class)->group(function(){
             Route::get('/', 'view');
@@ -91,13 +101,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
 
         Route::controller(SupplierProfileController::class)->group(function(){
-            Route::get('/profile/{id}', 'profile'); 
+            Route::get('/profile/{id}', 'profile');
         });
     });
 
     Route::prefix('invoice')->group(function(){
         Route::controller(InvoiceController::class)->group(function(){
-            Route::get('/', 'invoice'); 
+            Route::get('/', 'invoice');
         });
     });
 
@@ -110,7 +120,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::prefix('request')->group(function(){
-        Route::controller(RequestListsController::class)->group(function(){ 
+        Route::controller(RequestListsController::class)->group(function(){
             Route::get('/lists', 'lists');
             Route::get('/', 'view');
             Route::get('/stages_data', 'stages');
@@ -161,8 +171,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::controller(BookingController::class)->prefix('booking')->group(function(){
-        Route::get('/', 'booking'); 
-        Route::get('/details/{id}', 'details'); 
+        Route::get('/', 'booking');
+        Route::get('/details/{id}', 'details');
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){
@@ -178,7 +188,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
     });
 
-    Route::prefix('/room')->group(function(){ 
+    Route::prefix('/room')->group(function(){
         Route::controller(RoomPricingController::class)
         ->prefix('/pricing')->group(function(){
             Route::get('/{id}', 'view');
@@ -208,7 +218,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::delete('delete/{id}', 'delete');
         });
         Route::controller(CreateRoomController::class)
-        ->group(function(){ 
+        ->group(function(){
             Route::post('add', 'create');
             Route::post('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');
@@ -230,7 +240,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
                 Route::post('update/{id}', 'modify');
                 Route::delete('delete/{id}', 'delete');
             });
-            
+
             Route::prefix('/amenity')->controller(RoomAmenityController::class)
             ->group(function(){
                 Route::get('/', 'view');
@@ -240,7 +250,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
                 Route::post('update/{id}', 'modify');
                 Route::delete('delete/{id}', 'delete');
             });
-            
+
             Route::prefix('/extra')->controller(RoomExtraController::class)
             ->group(function(){
                 Route::get('/', 'view');

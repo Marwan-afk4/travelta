@@ -34,9 +34,9 @@ Route::post('/login', [Authcontroller::class, 'login']);
 
 ////////////////////////////////////////// Bookings Engine //////////////////////////////////////////////////
 
-        Route::post('/super/bookingEngine', [BookingEngine::class, 'bookroom']);
+        // Route::post('/super/bookingEngine', [BookingEngine::class, 'bookroom']);
 
-        Route::post('/super/avalibleRooms', [BookingEngine::class, 'getAvailableRooms']);
+        // Route::post('/super/avalibleRooms', [BookingEngine::class, 'getAvailableRooms']);
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
