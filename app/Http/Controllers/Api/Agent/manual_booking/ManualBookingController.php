@@ -816,6 +816,7 @@ class ManualBookingController extends Controller
             'code' => $code,
             'payment_type' => $request->payment_type,
         ]);
+        try{
             if (isset($request->adults_data) && !empty($request->adults_data)) {
                 $adults_data = json_decode($request->adults_data) ?? [];
                 foreach ($adults_data as $item) {	
@@ -1095,8 +1096,13 @@ class ManualBookingController extends Controller
            ->where('id', $request->cart_id)
            ->delete();
             return response()->json([
-                'success' => $request->all(),
-                'type' => type_of($request->all()),
+                'success' => $request->all(), 
             ]);
+        } catch (\Throwable $th) {
+            $manuel_booking->delete();
+            return response()->json([
+                'faild' => 'something wrong',
+            ], 400);
+        }
     }
 }

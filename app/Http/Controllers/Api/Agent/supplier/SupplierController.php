@@ -92,6 +92,12 @@ class SupplierController extends Controller
         // Keys
         // agent,admin_name,admin_phone,admin_email,emails[],phones[],services[],
         $supplierRequest = $request->only($this->supplierRequest);
+        $supplierRequest['emails'] = is_string($request->emails) ?$request->emails:
+        json_encode($request->emails);
+        $supplierRequest['phones'] = is_string($request->phones) ?$request->phones:
+        json_encode($request->phones);
+        $supplierRequest['services'] = is_string($request->services) ?$request->services:
+        json_encode($request->services);
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
