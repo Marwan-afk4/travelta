@@ -1002,16 +1002,16 @@ class ManualBookingController extends Controller
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
                         'date' => date('Y-m-d'),
-                        'amount' => $item->amount ?? 0,
-                        'financial_id' => $item->payment_method_id,
+                        'amount' => $item->amount ?? $item['amount'],
+                        'financial_id' => $item->payment_method_id ?? $item['payment_method_id'],
                         'code' => $code,
                     ]);
 // ___________________________________________________________________________________ \
                     $cartRequest = [
                         'manuel_booking_id' => $manuel_booking->id,
                         'total' => $request->total_cart,
-                        'payment' => $item->amount ?? 0,
-                        'payment_method_id' => $item->payment_method_id,
+                        'payment' => $item->amount ?? $item['amount'],
+                        'payment_method_id' => $item->payment_method_id ?? $item['payment_method_id'],
                     ];
                     if ($item->image && !empty($item->image)) {
                         $image_path = $this->storeBase64Image($item->image);
@@ -1058,8 +1058,8 @@ class ManualBookingController extends Controller
                     $this->payments_cart
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
-                        'amount' => $item->amount,
-                        'date' => $item->date,
+                        'amount' => $item->amount ?? $item['amount'],
+                        'date' => $item->date ?? $item['date'],
                     ]);
                 }
             }

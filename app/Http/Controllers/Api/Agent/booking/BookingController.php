@@ -9,6 +9,7 @@ use App\Http\Resources\ManuelFlightResource;
 use App\Http\Resources\ManuelHotelResource;
 use App\Http\Resources\ManuelTourResource;
 use App\Http\Resources\ManuelVisaResource;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\Service;
 use App\Models\ManuelBooking;
@@ -267,17 +268,27 @@ class BookingController extends Controller
         $payments = $manuel_booking->payments;
 
         return response()->json([
-            'manuel_booking' => $manuel_booking,
             'traveler' => $traveler,
             'payments' => $payments,
         ]);
     }
 
     public function special_request(Request $request, $id){
+        // https://travelta.online/agent/booking/special_request/{id}
+        $validation = Validator::make($request->all(), [
+            'special_request' => 'required',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
         $this->manuel_booking
         ->where('id', $id)
         ->update([
             'special_request' => $request->special_request
+        ]);
+
+        return response()->json([
+            'success' => $request->special_request
         ]);
     }
 }
