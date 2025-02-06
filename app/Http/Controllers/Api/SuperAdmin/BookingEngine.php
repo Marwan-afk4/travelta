@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\BookingEngine as ModelsBookingEngine;
 use App\Models\CustomerBookingengine;
+use App\Models\Hotel;
 use App\Models\Room;
 use App\Models\RoomAvailability;
 use Carbon\Carbon;
@@ -21,63 +22,94 @@ class BookingEngine extends Controller
     $validated = $request->validate([
         'check_in'  => 'required|date|before:check_out',
         'check_out' => 'required|date|after:check_in',
+        'hotel_id'  => 'nullable|integer|exists:hotels,id',
+        'city_id'   => 'nullable|integer|exists:cities,id',
+        'country_id'=> 'nullable|integer|exists:countries,id',
+        'max_adults'=> 'required|integer|min:1',
+        'max_children' => 'required|integer|min:0'
     ]);
 
     $checkIn = Carbon::parse($validated['check_in']);
     $checkOut = Carbon::parse($validated['check_out']);
 
     try {
-        $availableRooms = [];
+        $hotelsQuery = Hotel::query()
+            ->with(['city', 'country', 'rooms.availability']);
 
-        // Fetch all distinct room IDs in the availability table
-        $rooms = Room::with(['availability'])->get(); // Assuming you have a `Room` model with a `RoomAvailability` relationship.
+        if (!empty($validated['hotel_id'])) {
+            $hotelsQuery->where('id', $validated['hotel_id']);
+        }
+        if (!empty($validated['city_id'])) {
+            $hotelsQuery->where('city_id', $validated['city_id']);
+        }
+        if (!empty($validated['country_id'])) {
+            $hotelsQuery->whereHas('city', function ($query) use ($validated) {
+                $query->where('country_id', $validated['country_id']);
+            });
+        }
 
-        foreach ($rooms as $room) {
-            $roomId = $room->id;
-            $remainingQuantity = null; // Start with an unlimited quantity
-            $currentDate = clone $checkIn;
+        $hotels = $hotelsQuery->get();
+        $results = [];
 
-            // Check availability for each day in the booking period
-            while ($currentDate <= $checkOut) {
-                $dailyAvailable = RoomAvailability::where('room_id', $roomId)
-                    ->whereDate('from', '<=', $currentDate)
-                    ->whereDate('to', '>=', $currentDate)
-                    ->sum('quantity');
+        foreach ($hotels as $hotel) {
+            $availableRooms = [];
 
-                $dailyBooked = ModelsBookingEngine::where('room_id', $roomId)
-                    ->whereDate('check_in', '<=', $currentDate)
-                    ->whereDate('check_out', '>', $currentDate)
-                    ->sum('quantity');
-
-                $dailyRemaining = $dailyAvailable - $dailyBooked;
-
-                // If no rooms are available on any day, skip this room
-                if ($dailyRemaining <= 0) {
-                    $remainingQuantity = 0;
-                    break;
+            foreach ($hotel->rooms as $room) {
+                // Validate max adults and max children
+                if ($room->max_adults < $validated['max_adults'] || $room->max_children < $validated['max_children']) {
+                    continue;
                 }
 
-                // Track the minimum remaining quantity for the room
-                $remainingQuantity = is_null($remainingQuantity)
-                    ? $dailyRemaining
-                    : min($remainingQuantity, $dailyRemaining);
+                $roomId = $room->id;
+                $remainingQuantity = null;
+                $currentDate = clone $checkIn;
 
-                $currentDate = $currentDate->addDay();
+                while ($currentDate <= $checkOut) {
+                    $dailyAvailable = RoomAvailability::where('room_id', $roomId)
+                        ->whereDate('from', '<=', $currentDate)
+                        ->whereDate('to', '>=', $currentDate)
+                        ->sum('quantity');
+
+                    $dailyBooked = ModelsBookingEngine::where('room_id', $roomId)
+                        ->whereDate('check_in', '<=', $currentDate)
+                        ->whereDate('check_out', '>', $currentDate)
+                        ->sum('quantity');
+
+                    $dailyRemaining = $dailyAvailable - $dailyBooked;
+
+                    if ($dailyRemaining <= 0) {
+                        $remainingQuantity = 0;
+                        break;
+                    }
+
+                    $remainingQuantity = is_null($remainingQuantity)
+                        ? $dailyRemaining
+                        : min($remainingQuantity, $dailyRemaining);
+
+                    $currentDate = $currentDate->addDay();
+                }
+
+                if ($remainingQuantity > 0) {
+                    $availableRooms[] = [
+                        'room_id' => $roomId,
+                        'available_quantity' => $remainingQuantity,
+                        'room_details' => $room,
+                    ];
+                }
             }
 
-            // If the room has availability, add it to the result
-            if ($remainingQuantity > 0) {
-                $availableRooms[] = [
-                    'room_id' => $roomId,
-                    'available_quantity' => $remainingQuantity,
-                    'room_details' => $room, // Include all room data
-                ];
-            }
+            $results[] = [
+                'hotel_id' => $hotel->id,
+                'hotel_name' => $hotel->name,
+                'city' => $hotel->city->name,
+                'country' => $hotel->city->country->name,
+                'available_rooms' => $availableRooms,
+            ];
         }
 
         return response()->json([
             'success' => true,
-            'available_rooms' => $availableRooms,
+            'hotels' => $results,
         ]);
 
     } catch (\Exception $e) {
@@ -88,6 +120,8 @@ class BookingEngine extends Controller
         ], 500);
     }
 }
+
+
 
 
 
