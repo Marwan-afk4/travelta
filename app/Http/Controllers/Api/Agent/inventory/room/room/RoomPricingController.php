@@ -74,8 +74,8 @@ class RoomPricingController extends Controller
         // room/pricing/item/{id}
         $pricing = $this->pricing
         ->where('id', $id)
-        ->with('currency', 'pricing_data')
-        ->get();
+        ->with('currency', 'pricing_data', 'groups', 'nationality')
+        ->first();
 
         return response()->json([
             'pricing' => $pricing,
@@ -92,8 +92,10 @@ class RoomPricingController extends Controller
                 'errors' => 'id is wrong'
             ], 400);
         }
-        $this->pricing
+        $new_pricing = $this->pricing
         ->create($pricing->toArray());
+        $new_pricing->groups()->attach($pricing->groups->pluck('id')->toArray());
+        $new_pricing->nationality()->attach($pricing->nationality->pluck('id')->toArray());
 
         return response()->json([
             'success' => 'You duplicated room success'

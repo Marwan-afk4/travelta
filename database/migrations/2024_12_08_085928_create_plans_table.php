@@ -11,21 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('plans', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->notnull();
-            $table->text('description')->nullable();
-            $table->integer('user_limit')->notnull();
-            $table->integer('branch_limit')->notnull();
-            $table->integer('period_in_days')->notnull();
-            $table->string('module_type')->notnull();
-            $table->float('price')->notnull();
-            $table->string('discount_type')->notnull();
-            $table->float('price_after_discount')->nullable();
-            $table->float('admin_cost')->nullable();
-            $table->float('branch_cost')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('plans')) {
+            Schema::create('plans', function (Blueprint $table) {
+                $table->id();
+                $table->string('name')->notnull();
+                $table->text('description')->nullable();
+                $table->integer('user_limit')->notnull();
+                $table->integer('branch_limit')->notnull();
+                $table->integer('period_in_days')->notnull();
+                $table->string('module_type')->notnull();
+                $table->float('price')->notnull();
+                $table->string('discount_type')->notnull();
+                $table->float('price_after_discount')->nullable();
+                $table->float('admin_cost')->nullable();
+                $table->float('branch_cost')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

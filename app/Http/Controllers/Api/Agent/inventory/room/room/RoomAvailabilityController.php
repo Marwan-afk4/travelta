@@ -18,6 +18,9 @@ class RoomAvailabilityController extends Controller
     private BookingEngine $booking_engine){}
 
     public function view(Request $request){
+        // agent/room/availability
+        // Keys
+        // room_id, year
         $validation = Validator::make($request->all(), [
             'room_id' => 'required|exists:rooms,id',
             'year' => 'required|numeric',
@@ -92,6 +95,10 @@ class RoomAvailabilityController extends Controller
     }
 
     public function create(RoomAvailabilityRequest $request){
+        // agent/room/availability/add
+        // Keys
+        // room_id, 
+        // rooms [{from, to, quantity}]
         $roomRequest = $request->validated();
         foreach ($request->rooms as $item) {
             $this->room_availability
@@ -109,6 +116,11 @@ class RoomAvailabilityController extends Controller
     }
 
     public function modify(Request $request){
+        // agent/room/availability/update
+        // Keys
+        // room_id, 
+        // rooms [{from, to, quantity}]
+        // add_rooms [{from, to, quantity}]
         $validation = Validator::make($request->all(), [
             'room_id' => ['required', 'exists:rooms,id'],
             'rooms.*.from' => ['required', 'date'],
@@ -175,6 +187,7 @@ class RoomAvailabilityController extends Controller
     }
 
     public function delete($id){
+        // agent/room/availability/delete/{id}
         $this->room_availability
         ->where('id', $id)
         ->delete();

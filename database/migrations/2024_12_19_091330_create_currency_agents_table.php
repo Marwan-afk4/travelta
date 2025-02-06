@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('currency_agents', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId(column: 'currancy_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'affilate_id')->nullable()->constrained('affilate_agents')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'agent_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->string('name'); 
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('currency_agents')) {
+            Schema::create('currency_agents', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId(column: 'currancy_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+                $table->foreignId(column: 'affilate_id')->nullable()->constrained('affilate_agents')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreignId(column: 'agent_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+                $table->string('name'); 
+                $table->timestamps();
+            });
+        }
     }
 
     /**

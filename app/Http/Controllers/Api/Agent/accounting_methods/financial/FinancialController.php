@@ -85,6 +85,9 @@ class FinancialController extends Controller
     }
 
     public function transfer(Request $request){
+        // /financial/transfer
+        // Keys
+        // from_financial_id, to_financial_id, amount
         $validation = Validator::make($request->all(), [
             'from_financial_id' => 'required|exists:finantiol_acountings,id',
             'to_financial_id' => 'required|exists:finantiol_acountings,id',

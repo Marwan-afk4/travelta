@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\SuperAdmin\SubscriptionController;
 use App\Http\Controllers\Api\SuperAdmin\ThemeController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
+use App\Http\Controllers\Api\SuperAdmin\settings\AllowTimeController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -54,7 +55,12 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
 /////////////////////////////////////// Subscription ////////////////////////////////////////////////
 
-        Route::get('/super/subscribers',[SubscriptionController::class,'subscribers']);
+Route::get('/super/subscribers',[SubscriptionController::class,'subscribers']);
+
+///////////////////////////////////// Settings => Allow Time //////////////////////////////////////////////
+
+        Route::get('/super/settings/allow_time',[AllowTimeController::class,'view']);
+        Route::post('/super/settings/allow_time/update',[AllowTimeController::class,'modify']);
 
 ///////////////////////////////////////// Plans //////////////////////////////////////////////////
 

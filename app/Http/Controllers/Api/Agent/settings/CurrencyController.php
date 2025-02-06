@@ -28,17 +28,15 @@ class CurrencyController extends Controller
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
             $currency_agent = $this->currency_agent
             ->where('affilate_id', $agent_id)
-            ->with('country')
             ->get();
         } 
         else {
             $currency_agent = $this->currency_agent
-            ->with('country')
             ->where('agent_id', $agent_id)
             ->get();
         } 
         $currency = $this->currency
-        ->select('id', 'currancy_symbol')
+        ->select('id', 'currancy_symbol', 'currancy_name')
         ->get();
 
         return response()->json([
@@ -49,6 +47,8 @@ class CurrencyController extends Controller
 
     public function create(CurrencyRequest $request){
         // /settings/currency/add
+        // Keys
+        // currancy_id, name
         $currencyRequest = $request->validated();
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -77,6 +77,8 @@ class CurrencyController extends Controller
 
     public function modify(CurrencyRequest $request, $id){
         // /settings/currency/update/{id}
+        // Keys
+        // currancy_id, name
         $currencyRequest = $request->validated();
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;

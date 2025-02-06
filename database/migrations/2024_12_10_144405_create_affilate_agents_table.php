@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('affilate_agents', function (Blueprint $table) {
-            $table->id();
-            $table->string('f_name');
-            $table->string('l_name');
-            $table->string('email')->unique();
-            $table->string('phone');
-            $table->string('password');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('affilate_agents')) {
+            Schema::create('affilate_agents', function (Blueprint $table) {
+                $table->id();
+                $table->string('f_name');
+                $table->string('l_name');
+                $table->string('email')->unique();
+                $table->string('phone');
+                $table->string('password');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

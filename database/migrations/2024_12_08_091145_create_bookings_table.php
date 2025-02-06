@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bookings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->date('date')->notnull();
-            $table->string('type')->nullable();
-            $table->string('destanation')->notnull();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('bookings')) {
+            Schema::create('bookings', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->date('date')->notnull();
+                $table->string('type')->nullable();
+                $table->string('destanation')->notnull();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

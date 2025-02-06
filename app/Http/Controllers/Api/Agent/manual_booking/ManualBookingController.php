@@ -9,6 +9,8 @@ use App\Http\Requests\api\agent\manuel_booking\ManuelBookingRequest;
 use App\Http\Requests\api\agent\manuel_booking\CartBookingRequest;
 use Illuminate\Support\Str;
 use App\Http\Resources\ManuelCartResource;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentMail;
 
 use App\Models\CustomerData;
 use App\Models\SupplierAgent;
@@ -30,8 +32,11 @@ use App\Models\Child;
 use App\Models\ManuelCart;
 use App\Models\PaymentsCart;
 use App\Models\ManuelDataCart;
+use App\Models\BookingPayment;
 use App\Models\Customer;
 use App\Models\FinantiolAcounting;
+use App\Models\Agent;
+use App\Models\AffilateAgent;
 use App\trait\image;
 
 class ManualBookingController extends Controller
@@ -46,7 +51,9 @@ class ManualBookingController extends Controller
     private ManuelTourHotel $manuel_tour_hotel, private CurrencyAgent $currency,
     private Adult $adults, private Child $child, private ManuelCart $manuel_cart,
     private PaymentsCart $payments_cart, private ManuelDataCart $manuel_data_cart,
-    private Customer $customers, private FinantiolAcounting $financial_accounting){}
+    private Customer $customers, private FinantiolAcounting $financial_accounting,
+    private BookingPayment $booking_payment, private Agent $agent,
+    private AffilateAgent $affilate_agent){}
     
     protected $hotelRequest = [
         'check_in',
@@ -116,7 +123,8 @@ class ManualBookingController extends Controller
         'country_id',
         'city_id',
         'mark_up' ,
-        'mark_up_type'
+        'mark_up_type',
+        'special_request'
     ];
 
     public function lists(Request $request){
@@ -374,7 +382,8 @@ class ManualBookingController extends Controller
                     'country' => 'required',
                     'travel_date' => 'required|date', 
                     'appointment_date' => 'date',
-                    'number' => 'required|numeric', 
+                    'adults' => 'required|numeric',
+                    'childreen' => 'required|numeric',
                 ]);
                 if($validation->fails()){
                     return response()->json(['errors'=>$validation->errors()], 401);
@@ -458,8 +467,12 @@ class ManualBookingController extends Controller
                 "room_quantity" => $manuel_data_cart->room_quantity ?? null,
                 "childreen" =>  $manuel_data_cart->childreen ?? null,
                 "adults" =>  $manuel_data_cart->adults ?? null,
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "adults_data" =>  is_string($manuel_data_cart->adults_data) ?
+                json_decode($manuel_data_cart->adults_data ?? '[]') ?? []
+                : $manuel_data_cart->adults_data,
+                "children_data" => is_string($manuel_data_cart->children_data) ?
+                json_decode($manuel_data_cart->children_data ?? '[]') ?? []
+                : $manuel_data_cart->children_data,
             ];
         }
         elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
@@ -476,8 +489,12 @@ class ManualBookingController extends Controller
                 "bus" => $manuel_data_cart->bus ?? null,
                 "bus_number" => $manuel_data_cart->bus_number ?? null,
                 "driver_phone" => $manuel_data_cart->driver_phone ?? null, 
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "adults_data" => is_string($manuel_data_cart->adults_data) ? 
+                json_decode($manuel_data_cart->adults_data ?? '[]') ?? [] :
+                $manuel_data_cart->adults_data,
+                "children_data" => is_string($manuel_data_cart->children_data) ? 
+                json_decode($manuel_data_cart->children_data ?? '[]') ?? []
+                : $manuel_data_cart->children_data,
             ];
         }
         elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
@@ -485,17 +502,24 @@ class ManualBookingController extends Controller
                 "country_visa"=> $manuel_data_cart->country ?? null,
                 "travel_date"=> $manuel_data_cart->travel_date ??null,
                 "appointment_date"=> $manuel_data_cart->appointment_date ?? null,
-                "number"=> $manuel_data_cart->number ?? null, 
+                "childreen" =>  $manuel_data_cart->childreen ?? null,
+                "adults" =>  $manuel_data_cart->adults ?? null,
                 "notes"=> $manuel_data_cart->notes ?? null,
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "adults_data" => is_string($manuel_data_cart->adults_data) ? 
+                json_decode($manuel_data_cart->adults_data ?? '[]') ?? []
+                : $manuel_data_cart->adults_data,
+                "children_data" => is_string($manuel_data_cart->children_data) ?
+                 json_decode($manuel_data_cart->children_data ?? '[]') ?? []
+                 : $manuel_data_cart->children_data,
             ];
         }
         elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
             $flight = [	
                 "type" => $manuel_data_cart->type ?? null, 
                 "direction" =>  $manuel_data_cart->direction ?? null,
-                "from_to" =>  json_decode($manuel_data_cart->from_to ?? '[]') ?? [],
+                "from_to" =>  is_string($manuel_data_cart->from_to) ? 
+                json_decode($manuel_data_cart->from_to ?? '[]') ?? [] : 
+                $manuel_data_cart->from_to,
                 "departure" =>  $manuel_data_cart->departure ?? null,
                 "arrival" => $manuel_data_cart->arrival ?? null,   
                 "class" =>  $manuel_data_cart->class ?? null,
@@ -507,8 +531,12 @@ class ManualBookingController extends Controller
                 "adult_price" => $manuel_data_cart->adult_price ?? null, 
                 "child_price" => $manuel_data_cart->child_price ?? null, 
                 "ref_pnr" =>  $manuel_data_cart->ref_pnr ?? null,
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "adults_data" => is_string($manuel_data_cart->adults_data) ?
+                json_decode($manuel_data_cart->adults_data ?? '[]') ?? []
+                : $manuel_data_cart->adults_data,
+                "children_data" => is_string($manuel_data_cart->children_data) ? 
+                json_decode($manuel_data_cart->children_data ?? '[]') ?? [] :
+                $manuel_data_cart->children_data,
             ];
         }
         elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
@@ -520,10 +548,18 @@ class ManualBookingController extends Controller
                 "adults" => $manuel_data_cart->adults ?? null, 
                 "childreen" => $manuel_data_cart->childreen ?? null, 
                 "flight_date" => $manuel_data_cart->flight_date ?? null, 
-                "tour_buses" => json_decode($manuel_data_cart->tour_buses ?? '[]') ?? [], 
-                "tour_hotels" => json_decode($manuel_data_cart->tour_hotels ?? '[]') ?? [], 
-                "adults_data" =>  json_decode($manuel_data_cart->adults_data ?? '[]') ?? [],
-                "children_data" =>  json_decode($manuel_data_cart->children_data ?? '[]') ?? [],
+                "tour_buses" => is_string($manuel_data_cart->tour_buses) 
+                ? json_decode($manuel_data_cart->tour_buses ?? '[]') ?? []:
+                $manuel_data_cart->tour_buses, 
+                "tour_hotels" => is_string($manuel_data_cart->tour_hotels) 
+                ? json_decode($manuel_data_cart->tour_hotels ?? '[]') ?? []:
+                $manuel_data_cart->tour_hotels, 
+                "adults_data" =>  is_string($manuel_data_cart->adults_data) 
+                ? json_decode($manuel_data_cart->adults_data ?? '[]') ?? []:
+                $manuel_data_cart->adults_data,
+                "children_data" =>  is_string($manuel_data_cart->children_data) 
+                ? json_decode($manuel_data_cart->children_data ?? '[]') ?? []:
+                $manuel_data_cart->children_data,
             ];
         }
         $arr = [
@@ -532,6 +568,7 @@ class ManualBookingController extends Controller
             "mark_up_type"=> $manuel_data_cart->mark_up_type,
             "mark_up"=> $manuel_data_cart->mark_up,
             "price"=> $manuel_data_cart->price,
+            'special_request' => $manuel_data_cart->special_request ?? null,
             "country"=> $this->contries->where('id', $manuel_data_cart->country_id)->first()->name ?? null,
             "city"=> $this->cities->where('id', $manuel_data_cart->city_id ?? 0)->first()->name ?? null,
             "currency"=> $this->currency->where('id', $manuel_data_cart->currency_id ?? 0)->first()->name ?? null,
@@ -615,7 +652,8 @@ class ManualBookingController extends Controller
                     "country_visa"=> $manuel_item->country ?? null,
                     "travel_date"=> $manuel_item->travel_date ??null,
                     "appointment_date"=> $manuel_item->appointment_date ?? null,
-                    "number"=> $manuel_item->number ?? null, 
+                    "childreen" =>  $manuel_data_cart->childreen ?? null,
+                    "adults" =>  $manuel_data_cart->adults ?? null,
                     "notes"=> $manuel_item->notes ?? null,
                     "adults_data" =>  json_decode($manuel_item->adults_data ?? '[]') ?? [],
                     "children_data" =>  json_decode($manuel_item->children_data ?? '[]') ?? [],
@@ -662,6 +700,7 @@ class ManualBookingController extends Controller
                 "from_service"=>  $service,
                 "mark_up_type"=> $manuel_item->mark_up_type,
                 "mark_up"=> $manuel_item->mark_up,
+                'special_request' => $manuel_item->special_request ?? null,
                 "price"=> $manuel_item->price,
                 "country"=> $this->contries->where('id', $manuel_item->country_id)->first()->name ?? null,
                 "city"=> $this->cities->where('id', $manuel_item->city_id ?? 0)->first()->name ?? null,
@@ -711,16 +750,23 @@ class ManualBookingController extends Controller
         
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
+            $agent_data = $this->affilate_agent
+            ->where('id', $request->user()->affilate_id)
+            ->first();
         }
         elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
             $agent_id = $request->user()->agent_id;
+            $agent_data = $this->agent
+            ->where('id', $request->user()->agent_id)
+            ->first();
         }
         else{
             $agent_id = $request->user()->id;
+            $agent_data = $request->user();
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
             $role = 'affilate_id';
-        } 
+        }
         else {
             $role = 'agent_id';
         }
@@ -754,6 +800,7 @@ class ManualBookingController extends Controller
         ->create([
             'from_supplier_id' => $manuelRequest['from_supplier_id'] ?? null,
             'from_service_id' => $manuelRequest['from_service_id'] ?? null,
+            'special_request' => $manuelRequest['special_request'] ?? null,
             'mark_up_type' => $manuelRequest['mark_up_type'] ?? null,
             'mark_up' => $manuelRequest['mark_up'] ?? null,
             'price' => $manuelRequest['price'] ?? null,
@@ -836,7 +883,8 @@ class ManualBookingController extends Controller
                     'travel_date' => $manuel_data_cart['travel_date'] ?? null,
                     'appointment_date' => $manuel_data_cart['appointment_date'] ?? null,
                     'notes' => $manuel_data_cart['notes'] ?? null,
-                    'number' => $manuel_data_cart['number'] ?? null,
+                    "childreen" =>  $manuel_data_cart['childreen'] ?? null,
+                    "adults" =>  $manuel_data_cart['adults'] ?? null, 
                 ];
                 $visaRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_visa = $this->manuel_visa
@@ -888,6 +936,7 @@ class ManualBookingController extends Controller
                             'transportation' => $item->transportation,
                             'manuel_tour_id' => $manuel_tour->id,
                             'seats' => $item->seats,
+                            'departure' => $item->departure ?? null,
                         ]);
                     }
             }
@@ -914,7 +963,7 @@ class ManualBookingController extends Controller
                         'title' => $item->title,
                         'first_name' => $item->first_name,
                         'last_name' => $item->last_name,
-                    ]);
+                    ]); 
                 }
             }
             if (isset($manuel_data_cart['child_data']) && !empty($manuel_data_cart['child_data'])) {
@@ -929,13 +978,35 @@ class ManualBookingController extends Controller
                 }
             }
             // Cart
-            // payment_type, total_cart
+            // payment_type, total_cart, cart_id
             // payment_methods[amount, payment_method_id, image]
             // payments [{amount, date}]
+            // "payment_type":"full","total_cart":"1","payment_methods":"[{\"amount\":200,\"payment_method_id\":9,\"image\":\"\"}]","payments":"[{\"amount\":400,\"date\":\"2025-05-05\"}]","cart_id":"67"}
+            $amount_payment = 0;
             if ($request->payment_methods) {
                 $payment_methods = is_string($request->payment_methods) ? 
                 json_decode($request->payment_methods) : $request->payment_methods;
                 foreach ($payment_methods as $item) {
+                    $amount_payment += $item->amount ?? 0;
+                    $code = Str::random(8);
+                    $booking_payment_item = $this->booking_payment
+                    ->where('code', $code)
+                    ->first();
+                    while (!empty($booking_payment_item)) {
+                        $code = Str::random(8);
+                        $booking_payment_item = $this->booking_payment
+                        ->where('code', $code)
+                        ->first();
+                    }
+                    $this->booking_payment
+                    ->create([
+                        'manuel_booking_id' => $manuel_booking->id,
+                        'date' => date('Y-m-d'),
+                        'amount' => $item->amount ?? 0,
+                        'financial_id' => $item->payment_method_id,
+                        'code' => $code,
+                    ]);
+// ___________________________________________________________________________________ \
                     $cartRequest = [
                         'manuel_booking_id' => $manuel_booking->id,
                         'total' => $request->total_cart,
@@ -955,6 +1026,25 @@ class ManualBookingController extends Controller
                     $financial_accounting->balance = $financial_accounting->balance + $item->amount;
                 }
             }
+            else {
+                $code = Str::random(8);
+                $booking_payment_item = $this->booking_payment
+                ->where('code', $code)
+                ->first();
+                while (!empty($booking_payment_item)) {
+                    $code = Str::random(8);
+                    $booking_payment_item = $this->booking_payment
+                    ->where('code', $code)
+                    ->first();
+                }
+                $this->booking_payment
+                ->create([
+                    'manuel_booking_id' => $manuel_booking->id,
+                    'date' => date('Y-m-d'),
+                    'amount' => 0,
+                    'code' => $code,
+                ]);
+            }
             if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
                 $validation = Validator::make($request->all(), [
                     'payments' => 'required',
@@ -973,21 +1063,38 @@ class ManualBookingController extends Controller
                     ]);
                 }
             }
-            $this->customer_data
-            ->where('customer_id ', $request->to_customer_id)
+            $customer = $this->customer_data
+            ->where('customer_id', $manuel_data_cart['to_customer_id'] ?? null)
             ->where($role, $agent_id)
-            ->update([
-                'type' => 'customer'
-            ]);
-            $this->customers
-            ->where('id ', $request->to_customer_id)
-            ->update([
-                'role' => 'customer'
-            ]);
-             $this->manuel_data_cart
-            ->where('id', $request->cart_id)
-            ->delete();
-
+            ->first();
+            if (!empty($customer)) {
+                $customer->update([
+                    'type' => 'customer',
+                    'total_booking' => $amount_payment + $customer->total_booking,
+                ]);
+                $this->customers
+                ->where('id ', $manuel_data_cart['to_customer_id'] ?? null)
+                ->update([
+                    'role' => 'customer'
+                ]);
+                $position = 'Customer';
+            }
+            else{
+                $customer = $this->supplier_agent
+                ->where('id', $manuel_data_cart['to_supplier_id'] ?? null)
+                ->first();
+                $position = 'Supplier';
+            } 
+            $data = [];
+            $data['name'] = $customer->name;
+            $data['position'] = $position;
+            $data['amount'] = $amount_payment;
+            $data['payment_date'] = date('Y-m-d');
+            $data['agent'] = $agent_data->name;;
+            Mail::to($agent_data->email)->send(new PaymentMail($data));
+            $this->manuel_data_cart
+           ->where('id', $request->cart_id)
+           ->delete();
             return response()->json([
                 'success' => $request->all(),
             ]);

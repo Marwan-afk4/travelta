@@ -7,8 +7,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AgentAuthController;
 
 use App\Http\Controllers\Api\Agent\lead\LeadController;
+use App\Http\Controllers\Api\Agent\lead\LeadProfileController;
+
 use App\Http\Controllers\Api\Agent\customer\CustomerController;
+use App\Http\Controllers\Api\Agent\customer\CustomerProfileController;
+
 use App\Http\Controllers\Api\Agent\supplier\SupplierController;
+use App\Http\Controllers\Api\Agent\supplier\SupplierProfileController;
 
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
@@ -21,6 +26,9 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
 
+use App\Http\Controllers\Api\Agent\Request\CreateRequestController;
+use App\Http\Controllers\Api\Agent\Request\RequestListsController;
+
 use App\Http\Controllers\Api\Agent\inventory\room\room\RoomGalleryController;
 use App\Http\Controllers\Api\Agent\inventory\room\room\RoomController;
 use App\Http\Controllers\Api\Agent\inventory\room\room\CreateRoomController;
@@ -30,6 +38,8 @@ use App\Http\Controllers\Api\Agent\inventory\room\room\RoomAvailabilityControlle
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomTypesController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomAmenityController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomExtraController;
+
+use App\Http\Controllers\Api\Agent\invoice\InvoiceController;
 
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
@@ -47,12 +57,19 @@ Route::controller(AgentAuthController::class)->group(function(){
 
 
 Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
-    Route::controller(LeadController::class)->prefix('leads')->group(function(){
-        Route::get('/', 'view');
-        Route::get('leads_search', 'leads_search');
-        Route::post('add_lead', 'add_lead');
-        Route::post('add', 'create');
-        Route::delete('delete/{id}', 'delete');
+    Route::prefix('leads')->group(function(){
+        Route::controller(LeadController::class)->group(function(){
+            Route::get('/', 'view');
+            Route::get('leads_search', 'leads_search');
+            Route::put('update/{id}', 'modify');
+            Route::post('add_lead', 'add_lead');
+            Route::post('add', 'create');
+            Route::delete('delete/{id}', 'delete');
+        });
+
+        Route::controller(LeadProfileController::class)->group(function(){
+            Route::get('/profile/{id}', 'profile');
+        });
     });
     //marwan
     Route::controller(PlanController::class)->prefix('plan')->group(function(){
@@ -64,12 +81,24 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('/make_payment', 'makePayment');
     });
 
-    Route::controller(SupplierController::class)->prefix('supplier')->group(function(){
-        Route::get('/', 'view');
-        Route::get('item/{id}', 'supplier');
-        Route::post('add', 'create');
-        Route::post('update/{id}', 'modify');
-        Route::delete('delete/{id}', 'delete');
+    Route::prefix('supplier')->group(function(){
+        Route::controller(SupplierController::class)->group(function(){
+            Route::get('/', 'view');
+            Route::get('item/{id}', 'supplier');
+            Route::post('add', 'create');
+            Route::post('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
+        });
+
+        Route::controller(SupplierProfileController::class)->group(function(){
+            Route::get('/profile/{id}', 'profile'); 
+        });
+    });
+
+    Route::prefix('invoice')->group(function(){
+        Route::controller(InvoiceController::class)->group(function(){
+            Route::get('/', 'invoice'); 
+        });
     });
 
     Route::prefix('accounting')->group(function(){
@@ -77,6 +106,26 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::post('/search', 'search');
             Route::post('/payment', 'add_payment');
             Route::get('/invoice/{id}', 'invoice');
+        });
+    });
+
+    Route::prefix('request')->group(function(){
+        Route::controller(RequestListsController::class)->group(function(){ 
+            Route::get('/lists', 'lists');
+            Route::get('/', 'view');
+            Route::get('/stages_data', 'stages');
+            Route::get('/item/{id}', 'request_item');
+        });
+        Route::controller(CreateRequestController::class)->group(function(){
+            Route::post('/add_hotel', 'add_hotel');
+            Route::post('/add_bus', 'add_bus');
+            Route::post('/add_visa', 'add_visa');
+            Route::post('/add_flight', 'add_flight');
+            Route::post('/add_tour', 'add_tour');
+            Route::put('/priority/{id}', 'priority');
+            Route::put('/stages/{id}', 'stages');
+            Route::put('/notes/{id}', 'notes');
+            Route::delete('/delete/{id}', 'delete');
         });
     });
 
@@ -112,17 +161,21 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::controller(BookingController::class)->prefix('booking')->group(function(){
-        Route::get('/upcoming', 'upcoming');
-        Route::get('/current', 'current');
-        Route::get('/past', 'past');
+        Route::get('/', 'booking'); 
+        Route::get('/details/{id}', 'details'); 
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){
         Route::get('/', 'view');
     });
 
-    Route::controller(CustomerController::class)->prefix('customer')->group(function(){
-        Route::get('/', 'view');
+    Route::prefix('customer')->group(function(){
+        Route::controller(CustomerController::class)->group(function(){
+            Route::get('/', 'view');
+        });
+        Route::controller(CustomerProfileController::class)->group(function(){
+            Route::get('/profile/{id}', 'profile');
+        });
     });
 
     Route::prefix('/room')->group(function(){ 
@@ -204,7 +257,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(TaxController::class)->prefix('tax')->group(function(){
             Route::get('/', 'view');
             Route::post('add', 'create');
-            Route::post('update/{id}', 'modify');
+            Route::put('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');
         });
         Route::controller(CurrencyController::class)->prefix('currency')->group(function(){
@@ -218,7 +271,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view');
             Route::get('item/{id}', 'group');
             Route::post('add', 'create');
-            Route::post('update/{id}', 'modify');
+            Route::put('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');
         });
     });

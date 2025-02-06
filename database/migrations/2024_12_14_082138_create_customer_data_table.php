@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_data', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId(column: 'customer_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'affilate_id')->nullable()->constrained('affilate_agents')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'agent_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->float('total_booking')->default(0);
-            $table->enum('type', ['lead', 'customer'])->default('lead');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('customer_data')) {
+            Schema::create('customer_data', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId(column: 'customer_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+                $table->foreignId(column: 'affilate_id')->nullable()->constrained('affilate_agents')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreignId(column: 'agent_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+                $table->float('total_booking')->default(0);
+                $table->enum('type', ['lead', 'customer'])->default('lead');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

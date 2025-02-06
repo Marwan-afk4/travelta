@@ -12,8 +12,14 @@ class LegalPaper extends Model
         'agent_id',
         'affilate_id',
         'user_id',
-        'customer_id'
+        'customer_id',
+        'supplier_agent_id',
     ];
+    protected $appends = ['image_link'];
+
+    public function getImageLinkAttribute(){
+        return url('storage/' . $this->attributes['image']);
+    }
 
     public function user(){
         return $this->belongsTo(User::class);

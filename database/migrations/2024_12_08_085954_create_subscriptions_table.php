@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('plan_id')->constrained()->onDelete('cascade');
-            $table->date('start_date')->notnull();
-            $table->date('renual_date')->notnull();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('subscriptions')) {
+            Schema::create('subscriptions', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('plan_id')->constrained()->onDelete('cascade');
+                $table->date('start_date')->notnull();
+                $table->date('renual_date')->notnull();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

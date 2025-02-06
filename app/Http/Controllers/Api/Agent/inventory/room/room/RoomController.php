@@ -207,6 +207,8 @@ class RoomController extends Controller
         'hotel', 'currency', 'hotel_meal', 'room_type')
         ->where($agent_type, $agent_id)
         ->get();
+        $room = $room->sortBy('order');
+        $room = array_values($room->toArray());
 
         return response()->json([
             'room' => $room
@@ -268,8 +270,10 @@ class RoomController extends Controller
                 'errors' => 'id is wrong'
             ], 400);
         }
+        $room = $room->toArray();
+        $room['duplicated'] = is_numeric($room['duplicated']) ?$room['duplicated']:$room['id'];
         $new_room = $this->room
-        ->create($room->toArray());
+        ->create($room);
         if (!empty($room->amenity)) {
             $room_amenities_data = $room->amenity->pluck('id')->toArray();
             $new_room->amenity()->attach($room_amenities_data);

@@ -7,17 +7,23 @@ use Illuminate\Http\Request;
 use App\Http\Resources\ManuelBookingResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentMail;
 
 use App\Models\ManuelBooking;
 use App\Models\FinantiolAcounting;
 use App\Models\BookingPayment;
 use App\Models\PaymentsCart;
+use App\Models\Agent;
+use App\Models\AffilateAgent;
+use App\Models\CustomerData;
 
 class BookingPaymentController extends Controller
 {
     public function __construct(private ManuelBooking $manuel_bookings,
     private FinantiolAcounting $financial_accounting, private BookingPayment $booking_payment,
-    private PaymentsCart $payment_cart){}
+    private PaymentsCart $payment_cart, private Agent $agent, private AffilateAgent $affilate_agent,
+    private CustomerData $customer_data){}
 
     public function search(Request $request){
         // /accounting/booking/search
@@ -134,6 +140,29 @@ class BookingPaymentController extends Controller
         if ($validation->fails()) {
             return response()->json(['errors' => $validation->errors()], 401);
         }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+            $agent_data = $this->affilate_agent
+            ->where('id', $request->user()->affilate_id)
+            ->first();
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+            $agent_data = $this->agent
+            ->where('id', $request->user()->agent_id)
+            ->first();
+        }
+        else{
+            $agent_id = $request->user()->id;
+            $agent_data = $request->user();
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $amount_payment = 0;
         $payments = is_string($request->payments) ? json_decode($request->payments): $request->payments;
         foreach ($payments as $item) {
             $code = Str::random(8);
@@ -146,7 +175,7 @@ class BookingPaymentController extends Controller
                 ->where('code', $code)
                 ->first();
             }
-            $this->booking_payment
+            $booking_payment = $this->booking_payment
             ->create([
                 'manuel_booking_id' => $request->manuel_booking_id,
                 'date' => date('Y-m-d'),
@@ -159,6 +188,7 @@ class BookingPaymentController extends Controller
             ->orderBy('date')
             ->get();
             $amount = $item->amount;
+            $amount_payment += $amount;
             foreach ($payment_carts as $element) {
                 if ($element->due_payment <= $amount) {
                     $this->payment_cart
@@ -183,6 +213,28 @@ class BookingPaymentController extends Controller
                 }
             }
         }
+        $manuel_booking = $booking_payment->manuel_booking;
+        $customer = $manuel_booking->to_client;
+        if (empty($manuel_booking->to_customer_id )) { 
+            $position = 'Customer';
+            $customer = $this->customer_data
+            ->where('customer_id', $manuel_booking->to_customer_id ?? null)
+            ->where($role, $agent_id)
+            ->first();
+            $customer->update([
+                'total_booking' => $amount_payment + $customer->total_booking,
+            ]);
+        }
+        else{ 
+            $position = 'Supplier';
+        } 
+        $data = [];
+        $data['name'] = $customer->name;
+        $data['position'] = $position;
+        $data['amount'] = $amount_payment;
+        $data['payment_date'] = date('Y-m-d');
+        $data['agent'] = $agent_data->name;;
+        Mail::to($agent_data->email)->send(new PaymentMail($data));
 
         return response()->json([
             'success' => 'You add payment success'

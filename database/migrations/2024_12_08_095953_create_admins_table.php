@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admins', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId(column: 'admin_position_id')->constrained()->onDelete('cascade');
-            $table->foreignId('zone_id')->constrained()->onDelete('cascade');
-            $table->string('name')->notnull();
-            $table->string('email')->unique()->nullable();
-            $table->string('password')->nullable();
-            $table->string('phone_number')->notnull()->unique();
-            $table->longText('legal_paper')->notnull();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('admins')) {
+            Schema::create('admins', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId(column: 'admin_position_id')->constrained()->onDelete('cascade');
+                $table->foreignId('zone_id')->constrained()->onDelete('cascade');
+                $table->string('name')->notnull();
+                $table->string('email')->unique()->nullable();
+                $table->string('password')->nullable();
+                $table->string('phone_number')->notnull()->unique();
+                $table->longText('legal_paper')->notnull();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

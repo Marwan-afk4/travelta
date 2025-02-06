@@ -38,18 +38,28 @@ class LeadController extends Controller
             ->where('type', 'lead')
             ->where('affilate_id', $agent_id)
             ->with('customer')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->id = $item->customer->id; // Set customer_data.id to customers.id
+                $item->makeHidden('customer');
+                return $item;
+            });
         } 
         else {
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('agent_id', $agent_id)
             ->with('customer')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->id = $item->customer->id; // Set customer_data.id to customers.id
+                $item->makeHidden('customer');
+                return $item;
+            });
         }
         
         return response()->json([
-            'leads' => $leads->pluck('customer')
+            'leads' => $leads
         ]);
     }
 
@@ -134,8 +144,7 @@ class LeadController extends Controller
         ]);
     }
 
-    public function create(LeadRequest $request){
-        // مفيش edit احنا بنديله رسالة تأكيد بالمعلومات 
+    public function create(LeadRequest $request){ 
         // /leads/add
         // Keys
         // name, phone, email, gender
@@ -164,6 +173,8 @@ class LeadController extends Controller
                 'affilate_id' => $agent_id,
                 'name' => $request->name,
                 'phone' => $request->phone,
+                'email' => $request->email ?? null,
+                'gender' => $request->gender ?? null,
             ]);
         } 
         else {
@@ -173,6 +184,8 @@ class LeadController extends Controller
                 'agent_id' => $agent_id,
                 'name' => $request->name,
                 'phone' => $request->phone,
+                'email' => $request->email ?? null,
+                'gender' => $request->gender ?? null,
             ]);
         }
         
@@ -180,6 +193,109 @@ class LeadController extends Controller
             'success' => $customer
         ]);
     }
+
+    public function modify(Request $request, $id){ 
+        // /leads/update/{id}
+        // Keys
+        // name, phone, email, gender 
+        $validation = Validator::make($request->all(), [
+            'name' => 'required',
+            'gender' => 'required|in:male,female',
+            'phone' => 'required|unique:customers,phone,' . $id . ',id',
+            'email' => 'required|unique:customers,email,' . $id . ',id',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') { 
+            $role = 'affilate_id'; 
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $leadRequest = $request->only($this->leadRequest);
+        $customer = $this->customer_data
+        ->where('customer_id', $id)
+        ->where($role, $agent_id)
+        ->first();
+        if (empty($customer)) {
+            return response()->json([
+                'errors' => 'lead not found'
+            ], 400);
+        }
+        $customer_arr = [ 
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'email' => $request->email ?? null,
+            'gender' => $request->gender ?? null, 
+        ];
+        if ($customer->phone != $request->phone) {
+            $parent_customer = $this->customer
+            ->create($leadRequest);
+            $customer_arr['customer_id'] = $parent_customer->id;
+        }
+        $customer
+        ->update($customer_arr);
+        
+        return response()->json([
+            'success' => $customer
+        ]);
+    }
+
+    // public function modify(LeadRequest $request){ 
+    //     // /leads/update
+    //     // Keys
+    //     // name, phone, email, gender
+    //     $leadRequest = $request->only($this->leadRequest);
+    //     $customer = $this->customer
+    //     ->where('phone', $request->phone)
+    //     ->first();
+    //     if (empty($customer)) {
+    //         $customer = $this->customer
+    //         ->create($leadRequest);
+    //     }
+        
+    //     if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+    //         $agent_id = $request->user()->affilate_id;
+    //     }
+    //     elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+    //         $agent_id = $request->user()->agent_id;
+    //     }
+    //     else{
+    //         $agent_id = $request->user()->id;
+    //     }
+    //     if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
+    //         $this->customer_data
+    //         ->create([
+    //             'customer_id' => $customer->id,
+    //             'affilate_id' => $agent_id,
+    //             'name' => $request->name,
+    //             'phone' => $request->phone,
+    //         ]);
+    //     } 
+    //     else {
+    //         $this->customer_data
+    //         ->create([
+    //             'customer_id' => $customer->id,
+    //             'agent_id' => $agent_id,
+    //             'name' => $request->name,
+    //             'phone' => $request->phone,
+    //         ]);
+    //     }
+        
+    //     return response()->json([
+    //         'success' => $customer
+    //     ]);
+    // }
 
     public function delete(Request $request, $id){
         // /leads/delete/{id}

@@ -10,5 +10,6 @@ class ManuelTourBus extends Model
         'transportation',
         'manuel_tour_id',
         'seats',
+        'departure',
     ];
 }
