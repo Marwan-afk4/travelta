@@ -1084,7 +1084,7 @@ class ManualBookingController extends Controller
                 ->where('id', $manuel_data_cart['to_supplier_id'] ?? null)
                 ->first();
                 $position = 'Supplier';
-            } 
+            }
             $data = [];
             $data['name'] = $customer->name;
             $data['position'] = $position;
