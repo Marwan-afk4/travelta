@@ -96,8 +96,6 @@ class SupplierController extends Controller
         json_encode($request->emails);
         $supplierRequest['phones'] = is_string($request->phones) ?$request->phones:
         json_encode($request->phones);
-        $supplierRequest['services'] = is_string($request->services) ?$request->services:
-        json_encode($request->services);
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -116,7 +114,8 @@ class SupplierController extends Controller
         $supplier_agent = $this->supplier_agent
         ->create($supplierRequest);
         if ($request->services) {
-            $services = json_decode($request->services);
+            $services = is_string($request->services) ? json_decode($request->services) :
+            $request->services;
             foreach ($services as $item) {
                 $supplier_agent->services()->attach($item);
             }
@@ -164,7 +163,8 @@ class SupplierController extends Controller
         }
         $supplier_agent->update($supplierRequest);
         if ($request->services) {
-            $services = json_decode($request->services); 
+            $services = is_string($request->services) ? json_decode($request->services) :
+            $request->services;
             $supplier_agent->services()->sync($services); 
         }
         
