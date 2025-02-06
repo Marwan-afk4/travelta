@@ -13,11 +13,14 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\Service;
 use App\Models\ManuelBooking;
+use App\Models\AffilateAgent;
+use App\Models\Agent;
 
 class BookingController extends Controller
 {
     public function __construct(private Service $services, 
-    private ManuelBooking $manuel_booking){}
+    private ManuelBooking $manuel_booking, private AffilateAgent $affilate,
+    private Agent $agent){}
 
     public function services(){
         $services = $this->services
@@ -218,16 +221,22 @@ class BookingController extends Controller
 
     public function details(Request $request, $id){
         // https://travelta.online/agent/booking/details/{id}
-        // invoice => /accounting/booking/invoice/{id}
-        // voucher => /accounting/booking/voucher/{id}
+        // invoice => /accounting/booking/invoice/{id} 
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
+            $affilate = $this->affilate
+            ->where('id', $agent_id)
+            ->first();
         }
         elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
             $agent_id = $request->user()->agent_id;
+            $agent = $this->agent
+            ->where('id', $agent_id)
+            ->first();
         }
         else{
             $agent_id = $request->user()->id;
+            $agent = $request->user();
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $agent_type = 'affilate_id';
@@ -273,10 +282,16 @@ class BookingController extends Controller
             'vouchered' => $manuel_booking->operation_vouchered,
             'canceled' => $manuel_booking->operation_canceled,
         ];
+        $agent_data = [
+            'name' => $agent->name,
+            'email' => $agent->email,
+            'phone' => $agent->phone,
+        ];
         return response()->json([
             'traveler' => $traveler,
             'payments' => $payments,
             'actions' => $actions,
+            'agent_data' => $agent_data,
         ]);
     }
 
@@ -297,17 +312,5 @@ class BookingController extends Controller
         return response()->json([
             'success' => $request->special_request
         ]);
-    }
-
-    public function voucher(Request $request){
-        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
-            $agent_id = $request->user()->affilate_id;
-        }
-        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
-            $agent_id = $request->user()->agent_id;
-        }
-        else{
-            $agent_id = $request->user()->id;
-        } 
-    }
+    } 
 }

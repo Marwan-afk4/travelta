@@ -1073,7 +1073,7 @@ class ManualBookingController extends Controller
                     'total_booking' => $amount_payment + $customer->total_booking,
                 ]);
                 $this->customers
-                ->where('id ', $manuel_data_cart['to_customer_id'] ?? null)
+                ->where('id', $manuel_data_cart['to_customer_id'] ?? null)
                 ->update([
                     'role' => 'customer'
                 ]);
@@ -1084,7 +1084,7 @@ class ManualBookingController extends Controller
                 ->where('id', $manuel_data_cart['to_supplier_id'] ?? null)
                 ->first();
                 $position = 'Supplier';
-            } 
+            }
             $data = [];
             $data['name'] = $customer->name;
             $data['position'] = $position;

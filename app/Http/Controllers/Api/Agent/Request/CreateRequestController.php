@@ -516,7 +516,7 @@ class CreateRequestController extends Controller
         // /agent/request/stages/{id}
         // Stages = Pending, Price quotation, Negotiation
         // Keys
-        // stages => [Pending,Price quotation,Negotiation,Won,Won Canceled,Lost], 
+        // stages => [Pending,Price quotation,Negotiation,Won,Won Canceled,Lost],
         // action => [call,message,assign_request], follow_up_date, result, 
         // if action = message => key => send_by
         // if action = assign_request => key => admin_agent_id
