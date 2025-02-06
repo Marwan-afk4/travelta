@@ -25,15 +25,16 @@ class BookingEngine extends Controller
         'hotel_id'  => 'nullable|integer|exists:hotels,id',
         'city_id'   => 'nullable|integer|exists:cities,id',
         'country_id'=> 'nullable|integer|exists:countries,id',
+        'max_adults'=> 'required|integer|min:1',
+        'max_children' => 'required|integer|min:0'
     ]);
 
     $checkIn = Carbon::parse($validated['check_in']);
     $checkOut = Carbon::parse($validated['check_out']);
 
     try {
-        // Filter hotels by provided `hotel_id`, `city_id`, or `country_id`
         $hotelsQuery = Hotel::query()
-            ->with(['city', 'country', 'rooms.availability']); // Include relationships for city, country, and rooms
+            ->with(['city', 'country', 'rooms.availability']);
 
         if (!empty($validated['hotel_id'])) {
             $hotelsQuery->where('id', $validated['hotel_id']);
@@ -48,18 +49,21 @@ class BookingEngine extends Controller
         }
 
         $hotels = $hotelsQuery->get();
-
         $results = [];
 
         foreach ($hotels as $hotel) {
             $availableRooms = [];
 
             foreach ($hotel->rooms as $room) {
+                // Validate max adults and max children
+                if ($room->max_adults < $validated['max_adults'] || $room->max_children < $validated['max_children']) {
+                    continue;
+                }
+
                 $roomId = $room->id;
-                $remainingQuantity = null; // Start with an unlimited quantity
+                $remainingQuantity = null;
                 $currentDate = clone $checkIn;
 
-                // Check availability for each day in the booking period
                 while ($currentDate <= $checkOut) {
                     $dailyAvailable = RoomAvailability::where('room_id', $roomId)
                         ->whereDate('from', '<=', $currentDate)
@@ -73,13 +77,11 @@ class BookingEngine extends Controller
 
                     $dailyRemaining = $dailyAvailable - $dailyBooked;
 
-                    // If no rooms are available on any day, skip this room
                     if ($dailyRemaining <= 0) {
                         $remainingQuantity = 0;
                         break;
                     }
 
-                    // Track the minimum remaining quantity for the room
                     $remainingQuantity = is_null($remainingQuantity)
                         ? $dailyRemaining
                         : min($remainingQuantity, $dailyRemaining);
@@ -87,12 +89,11 @@ class BookingEngine extends Controller
                     $currentDate = $currentDate->addDay();
                 }
 
-                // If the room has availability, add it to the hotel's available rooms
                 if ($remainingQuantity > 0) {
                     $availableRooms[] = [
                         'room_id' => $roomId,
                         'available_quantity' => $remainingQuantity,
-                        'room_details' => $room, // Include all room data
+                        'room_details' => $room,
                     ];
                 }
             }
@@ -119,6 +120,7 @@ class BookingEngine extends Controller
         ], 500);
     }
 }
+
 
 
 
