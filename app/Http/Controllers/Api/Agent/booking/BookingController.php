@@ -218,6 +218,8 @@ class BookingController extends Controller
 
     public function details(Request $request, $id){
         // https://travelta.online/agent/booking/details/{id}
+        // invoice => /accounting/booking/invoice/{id}
+        // voucher => /accounting/booking/voucher/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -266,10 +268,15 @@ class BookingController extends Controller
             $traveler['position'] = 'Customer';
         }
         $payments = $manuel_booking->payments;
-
+        $actions = [
+            'confirmed' => $manuel_booking->operation_confirmed,
+            'vouchered' => $manuel_booking->operation_vouchered,
+            'canceled' => $manuel_booking->operation_canceled,
+        ];
         return response()->json([
             'traveler' => $traveler,
             'payments' => $payments,
+            'actions' => $actions,
         ]);
     }
 
@@ -290,5 +297,17 @@ class BookingController extends Controller
         return response()->json([
             'success' => $request->special_request
         ]);
+    }
+
+    public function voucher(Request $request){
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        } 
     }
 }

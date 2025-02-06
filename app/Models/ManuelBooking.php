@@ -29,6 +29,18 @@ class ManuelBooking extends Model
     ];
     protected $appends = ['to_client'];
 
+    public function operation_confirmed(){
+        return $this->hasMany(OperationBookingConfirmed::class, 'manuel_booking_id');
+    }
+
+    public function operation_vouchered(){
+        return $this->hasMany(OperationBookingVouchered::class, 'manuel_booking_id');
+    }
+
+    public function operation_canceled(){
+        return $this->hasMany(OperationBookingCanceled::class, 'manuel_booking_id');
+    }
+
     public function payments(){
         return $this->hasMany(BookingPayment::class, 'manuel_booking_id');
     }

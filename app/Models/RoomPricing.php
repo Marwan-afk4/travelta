@@ -14,6 +14,7 @@ class RoomPricing extends Model
         'price',
         'currency_id',
         'pricing_data_id',
+        'hotel_id',
     ];
 
     public function currency(){

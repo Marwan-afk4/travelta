@@ -12,12 +12,13 @@ use App\Models\CurrencyAgent;
 use App\Models\RoomPricingData;
 use App\Models\Group;
 use App\Models\Nationality;
+use App\Models\Room;
 
 class RoomPricingController extends Controller
 {
     public function __construct(private RoomPricing $pricing, private Group $groups,
     private CurrencyAgent $currency, private RoomPricingData $pricing_data,
-    private Nationality $nationalities){}
+    private Nationality $nationalities, private Room $room){}
     protected $pricingRequest =[
         'pricing_data_id',
         'room_id',
@@ -107,6 +108,9 @@ class RoomPricingController extends Controller
         // Keys
         // pricing_data_id, room_id, currency_id, name, from, to, price, groups_id[], nationality_id[]
         $room_pricing = $request->only($this->pricingRequest);
+        $room_pricing['hotel_id'] = $this->room
+        ->where('id', $request->room_id)
+        ->first()->hotel_id ?? null;
         $pricing = $this->pricing
         ->create($room_pricing);
         $groups_id = $request->groups_id;

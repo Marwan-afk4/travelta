@@ -9,12 +9,14 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\ManuelBooking;
 use App\Models\OperationBookingConfirmed;
 use App\Models\OperationBookingVouchered;
+use App\Models\OperationBookingCanceled;
 
 class BookingStatusController extends Controller
 {
     public function __construct(private ManuelBooking $manuel_booking,
     private OperationBookingConfirmed $operation_confirmed, 
-    private OperationBookingVouchered $operation_vouchered){}
+    private OperationBookingVouchered $operation_vouchered,
+    private OperationBookingCanceled $operation_canceled){}
     protected $voucheredRequest = [
         'totally_paid',
         'confirmation_num',
@@ -92,11 +94,15 @@ class BookingStatusController extends Controller
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
         }
+        $this->operation_canceled
+        ->create([
+            'manuel_booking_id' => $id,
+            'cancelation_reason' => $request->cancelation_reason,
+        ]);
         $this->manuel_booking
         ->where('id', $id)
         ->update([
             'status' => 'canceled',
-            'cancelation_reason' => $request->cancelation_reason
         ]);
 
         return response()->json([

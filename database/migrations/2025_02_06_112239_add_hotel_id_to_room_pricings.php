@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('manuel_bookings', function (Blueprint $table) {
-            $table->text('cancelation_reason')->nullable();
+        Schema::table('room_pricings', function (Blueprint $table) {
+            $table->foreignId(column: 'hotel_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('manuel_bookings', function (Blueprint $table) {
+        Schema::table('room_pricings', function (Blueprint $table) {
             //
         });
     }

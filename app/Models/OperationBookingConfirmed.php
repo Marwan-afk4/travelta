@@ -11,4 +11,13 @@ class OperationBookingConfirmed extends Model
         'comfirmed',
         'deposits',
     ];
+
+    public function getdepositsAttribute($data){
+        if (is_string($data)) {
+            return json_decode($data);
+        } 
+        else {
+            return $data;
+        }
+    }
 }
