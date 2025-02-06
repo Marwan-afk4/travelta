@@ -1013,8 +1013,8 @@ class ManualBookingController extends Controller
                         'payment' => $item->amount ?? $item['amount'],
                         'payment_method_id' => $item->payment_method_id ?? $item['payment_method_id'],
                     ];
-                    if ($item->image && !empty($item->image)) {
-                        $image_path = $this->storeBase64Image($item->image);
+                    if ($item->image ?? $item['image'] && !empty($item->image ?? $item['image'])) {
+                        $image_path = $this->storeBase64Image($item->image ?? $item['image']);
                         $cartRequest['image'] = $image_path;
                     }
                     $manuel_cart = $this->manuel_cart
@@ -1097,6 +1097,7 @@ class ManualBookingController extends Controller
            ->delete();
             return response()->json([
                 'success' => $request->all(),
+                'type' => type_of($request->all()),
             ]);
         } catch (\Throwable $th) {
             $manuel_booking->delete();
