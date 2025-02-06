@@ -13,11 +13,14 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\Service;
 use App\Models\ManuelBooking;
+use App\Models\AffilateAgent;
+use App\Models\Agent;
 
 class BookingController extends Controller
 {
     public function __construct(private Service $services, 
-    private ManuelBooking $manuel_booking){}
+    private ManuelBooking $manuel_booking, private AffilateAgent $affilate,
+    private Agent $agent){}
 
     public function services(){
         $services = $this->services
@@ -300,14 +303,17 @@ class BookingController extends Controller
     }
 
     public function voucher(Request $request){
+        $agent = null;
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
+            // $agent = $this->agent
         }
         elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
             $agent_id = $request->user()->agent_id;
         }
         else{
             $agent_id = $request->user()->id;
-        } 
+        }
+
     }
 }
