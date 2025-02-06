@@ -987,7 +987,7 @@ class ManualBookingController extends Controller
                 $payment_methods = is_string($request->payment_methods) ? 
                 json_decode($request->payment_methods) : $request->payment_methods;
                 foreach ($payment_methods as $item) {
-                    $amount_payment += $item->amount ?? 0;
+                    $amount_payment += $item->amount ?? $item['amount'];
                     $code = Str::random(8);
                     $booking_payment_item = $this->booking_payment
                     ->where('code', $code)
@@ -1002,28 +1002,28 @@ class ManualBookingController extends Controller
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
                         'date' => date('Y-m-d'),
-                        'amount' => $item->amount ?? 0,
-                        'financial_id' => $item->payment_method_id,
+                        'amount' => $item->amount ?? $item['amount'],
+                        'financial_id' => $item->payment_method_id ?? $item['payment_method_id'],
                         'code' => $code,
                     ]);
 // ___________________________________________________________________________________ \
                     $cartRequest = [
                         'manuel_booking_id' => $manuel_booking->id,
                         'total' => $request->total_cart,
-                        'payment' => $item->amount ?? 0,
-                        'payment_method_id' => $item->payment_method_id,
+                        'payment' => $item->amount ?? $item['amount'],
+                        'payment_method_id' => $item->payment_method_id ?? $item['payment_method_id'],
                     ];
-                    if ($item->image && !empty($item->image)) {
-                        $image_path = $this->storeBase64Image($item->image);
+                    if ($item->image ?? $item['image'] && !empty($item->image ?? $item['image'])) {
+                        $image_path = $this->storeBase64Image($item->image ?? $item['image']);
                         $cartRequest['image'] = $image_path;
                     }
                     $manuel_cart = $this->manuel_cart
                     ->create($cartRequest);
                     $financial_accounting = $this->financial_accounting
-                    ->where('id', $item->payment_method_id)
+                    ->where('id', $item->payment_method_id ?? $item['payment_method_id'])
                     ->where($role, $agent_id)
                     ->first();
-                    $financial_accounting->balance = $financial_accounting->balance + $item->amount;
+                    $financial_accounting->balance = $financial_accounting->balance + ($item->amount?? $item['amount']);
                 }
             }
             else {
@@ -1058,8 +1058,8 @@ class ManualBookingController extends Controller
                     $this->payments_cart
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
-                        'amount' => $item->amount,
-                        'date' => $item->date,
+                        'amount' => $item->amount ?? $item['amount'],
+                        'date' => $item->date ?? $item['date'],
                     ]);
                 }
             }
@@ -1096,7 +1096,7 @@ class ManualBookingController extends Controller
            ->where('id', $request->cart_id)
            ->delete();
             return response()->json([
-                'success' => $request->all(),
+                'success' => $request->all(), 
             ]);
         } catch (\Throwable $th) {
             $manuel_booking->delete();

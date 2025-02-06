@@ -92,6 +92,10 @@ class SupplierController extends Controller
         // Keys
         // agent,admin_name,admin_phone,admin_email,emails[],phones[],services[],
         $supplierRequest = $request->only($this->supplierRequest);
+        $supplierRequest['emails'] = is_string($request->emails) ?$request->emails:
+        json_encode($request->emails);
+        $supplierRequest['phones'] = is_string($request->phones) ?$request->phones:
+        json_encode($request->phones);
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -110,7 +114,8 @@ class SupplierController extends Controller
         $supplier_agent = $this->supplier_agent
         ->create($supplierRequest);
         if ($request->services) {
-            $services = json_decode($request->services);
+            $services = is_string($request->services) ? json_decode($request->services) :
+            $request->services;
             foreach ($services as $item) {
                 $supplier_agent->services()->attach($item);
             }
@@ -123,7 +128,13 @@ class SupplierController extends Controller
 
     public function modify(SupplierRequest $request, $id){
         // supplier/update/{id}
-        $supplierRequest = $request->only($this->supplierRequest);
+        $supplierRequest = $request->only($this->supplierRequest); 
+        $supplierRequest['emails'] = is_string($request->emails) ?$request->emails:
+        json_encode($request->emails);
+        $supplierRequest['phones'] = is_string($request->phones) ?$request->phones:
+        json_encode($request->phones);
+        $supplierRequest['services'] = is_string($request->services) ?$request->services:
+        json_encode($request->services);
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -152,7 +163,8 @@ class SupplierController extends Controller
         }
         $supplier_agent->update($supplierRequest);
         if ($request->services) {
-            $services = json_decode($request->services); 
+            $services = is_string($request->services) ? json_decode($request->services) :
+            $request->services;
             $supplier_agent->services()->sync($services); 
         }
         
