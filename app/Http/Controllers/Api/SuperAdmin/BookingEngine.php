@@ -67,8 +67,27 @@ class BookingEngine extends Controller
     $checkOut = Carbon::parse($validated['check_out']);
 
     try {
-        $hotelsQuery = Hotel::query()
-            ->with(['city', 'country', 'rooms.availability']);
+        // Get the pricing data IDs that match the required max_adults and max_children
+        $pricingDataIds = DB::table('room_pricing_data')
+            ->where('adults', $validated['max_adults'])
+            ->where('children', $validated['max_children'])
+            ->pluck('id');
+
+        if ($pricingDataIds->isEmpty()) {
+            return response()->json(['success' => true, 'hotels' => []]);
+        }
+
+        // Get the room pricing entries that match the pricing data IDs
+        $roomPricings = DB::table('room_pricings')
+            ->whereIn('pricing_data_id', $pricingDataIds)
+            ->pluck('room_id');
+
+        if ($roomPricings->isEmpty()) {
+            return response()->json(['success' => true, 'hotels' => []]);
+        }
+
+        // Fetch hotels with available rooms based on the filters
+        $hotelsQuery = Hotel::query()->with(['city', 'country', 'rooms.availability']);
 
         if (!empty($validated['hotel_id'])) {
             $hotelsQuery->where('id', $validated['hotel_id']);
@@ -89,8 +108,7 @@ class BookingEngine extends Controller
             $availableRooms = [];
 
             foreach ($hotel->rooms as $room) {
-                // Validate max adults and max children
-                if ($room->max_adults < $validated['max_adults'] || $room->max_children < $validated['max_children']) {
+                if (!$roomPricings->contains($room->id)) {
                     continue;
                 }
 
@@ -145,7 +163,6 @@ class BookingEngine extends Controller
             'success' => true,
             'hotels' => $results,
         ]);
-
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
@@ -154,6 +171,7 @@ class BookingEngine extends Controller
         ], 500);
     }
 }
+
 
 
 

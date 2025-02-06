@@ -46,13 +46,13 @@ class Room extends Model
     public function getOrderAttribute(){
         if (!empty($this->attributes['duplicated']) && is_numeric($this->attributes['duplicated'])) {
             return $this->attributes['duplicated'];
-        } 
+        }
         else {
             return $this->attributes['id'];
         }
-        
+
     }
-    
+
     public function room_type(){
         return $this->belongsTo(RoomType::class, 'room_type_id');
     }
@@ -99,5 +99,9 @@ class Room extends Model
 
     public function availability(){
         return $this->hasMany(RoomAvailability::class, 'room_id');
+    }
+
+    public function pricingData(){
+        return $this->hasMany(RoomPricingData::class, 'room_id');
     }
 }
