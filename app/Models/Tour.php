@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Tour extends Model
+{
+    protected $fillable = [
+        'name',
+        'description',
+        'video_link',
+        'tour_type',
+        'status',
+        'days',
+        'nights',
+        'tour_type_id',
+        'featured',
+        'featured_from',
+        'featured_to',
+        'deposit',
+        'deposit_type',
+        'tax',
+        'tax_type',
+        'pick_up_country_id',
+        'pick_up_city_id',
+        'pick_up_map',
+        'destination_type', 
+        'tour_email',
+        'tour_website',
+        'tour_phone',
+        'tour_address',
+        'payments_options',
+        'policy',
+        'cancelation',
+    ];
+}
