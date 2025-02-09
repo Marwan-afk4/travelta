@@ -39,6 +39,9 @@ use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomTypesController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomAmenityController;
 use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomExtraController;
 
+use App\Http\Controllers\Api\Agent\inventory\tour\tour\TourController;
+use App\Http\Controllers\Api\Agent\inventory\tour\tour\CreateTourController;
+
 use App\Http\Controllers\Api\Agent\invoice\InvoiceController;
 
 use App\Http\Controllers\Api\Agent\settings\TaxController;
@@ -185,6 +188,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(CustomerProfileController::class)->group(function(){
             Route::get('/profile/{id}', 'profile');
+        });
+    });
+
+    Route::prefix('/tour')->group(function(){
+        Route::controller(CreateTourController::class)->group(function(){
+            Route::post('/add', 'create'); 
+            Route::put('/update/{id}', 'modify'); 
         });
     });
 

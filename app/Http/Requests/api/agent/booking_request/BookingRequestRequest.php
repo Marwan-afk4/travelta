@@ -28,8 +28,7 @@ class BookingRequestRequest extends FormRequest
             'admin_agent_id' => ['required', 'exists:admin_agents,id'],
             'service_id' => ['required', 'exists:services,id'],
             'currency_id' => ['required', 'exists:currency_agents,id'],
-            'priority' => ['in:Low,Normal,High', 'nullable'],
-            'stages' => ['required', 'in:Pending,Price quotation,Negotiation,Won,Won Canceled,Lost'],
+            'priority' => ['in:Low,Normal,High', 'nullable'], 
         ];
     }
 
