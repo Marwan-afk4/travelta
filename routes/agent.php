@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\Agent\accounting_methods\financial\FinancialControl
 use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
+use App\Http\Controllers\Api\Agent\booking\BookingStatusController;
 
 use App\Http\Controllers\Api\Agent\Request\CreateRequestController;
 use App\Http\Controllers\Api\Agent\Request\RequestListsController;
@@ -113,7 +114,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'invoice');
         });
     });
-
+    
     Route::prefix('accounting')->group(function(){
         Route::controller(BookingPaymentController::class)->prefix('booking')->group(function(){
             Route::post('/search', 'search');
@@ -173,9 +174,16 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('/lists', 'lists');
     });
 
-    Route::controller(BookingController::class)->prefix('booking')->group(function(){
-        Route::get('/', 'booking');
-        Route::get('/details/{id}', 'details');
+    Route::prefix('booking')->group(function(){
+        Route::controller(BookingController::class)->group(function(){
+            Route::get('/', 'booking');
+            Route::get('/details/{id}', 'details');
+        });
+        Route::controller(BookingStatusController::class)->group(function(){
+            Route::post('/confirmed/{id}', 'confirmed');
+            Route::post('/vouchered/{id}', 'vouchered');
+            Route::post('/canceled/{id}', 'canceled');
+        });
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){
@@ -195,6 +203,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(CreateTourController::class)->group(function(){
             Route::post('/add', 'create'); 
             Route::put('/update/{id}', 'modify'); 
+            Route::delete('/delete/{id}', 'delete'); 
         });
     });
 
