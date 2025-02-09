@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\SuperAdmin\HotelPoliciesController;
 use App\Http\Controllers\Api\SuperAdmin\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\PaymentMethodController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
+use App\Http\Controllers\Api\SuperAdmin\RechargeWalletController;
 use App\Http\Controllers\Api\SuperAdmin\RoomDataController;
 use App\Http\Controllers\Api\SuperAdmin\ServicesController;
 use App\Http\Controllers\Api\SuperAdmin\SignupApproveController;
@@ -260,7 +261,13 @@ Route::get('/super/subscribers',[SubscriptionController::class,'subscribers']);
 
         Route::put('/super/roomData/update/{id}',[RoomDataController::class,'updateRoomData']);
 
+/////////////////////////////////////////////////// Pending Recharge Wallet ///////////////////////////////////////////////////////////
 
+        Route::get('/super/pendingRechargeWallet', [RechargeWalletController::class, 'getPendingWallets']);
+
+        Route::put('/super/rechargeWallet/approve/{id}',[RechargeWalletController::class,'approveRechargeWallet']);
+
+        Route::put('/super/rechargeWallet/reject/{id}',[RechargeWalletController::class,'rejectRechargeWallet']);
 
 });
 

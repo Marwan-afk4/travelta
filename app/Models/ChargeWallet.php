@@ -14,5 +14,6 @@ class ChargeWallet extends Model
         'amount',
         'image',
         'status',
+        'rejected_reason'
     ];
 }
