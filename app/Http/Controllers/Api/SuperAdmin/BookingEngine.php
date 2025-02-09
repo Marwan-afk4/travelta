@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BookinEngine\BookingEngineListRequest;
+use App\Models\Booking;
 use App\Models\BookingEngine as ModelsBookingEngine;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\CustomerBookingengine;
 use App\Models\Hotel;
+use App\Models\HotelImage;
 use App\Models\Room;
 use App\Models\RoomAvailability;
 use Carbon\Carbon;
@@ -67,8 +70,39 @@ class BookingEngine extends Controller
     $checkOut = Carbon::parse($validated['check_out']);
 
     try {
-        $hotelsQuery = Hotel::query()
-            ->with(['city', 'country', 'rooms.availability']);
+        // ✅ Get pricing data that supports the requested guests
+        $pricingData = DB::table('room_pricing_data')
+            ->where('adults', '>=', $validated['max_adults'])
+            ->where('children', '>=', $validated['max_children'])
+            ->get(['id', 'room_type']);
+
+        if ($pricingData->isEmpty()) {
+            return response()->json(['success' => true, 'hotels' => []]);
+        }
+
+        // ✅ Map pricing data
+        $pricingDataMap = [];
+        foreach ($pricingData as $data) {
+            $pricingDataMap[$data->id] = $data->room_type;
+        }
+
+        // ✅ Get room IDs and room types
+        $roomPricings = DB::table('room_pricings')
+            ->whereIn('pricing_data_id', array_keys($pricingDataMap))
+            ->get(['room_id', 'pricing_data_id']);
+
+        if ($roomPricings->isEmpty()) {
+            return response()->json(['success' => true, 'hotels' => []]);
+        }
+
+        // ✅ Map room_id to room_type
+        $roomTypeMap = [];
+        foreach ($roomPricings as $pricing) {
+            $roomTypeMap[$pricing->room_id] = $pricingDataMap[$pricing->pricing_data_id];
+        }
+
+        // ✅ Fetch hotels with available rooms & images
+        $hotelsQuery = Hotel::query()->with(['rooms.availability', 'images' , 'rooms.gallery']);
 
         if (!empty($validated['hotel_id'])) {
             $hotelsQuery->where('id', $validated['hotel_id']);
@@ -85,16 +119,17 @@ class BookingEngine extends Controller
         $hotels = $hotelsQuery->get();
         $results = [];
 
+
         foreach ($hotels as $hotel) {
             $availableRooms = [];
 
             foreach ($hotel->rooms as $room) {
-                // Validate max adults and max children
-                if ($room->max_adults < $validated['max_adults'] || $room->max_children < $validated['max_children']) {
+                if (!isset($roomTypeMap[$room->id])) {
                     continue;
                 }
 
                 $roomId = $room->id;
+                $roomType = $roomTypeMap[$roomId];
                 $remainingQuantity = null;
                 $currentDate = clone $checkIn;
 
@@ -126,26 +161,34 @@ class BookingEngine extends Controller
                 if ($remainingQuantity > 0) {
                     $availableRooms[] = [
                         'room_id' => $roomId,
+                        'room_type' => $roomType,
                         'available_quantity' => $remainingQuantity,
                         'room_details' => $room,
                     ];
                 }
             }
 
-            $results[] = [
-                'hotel_id' => $hotel->id,
-                'hotel_name' => $hotel->hotel_name,
-                'city' => $hotel->city->name,
-                'country' => $hotel->city->country->name,
-                'available_rooms' => $availableRooms,
-            ];
+            if (!empty($availableRooms)) {
+                $results[] = [
+                    'hotel_id' => $hotel->id,
+                    'hotel_name' => $hotel->hotel_name,
+                    'hotel_logo' => $hotel->hotel_logo? asset('storage/' . $hotel->hotel_logo) : null,
+                    'city' => $hotel->city->name,
+                    'country' => $hotel->city->country->name,
+                    'images' => HotelImage::where('hotel_id', $hotel->id)
+                    ->pluck('image')
+                    ->map(fn($image) => asset('storage/' . $image))
+                    ->toArray(),
+                    'available_rooms' => $availableRooms,
+                ];
+            }
+
         }
 
         return response()->json([
             'success' => true,
             'hotels' => $results,
         ]);
-
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
@@ -154,6 +197,12 @@ class BookingEngine extends Controller
         ], 500);
     }
 }
+
+
+
+
+
+
 
 
 
@@ -296,4 +345,13 @@ public function bookRoom(Request $request)
     }
 }
 
+
+
+
+
+
+
+    public function BookingEngineList(BookingEngineListRequest $request){
+
+    }
 }

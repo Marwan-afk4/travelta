@@ -20,7 +20,8 @@ class Hotel extends Model
         'hotel_video_link',
         'hotel_website',
         'check_in',
-        'check_out'
+        'check_out',
+        'location'
     ];
 
 
