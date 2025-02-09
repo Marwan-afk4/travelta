@@ -67,10 +67,10 @@ class BookingEngine extends Controller
     $checkOut = Carbon::parse($validated['check_out']);
 
     try {
-        // Get the pricing data IDs that match the required max_adults and max_children
+        // Get the pricing data IDs that support at least the requested number of adults and children
         $pricingDataIds = DB::table('room_pricing_data')
-            ->where('adults', $validated['max_adults'])
-            ->where('children', $validated['max_children'])
+            ->where('adults', '>=', $validated['max_adults'])
+            ->where('children', '>=', $validated['max_children'])
             ->pluck('id');
 
         if ($pricingDataIds->isEmpty()) {
@@ -171,6 +171,7 @@ class BookingEngine extends Controller
         ], 500);
     }
 }
+
 
 
 
