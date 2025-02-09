@@ -193,8 +193,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('/tour')->group(function(){
         Route::controller(CreateTourController::class)->group(function(){
-            Route::post('/add', 'create'); 
-            Route::put('/update/{id}', 'modify'); 
+            Route::post('/add', 'create');
+            Route::put('/update/{id}', 'modify');
         });
     });
 
