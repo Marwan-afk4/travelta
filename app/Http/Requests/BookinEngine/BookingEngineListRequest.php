@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\BookinEngine;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class BookingEngineListRequest extends FormRequest
 {
@@ -31,7 +33,17 @@ class BookingEngineListRequest extends FormRequest
             'check_in' => ['required', 'date'],
             'check_out' => ['required', 'date'],
             'room_type' => ['required'],
-            
+            'no_of_adults' => ['required','integer','min:1'],
+            'no_of_children' => ['required','integer','min:0'],
+            'payment_status' => ['required','enum:later,full,partial'],
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => 'Validation errors',
+            'data' => $validator->errors()
+        ],400),);
     }
 }

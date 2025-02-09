@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookinEngine\BookingEngineListRequest;
 use App\Models\Booking;
 use App\Models\BookingEngine as ModelsBookingEngine;
+use App\Models\BookingengineList;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\CustomerBookingengine;
@@ -102,7 +103,7 @@ class BookingEngine extends Controller
         }
 
         // ✅ Fetch hotels with available rooms & images
-        $hotelsQuery = Hotel::query()->with(['rooms.availability', 'images' , 'rooms.gallery']);
+        $hotelsQuery = Hotel::query()->with(['images' , 'rooms.gallery']);
 
         if (!empty($validated['hotel_id'])) {
             $hotelsQuery->where('id', $validated['hotel_id']);
@@ -172,6 +173,7 @@ class BookingEngine extends Controller
                 $results[] = [
                     'hotel_id' => $hotel->id,
                     'hotel_name' => $hotel->hotel_name,
+                    'hotel_stars' => $hotel->stars,
                     'hotel_logo' => $hotel->hotel_logo? asset('storage/' . $hotel->hotel_logo) : null,
                     'city' => $hotel->city->name,
                     'country' => $hotel->city->country->name,
@@ -208,7 +210,7 @@ class BookingEngine extends Controller
 
 
 
-public function bookRoom(Request $request)
+    public function bookRoom(Request $request,BookingEngineListRequest $bookinglistrequest)
 {
     $validator = Validator::make($request->all(), [
         'room_id'       => 'required|integer|exists:rooms,id',
@@ -326,6 +328,12 @@ public function bookRoom(Request $request)
             'nationality'        => $nationality,
         ]);
 
+        // $validationList = $bookinglistrequest->validated();
+        // $bookingList = BookingengineList::create($validationList);
+        // $validationList['status'] = 'inprogress';
+
+
+
         DB::commit();
 
         return response()->json([
@@ -345,13 +353,4 @@ public function bookRoom(Request $request)
     }
 }
 
-
-
-
-
-
-
-    public function BookingEngineList(BookingEngineListRequest $request){
-
-    }
 }
