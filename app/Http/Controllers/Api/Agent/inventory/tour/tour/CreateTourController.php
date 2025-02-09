@@ -150,6 +150,7 @@ class CreateTourController extends Controller
     }
 
     public function modify(TourRequest $request, $id){
+        // هتبعت id itinerary لو قديم
         // Keys
         // name, description, video_link, tour_type[private, group], status, days, 
         // nights, tour_type_id, featured[yes, no], featured_from, featured_to, 
@@ -162,13 +163,14 @@ class CreateTourController extends Controller
         // cancelation_items [{type[precentage, fixed], amount, days}] 
         // excludes [{name}] 
         // includes [{name}]
-        // itinerary [{image, day_name, day_description, content}]
+        // itinerary [{id, image, day_name, day_description, content}]
         // {"name": "Tour1","description": "Tour Description1","video_link": "Link1","status": "0","days": "11","nights": "11","tour_type_id": "1","featured": "no","featured_from": "2025-09-11","featured_to": "2025-10-11","deposit": "111","deposit_type": "precentage","tax": "11","tax_type": "precentage","pick_up_country_id": "1","pick_up_city_id": "1","pick_up_map": "dfdf11","destination_type": "single","tour_email": "ahmed11@gmail.com","tour_website": "Web11","tour_phone": "0111111","tour_address": "address111","payments_options": "fdgdf111","policy": "sdfsd111","cancelation": "0","destinations": [{  "country_id": "1", "city_id": "1", "arrival_map": "dsfsd111" } ],"availability": [ {"date": "2025-09-11", "last_booking": "11", "quantity": "11"}],"cancelation_items": [    {"type": "precentage","amount": "11111","days": "11"    }],"excludes": [    {"name": "Exclude11"    }],"includes": [    {"name": "Include11"    }],"itinerary": [    {"image":"base64""day_name": "First11","day_description": "Description11","content": "Content11"    }],"tour_type": "private"}
         $tourRequest = $request->only($this->tourRequest);
         $tour = $this->tour
         ->where('id', $id)
         ->first();
         $tour->update($tourRequest);
+        $itinerary_ids = [];
         try{
             $this->destinations
             ->where('tour_id', $tour->id)
@@ -241,19 +243,32 @@ class CreateTourController extends Controller
             ->delete();
             if ($request->itinerary) {
                 foreach ($request->itinerary as $item) {
-                    $image = null;
                     if (!empty($item['image'])) {
                         $this->deleteImage();
                         $image = $this->storeBase64Image($item['image'], 'agent/inventory/tour/itinerary');
                     }
-                    $this->itinerary
-                    ->create([
-                        'tour_id' => $tour->id,
-                        'day_name' => $item['day_name'], 
-                        'day_description' => $item['day_description'] ?? null, 
-                        'content' => $item['content'] ?? null, 
-                        'image' => $image ?? null, 
-                    ]);
+                    if (isset($item['id']) && is_numeric($item['id'])) {
+                        $this->itinerary
+                        ->where('id', $item['id'])
+                        ->update([
+                            'tour_id' => $tour->id,
+                            'day_name' => $item['day_name'], 
+                            'day_description' => $item['day_description'] ?? null, 
+                            'content' => $item['content'] ?? null, 
+                            'image' => $image ?? null, 
+                        ]);
+                    } 
+                    else {
+                        $this->itinerary
+                        ->create([
+                            'tour_id' => $tour->id,
+                            'day_name' => $item['day_name'], 
+                            'day_description' => $item['day_description'] ?? null, 
+                            'content' => $item['content'] ?? null, 
+                            'image' => $image ?? null, 
+                        ]);
+                    }
+                    
                 }
             }
             return response()->json([
@@ -268,9 +283,17 @@ class CreateTourController extends Controller
     }
 
     public function delete($id){
-        $this->tour
+        $tour = $this->tour
         ->where('id', $id)
-        ->delete();
+        ->first();
+        $itinerary = $this->itinerary
+        ->where('tour_id', $id)
+        ->get();
+        foreach ($itinerary as $item) { 
+            $this->deleteImage($item->image);
+        }
+
+        $tour->delete();
 
         return response()->json([
             'success' => 'You delete success'

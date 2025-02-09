@@ -11,6 +11,11 @@ use Illuminate\Support\Str;
 use App\Http\Resources\ManuelCartResource;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentMail;
+use App\Http\Resources\ManuelBusResource;
+use App\Http\Resources\ManuelFlightResource;
+use App\Http\Resources\ManuelHotelResource;
+use App\Http\Resources\ManuelTourResource;
+use App\Http\Resources\ManuelVisaResource;
 
 use App\Models\CustomerData;
 use App\Models\SupplierAgent;
@@ -1095,6 +1100,12 @@ class ManualBookingController extends Controller
             $this->manuel_data_cart
            ->where('id', $request->cart_id)
            ->delete();
+           $hotel = ManuelHotelResource::collection($hotel);
+           $bus = ManuelBusResource::collection($bus);
+           $visa = ManuelVisaResource::collection($visa);
+           $flight = ManuelFlightResource::collection($flight);
+           $tour = ManuelTourResource::collection($tour);
+           
             return response()->json([
                 'success' => $request->all(), 
             ]);
