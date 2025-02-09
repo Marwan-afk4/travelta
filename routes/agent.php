@@ -180,9 +180,9 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/details/{id}', 'details');
         });
         Route::controller(BookingStatusController::class)->group(function(){
-            Route::post('/confirmed/{id}', 'confirmed');
-            Route::post('/vouchered/{id}', 'vouchered');
-            Route::post('/canceled/{id}', 'canceled');
+            Route::put('/confirmed/{id}', 'confirmed');
+            Route::put('/vouchered/{id}', 'vouchered');
+            Route::put('/canceled/{id}', 'canceled');
         });
     });
 
