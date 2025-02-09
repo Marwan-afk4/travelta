@@ -36,7 +36,7 @@ class HotelController extends Controller
 
     $hotels->each(function ($hotel) use ($baseUrl) {
         if (!empty($hotel->hotel_logo)) {
-            $hotel->hotel_logo = url('storage/' . $hotel->hotel_logo);
+            $hotel->hotel_logo = $baseUrl . '/' . $hotel->hotel_logo;
         }
 
         $hotel->features->each(function ($feature) use ($baseUrl) {

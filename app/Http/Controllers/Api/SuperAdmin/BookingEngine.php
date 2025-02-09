@@ -172,7 +172,7 @@ class BookingEngine extends Controller
                 $results[] = [
                     'hotel_id' => $hotel->id,
                     'hotel_name' => $hotel->hotel_name,
-                    'hotel_logo' => $hotel->hotel_logo? url($hotel->hotel_logo) : null,
+                    'hotel_logo' => $hotel->hotel_logo? asset('storage/' . $hotel->hotel_logo) : null,
                     'city' => $hotel->city->name,
                     'country' => $hotel->city->country->name,
                     'images' => HotelImage::where('hotel_id', $hotel->id)
