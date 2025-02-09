@@ -13,7 +13,7 @@ class BookingEngineListRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -28,14 +28,14 @@ class BookingEngineListRequest extends FormRequest
             'country_id' => ['required', 'exists:countries,id'],
             'city_id' => ['required', 'exists:cities,id'],
             'hotel_id' => ['required', 'exists:hotels,id'],
-            'to_agent_id' => ['required', 'exists:agents,id'],
-            'to_customer_id' => ['required', 'exists:customers,id'],
+            'to_agent_id' => ['nullable', 'exists:agents,id'],
+            'to_customer_id' => ['nullable', 'exists:customers,id'],
             'check_in' => ['required', 'date'],
             'check_out' => ['required', 'date'],
             'room_type' => ['required'],
             'no_of_adults' => ['required','integer','min:1'],
             'no_of_children' => ['required','integer','min:0'],
-            'payment_status' => ['required','enum:later,full,partial'],
+            'payment_status' => ['required','in:later,full,partial,half'],
         ];
     }
 

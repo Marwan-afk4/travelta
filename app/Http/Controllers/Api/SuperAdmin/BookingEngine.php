@@ -232,6 +232,7 @@ class BookingEngine extends Controller
         ], 422);
     }
 
+
     $validated = $validator->validated();
 
     $roomId = $validated['room_id'];
@@ -328,9 +329,9 @@ class BookingEngine extends Controller
             'nationality'        => $nationality,
         ]);
 
-        // $validationList = $bookinglistrequest->validated();
-        // $bookingList = BookingengineList::create($validationList);
-        // $validationList['status'] = 'inprogress';
+        $validationList = $bookinglistrequest->validated();
+        $bookingList = BookingengineList::create($validationList);
+        $validationList['status'] = 'inprogress';
 
 
 
