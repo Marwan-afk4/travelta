@@ -32,11 +32,11 @@ class HotelController extends Controller
         'policies'
     ])->get();
 
-    $baseUrl = url('storage/');
+    $baseUrl = url('/');
 
     $hotels->each(function ($hotel) use ($baseUrl) {
         if (!empty($hotel->hotel_logo)) {
-            $hotel->hotel_logo = $baseUrl . '/' . $hotel->hotel_logo;
+            $hotel->hotel_logo = $baseUrl . 'storage/' . $hotel->hotel_logo;
         }
 
         $hotel->features->each(function ($feature) use ($baseUrl) {
