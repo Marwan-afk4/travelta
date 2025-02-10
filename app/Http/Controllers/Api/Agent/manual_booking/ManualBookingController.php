@@ -1122,23 +1122,22 @@ class ManualBookingController extends Controller
             $data['payment_date'] = date('Y-m-d');
             $data['agent'] = $agent_data->name;;
             Mail::to($agent_data->email)->send(new PaymentMail($data));
-           
-        //    if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
-    
-        //     }
-        //     elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-      
-        //     }
-        //     elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
-   
-        //     }
-        //     elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
-     
-        //     }
-        //     elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
-       
-    
-        //     }
+            $agent_data = [];
+            if (!empty($manuel_booking->affilate_id)) {
+                $agent = $manuel_booking->affilate; 
+            }
+            else{
+                $agent = $manuel_booking->affilate; 
+            }
+            $agent_data = [
+                'name' => $agent->name,
+                'email' => $agent->email,
+                'phone' => $agent->phone,
+            ];
+            $booking_payment->makeHidden('manuel_booking');
+        //     $this->manuel_data_cart
+        //    ->where('id', $request->cart_id)
+        //    ->delete();
             return response()->json([
                 'success' => $request->all(), 
                 'hotel' => $hotel[0] ?? null,
@@ -1146,6 +1145,7 @@ class ManualBookingController extends Controller
                 'visa' => $visa[0] ?? null,
                 'flight' => $flight[0] ?? null,
                 'tour' => $tour[0] ?? null,
+                'agent_data' => $agent_data
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             $manuel_booking->delete();
