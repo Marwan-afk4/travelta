@@ -179,6 +179,7 @@ class BookingEngine extends Controller
                     'hotel_features' => $hotel->features,
                     'hotel_policies' => $hotel->policies,
                     'hotel_accepted_cards' => $hotel->acceptedCards,
+                    'hotel_themes' => $hotel->themes,
                     'city' => $hotel->city->name,
                     'country' => $hotel->city->country->name,
                     'images' => HotelImage::where('hotel_id', $hotel->id)
