@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tour_availabilities', function (Blueprint $table) {
-            $table->date('last_booking')->change();
+            $table->integer('remaining');
         });
     }
 

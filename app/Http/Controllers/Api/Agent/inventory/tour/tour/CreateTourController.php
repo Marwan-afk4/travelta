@@ -107,6 +107,7 @@ class CreateTourController extends Controller
                         'date' => $item['date'],
                         'last_booking' => $item['last_booking'],
                         'quantity' => $item['quantity'],
+                        'remaining' => $item['quantity'],
                     ]);
                 }
             }
