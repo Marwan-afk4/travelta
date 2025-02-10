@@ -297,6 +297,8 @@ class BookingController extends Controller
 
     public function special_request(Request $request, $id){
         // https://travelta.online/agent/booking/special_request/{id}
+        // Keys
+        // special_request
         $validation = Validator::make($request->all(), [
             'special_request' => 'required',
         ]);

@@ -820,8 +820,7 @@ class ManualBookingController extends Controller
             $role => $agent_id,
             'code' => $code,
             'payment_type' => $request->payment_type,
-        ]);
-        try{
+        ]); 
             if (isset($request->adults_data) && !empty($request->adults_data)) {
                 $adults_data = json_decode($request->adults_data) ?? [];
                 foreach ($adults_data as $item) {	
@@ -863,7 +862,7 @@ class ManualBookingController extends Controller
                 $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_hotel = $this->manuel_hotel
                 ->create($hotelRequest);
-                $hotel = ManuelHotelResource::collection($hotel);
+                $hotel = ManuelHotelResource::collection(collect([$hotel]));
                 $bus = null;
                 $visa = null;
                 $flight = null;
@@ -887,7 +886,7 @@ class ManualBookingController extends Controller
                 $manuel_bus = $this->manuel_bus
                 ->create($busRequest);  
                 $hotel = null;
-                $bus = ManuelBusResource::collection($bus); 
+                $bus = ManuelBusResource::collection(collect([$manuel_bus])); 
                 $visa = null;
                 $flight = null;
                 $tour = null;
@@ -906,7 +905,7 @@ class ManualBookingController extends Controller
                 ->create($visaRequest);
                 $hotel = null;
                 $bus = null; 
-                $visa = ManuelVisaResource::collection($visa);
+                $visa = ManuelVisaResource::collection(collect([$manuel_visa]));
                 $flight = null;
                 $tour = null;
             }
@@ -930,6 +929,11 @@ class ManualBookingController extends Controller
                 $flightRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_flight = $this->manuel_flight
                 ->create($flightRequest);
+                $hotel = null;
+                $bus = null; 
+                $visa = null;
+                $flight = ManuelFlightResource::collection(collect([$manuel_flight]));
+                $tour = null;
             }
             elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
                 $tourRequest = [
@@ -948,32 +952,37 @@ class ManualBookingController extends Controller
                 ->create($tourRequest);
                 $manuel_tour_bus = is_string($manuel_data_cart['tour_buses']) ? json_decode($manuel_data_cart['tour_buses']) : $manuel_data_cart['tour_buses'];
                 $manuel_tour_hotel = is_string($manuel_data_cart['tour_hotels']) ? json_decode($manuel_data_cart['tour_hotels']) : $manuel_data_cart['tour_hotels']; 
-            // return $manuel_tour_bus;
-            if ($manuel_tour_bus) {
-                    foreach ($manuel_tour_bus as $item) {
-                        $this->manuel_tour_bus
-                        ->create([
-                            'transportation' => $item->transportation,
-                            'manuel_tour_id' => $manuel_tour->id,
-                            'seats' => $item->seats,
-                            'departure' => $item->departure ?? null,
-                        ]);
-                    }
-            }
-            if ($manuel_tour_hotel) {
-                    foreach ($manuel_tour_hotel as $item) {
-                        $this->manuel_tour_hotel
-                        ->create([
-                            'destination' => $item->destination,
-                            'manuel_tour_id' => $manuel_tour->id,
-                            'hotel_name' => $item->hotel_name,
-                            'room_type' => $item->room_type,
-                            'check_in' => $item->check_in,
-                            'check_out' => $item->check_out,
-                            'nights' => $item->nights,
-                        ]);
-                    }
-            }
+                // return $manuel_tour_bus;
+                if ($manuel_tour_bus) {
+                        foreach ($manuel_tour_bus as $item) {
+                            $this->manuel_tour_bus
+                            ->create([
+                                'transportation' => $item->transportation,
+                                'manuel_tour_id' => $manuel_tour->id,
+                                'seats' => $item->seats,
+                                'departure' => $item->departure ?? null,
+                            ]);
+                        }
+                }
+                if ($manuel_tour_hotel) {
+                        foreach ($manuel_tour_hotel as $item) {
+                            $this->manuel_tour_hotel
+                            ->create([
+                                'destination' => $item->destination,
+                                'manuel_tour_id' => $manuel_tour->id,
+                                'hotel_name' => $item->hotel_name,
+                                'room_type' => $item->room_type,
+                                'check_in' => $item->check_in,
+                                'check_out' => $item->check_out,
+                                'nights' => $item->nights,
+                            ]);
+                        }
+                }
+                $hotel = null;
+                $bus = null; 
+                $visa = null;
+                $flight = null;
+                $tour = ManuelTourResource::collection(collect([$manuel_tour]));
             }
             if (isset($manuel_data_cart['adults_data']) && !empty($manuel_data_cart['adults_data'])) {
                 $adults = is_string($manuel_data_cart['adults_data']) ?json_decode($manuel_data_cart['adults_data']) :$manuel_data_cart['adults_data'];
@@ -1126,20 +1135,16 @@ class ManualBookingController extends Controller
      
         //     }
         //     elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
-        //         $hotel = null;
-        //         $bus = null; 
-        //         $visa = null;
-        //         $flight = null;
-        //         $tour = ManuelTourResource::collection($tour);
+       
+    
         //     }
             return response()->json([
                 'success' => $request->all(), 
-            ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            $manuel_booking->delete();
-            return response()->json([
-                'faild' => $e,
-            ], 400);
-        }
+                'hotel' => $hotel->first(),
+                'bus' => $bus->first(),
+                'visa' => $visa->first(),
+                'flight' => $flight->first(),
+                'tour' => $tour->first(),
+            ]); 
     }
 }
