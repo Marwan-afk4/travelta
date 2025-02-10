@@ -66,7 +66,24 @@ class CreateTourController extends Controller
         // includes [{name}]
         // itinerary [{image, day_name, day_description, content}]
         // {"name": "Tour1","description": "Tour Description1","video_link": "Link1","status": "0","days": "11","nights": "11","tour_type_id": "1","featured": "no","featured_from": "2025-09-11","featured_to": "2025-10-11","deposit": "111","deposit_type": "precentage","tax": "11","tax_type": "precentage","pick_up_country_id": "1","pick_up_city_id": "1","pick_up_map": "dfdf11","destination_type": "single","tour_email": "ahmed11@gmail.com","tour_website": "Web11","tour_phone": "0111111","tour_address": "address111","payments_options": "fdgdf111","policy": "sdfsd111","cancelation": "0","destinations": [{  "country_id": "1", "city_id": "1", "arrival_map": "dsfsd111" } ],"availability": [ {"date": "2025-09-11", "last_booking": "11", "quantity": "11"}],"cancelation_items": [    {"type": "precentage","amount": "11111","days": "11"    }],"excludes": [    {"name": "Exclude11"    }],"includes": [    {"name": "Include11"    }],"itinerary": [    {"image":"base64""day_name": "First11","day_description": "Description11","content": "Content11"    }],"tour_type": "private"}
+        
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
+        }
+        else{
+            $agent_type = 'agent_id';
+        }
         $tourRequest = $request->only($this->tourRequest);
+        $tourRequest[$agent_type] = $agent_id;
         $tour = $this->tour
         ->create($tourRequest);
         try{
