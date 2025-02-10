@@ -12,4 +12,12 @@ class TourDestination extends Model
         'city_id',
         'arrival_map',
     ];
+
+    public function country(){
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function city(){
+        return $this->belongsTo(City::class, 'city_id');
+    }
 }

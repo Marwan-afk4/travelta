@@ -1134,9 +1134,9 @@ class ManualBookingController extends Controller
                 'email' => $agent->email,
                 'phone' => $agent->phone,
             ];
-        //     $this->manuel_data_cart
-        //    ->where('id', $request->cart_id)
-        //    ->delete();
+            $this->manuel_data_cart
+           ->where('id', $request->cart_id)
+           ->delete();
             return response()->json([
                 'success' => $request->all(), 
                 'hotel' => $hotel[0] ?? null,

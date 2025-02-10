@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tour_availabilities', function (Blueprint $table) {
+        Schema::create('tour_images', function (Blueprint $table) {
             $table->id();
             $table->foreignId(column: 'tour_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->date('date');
-            $table->date('last_booking');
-            $table->integer('quantity');
+            $table->string('image');
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tour_availabilities');
+        Schema::dropIfExists('tour_images');
     }
 };

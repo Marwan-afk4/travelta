@@ -22,8 +22,8 @@ return new class extends Migration
             $table->integer('nights');
             $table->foreignId(column: 'tour_type_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->enum('featured', ['yes', 'no']);
-            $table->date('featured_from');
-            $table->date('featured_to');
+            $table->date('featured_from')->nullable();
+            $table->date('featured_to')->nullable();
             $table->integer('deposit')->default(0);
             $table->enum('deposit_type', ['precentage', 'fixed']);
             $table->integer('tax')->default(0);

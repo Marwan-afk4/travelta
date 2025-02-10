@@ -4,13 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TourAvailability extends Model
+class TourImage extends Model
 {
     protected $fillable = [
         'tour_id',
-        'date',
-        'last_booking',
-        'quantity',
-        'remaining',
+        'image',
+        'status',
     ];
 }

@@ -52,6 +52,7 @@ class CreateTourController extends Controller
     ]; 
 
     public function create(TourRequest $request){
+        // /agent/tour/add
         // Keys
         // name, description, video_link, tour_type[private, group], status, days, 
         // nights, tour_type_id, featured[yes, no], featured_from, featured_to, 
@@ -167,6 +168,7 @@ class CreateTourController extends Controller
     }
 
     public function modify(TourRequest $request, $id){
+        // /agent/tour/update/{id}
         // هتبعت id itinerary لو قديم
         // Keys
         // name, description, video_link, tour_type[private, group], status, days, 
@@ -326,10 +328,32 @@ class CreateTourController extends Controller
         }
     }
 
-    public function delete($id){
+    public function delete(Request $request, $id){
+        // /agent/tour/delete/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        } 
         $tour = $this->tour
         ->where('id', $id)
+        ->where($role, $agent_id)
         ->first();
+        if (empty($tour)) {
+            return response()->json([
+                'errors' => 'tour is not found'
+            ], 400);
+        }
         $itinerary = $this->itinerary
         ->where('tour_id', $id)
         ->get();
