@@ -45,6 +45,7 @@ class ManuelFlightResource extends JsonResource
             'code' => $this->code ?? null,
             'payment_status' => $this->payment_type ?? null,
             'status' => $this->status ?? null,
+            'special_request' => $this->special_request ?? null,
         ];
     }
 }

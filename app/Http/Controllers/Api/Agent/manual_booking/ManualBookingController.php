@@ -863,6 +863,11 @@ class ManualBookingController extends Controller
                 $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_hotel = $this->manuel_hotel
                 ->create($hotelRequest);
+                $hotel = ManuelHotelResource::collection($hotel);
+                $bus = null;
+                $visa = null;
+                $flight = null;
+                $tour = null;
             }
             elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
                 $busRequest = [ 
@@ -880,7 +885,12 @@ class ManualBookingController extends Controller
                 ];
                 $busRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_bus = $this->manuel_bus
-                ->create($busRequest);
+                ->create($busRequest);  
+                $hotel = null;
+                $bus = ManuelBusResource::collection($bus); 
+                $visa = null;
+                $flight = null;
+                $tour = null;
             }
             elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
                 $visaRequest = [
@@ -894,6 +904,11 @@ class ManualBookingController extends Controller
                 $visaRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_visa = $this->manuel_visa
                 ->create($visaRequest);
+                $hotel = null;
+                $bus = null; 
+                $visa = ManuelVisaResource::collection($visa);
+                $flight = null;
+                $tour = null;
             }
             elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
                 $flightRequest = [
@@ -1097,37 +1112,18 @@ class ManualBookingController extends Controller
             $data['payment_date'] = date('Y-m-d');
             $data['agent'] = $agent_data->name;;
             Mail::to($agent_data->email)->send(new PaymentMail($data));
-        //     $this->manuel_data_cart
-        //    ->where('id', $request->cart_id)
-        //    ->delete();
            
         //    if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
-        //         $hotel = ManuelHotelResource::collection($hotel);
-        //         $bus = null;
-        //         $visa = null;
-        //         $flight = null;
-        //         $tour = null;
+    
         //     }
         //     elseif($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses'){
-        //         $hotel = null;
-        //         $bus = ManuelBusResource::collection($bus); 
-        //         $visa = null;
-        //         $flight = null;
-        //         $tour = null;
+      
         //     }
         //     elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
-        //         $hotel = null;
-        //         $bus = null; 
-        //         $visa = ManuelVisaResource::collection($visa);
-        //         $flight = null;
-        //         $tour = null;
+   
         //     }
         //     elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
-        //         $hotel = null;
-        //         $bus = null; 
-        //         $visa = null;
-        //         $flight = ManuelFlightResource::collection($flight);
-        //         $tour = null;
+     
         //     }
         //     elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
         //         $hotel = null;

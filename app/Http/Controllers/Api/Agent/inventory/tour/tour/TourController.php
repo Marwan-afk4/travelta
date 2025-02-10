@@ -22,6 +22,8 @@ class TourController extends Controller
         ->get();
         $cities = $this->cities
         ->get();
+        $tour = $this->tour
+        ->get();
 
         return response()->json([
             'tour_types' => $tour_types,
