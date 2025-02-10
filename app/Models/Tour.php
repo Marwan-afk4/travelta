@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Tour extends Model
 {
     protected $fillable = [
+        'agent_id',
+        'affilate_id',
         'name',
         'description',
         'video_link',

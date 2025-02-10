@@ -238,28 +238,29 @@ class CreateTourController extends Controller
                     ]);
                 }
             }
-            $this->itinerary
-            ->where('tour_id', $tour->id)
-            ->delete();
             if ($request->itinerary) {
                 foreach ($request->itinerary as $item) {
                     if (!empty($item['image'])) {
-                        $this->deleteImage();
                         $image = $this->storeBase64Image($item['image'], 'agent/inventory/tour/itinerary');
                     }
                     if (isset($item['id']) && is_numeric($item['id'])) {
-                        $this->itinerary
+                        $itinerary = $this->itinerary
                         ->where('id', $item['id'])
-                        ->update([
+                        ->first();
+                        if (!empty($item['image'])) {
+                            $this->deleteImage($itinerary->image);
+                        }
+                        $itinerary->update([
                             'tour_id' => $tour->id,
                             'day_name' => $item['day_name'], 
                             'day_description' => $item['day_description'] ?? null, 
                             'content' => $item['content'] ?? null, 
                             'image' => $image ?? null, 
                         ]);
+                        $itinerary_ids[] = $item['id'];
                     } 
                     else {
-                        $this->itinerary
+                        $itinerary_item = $this->itinerary
                         ->create([
                             'tour_id' => $tour->id,
                             'day_name' => $item['day_name'], 
@@ -267,9 +268,13 @@ class CreateTourController extends Controller
                             'content' => $item['content'] ?? null, 
                             'image' => $image ?? null, 
                         ]);
+                        $itinerary_ids[] = $itinerary_item->id;
                     }
-                    
                 }
+                $this->itinerary
+                ->where('tour_id', $tour->id)
+                ->whereNotIn('id', $itinerary_ids)
+                ->delete();
             }
             return response()->json([
                 "success" => "You update data success",
