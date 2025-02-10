@@ -85,7 +85,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('/make_payment', 'makePayment');
     });
 ///////marwan start
-    Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookroom']);
+    Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom']);
 
     Route::post('/agent/avalibleRooms', [BookingEngine::class, 'getAvailableRooms']);
 
