@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\SuperAdmin\ThemeController;
 use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
 use App\Http\Controllers\Api\SuperAdmin\settings\AllowTimeController;
+use App\Http\Controllers\Api\SuperAdmin\TourTypeController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -250,6 +251,16 @@ Route::get('/super/subscribers',[SubscriptionController::class,'subscribers']);
         Route::post('/super/hotel/add', [HotelController::class, 'storeHotel']);
 
         Route::delete('/super/hotel/delete/{id}', [HotelController::class, 'deleteHotel']);
+
+///////////////////////////////////////////////// TourType ////////////////////////////////////////////////////////
+
+        Route::get('/super/getTourtype', [TourTypeController::class , 'getTourtype']);
+
+        Route::post('/super/add/tourtype', [TourTypeController::class , 'addTourtype']);
+
+        Route::post('/super/update/tourtype/{id}', [TourTypeController::class , 'updateTourtype']);
+
+        Route::post('/super/delete/tourtype/{id}', [TourTypeController::class , 'deleteTourtype']);
 
 //////////////////////////////////////////////////// Room Data ///////////////////////////////////////////////////////////
 
