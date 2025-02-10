@@ -57,6 +57,11 @@ class BookingPaymentController extends Controller
         }])
         ->where('code', $request->code )
         ->first();
+        if (empty($booking)) {
+            return response()->json([
+                'errors' => 'Code is wrong'
+            ], 400);
+        }
         $data = collect([]);
         if (!empty($booking)) {
             $data['id'] = $booking->id;
@@ -64,6 +69,11 @@ class BookingPaymentController extends Controller
             $data['code'] = $booking->code;
             $data['to_phone'] = $booking->to_client->phones[0] ?? $booking->to_client->phones ?? $booking->to_client->phone;
             $data['to_email'] = $booking->to_client->emails[0] ?? $booking->to_client->emails ?? $booking->to_client->email;
+
+            $data['from_name'] = $booking->from_supplier->agent ?? null;
+            $data['from_phone'] = $booking->from_supplier->phones[0] ?? $booking->from_supplier->phones ?? null;
+            $data['from_email'] = $booking->from_supplier->emails[0] ?? $booking->from_supplier->emails ?? null;
+
             $data['no_adults'] = $booking->adults->count();
             $data['no_children'] = $booking->children->count();
             $data['hotel'] = $booking->hotel;
