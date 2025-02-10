@@ -67,7 +67,7 @@ class RoomAmenityController extends Controller
         } 
         else {
             $role = 'agent_id';
-        } 
+        }
         $room_amenity = $this->room_amenity
         ->where('id', $id)
         ->where($role, $agent_id)

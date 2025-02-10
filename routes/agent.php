@@ -42,6 +42,7 @@ use App\Http\Controllers\Api\Agent\inventory\room\settings\RoomExtraController;
 
 use App\Http\Controllers\Api\Agent\inventory\tour\tour\TourController;
 use App\Http\Controllers\Api\Agent\inventory\tour\tour\CreateTourController;
+use App\Http\Controllers\Api\Agent\inventory\tour\tour\TourGalleryController;
 
 use App\Http\Controllers\Api\Agent\invoice\InvoiceController;
 
@@ -201,10 +202,20 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::prefix('/tour')->group(function(){
+        Route::controller(TourController::class)->group(function(){
+            Route::get('/', 'view');
+            Route::put('/status/{id}', 'status');
+            Route::put('/accepted/{id}', 'accepted');
+        });
         Route::controller(CreateTourController::class)->group(function(){
             Route::post('/add', 'create'); 
             Route::put('/update/{id}', 'modify'); 
             Route::delete('/delete/{id}', 'delete'); 
+        });
+        Route::controller(TourGalleryController::class)->group(function(){
+            Route::get('/gallery/{id}', 'gallery'); 
+            Route::post('/add_gallery', 'add_gallery'); 
+            Route::delete('/gallery/delete/{id}', 'delete'); 
         });
     });
 

@@ -29,6 +29,14 @@ class ManuelBooking extends Model
     ];
     protected $appends = ['to_client'];
 
+    public function affilate(){
+        return $this->belongsTo(AffilateAgent::class, 'affilate_id');
+    }
+
+    public function agent(){
+        return $this->belongsTo(Agent::class, 'agent_id');
+    }
+
     public function operation_confirmed(){
         return $this->hasMany(OperationBookingConfirmed::class, 'manuel_booking_id');
     }
@@ -60,10 +68,7 @@ class ManuelBooking extends Model
     public function taxes(){
         return $this->belongsToMany(Tax::class, 'manuel_taxes', 'manuel_id', 'tax_id');
     }
-
-    public function agent(){
-        return $this->belongsTo(Agent::class, 'agent_id');
-    }
+ 
 
     public function country(){
         return $this->belongsTo(Country::class);

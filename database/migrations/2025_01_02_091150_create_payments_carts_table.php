@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId(column: 'manuel_booking_id')->nullable()->constrained('manuel_bookings')->onUpdate('cascade')->onDelete('cascade');
             $table->float('amount');
             $table->date('date');
-            $table->boolean('payment')->default(0);
+            $table->float('payment')->default(0);
             $table->timestamps();
         });
     }

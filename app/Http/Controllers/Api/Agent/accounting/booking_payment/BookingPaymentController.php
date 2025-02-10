@@ -137,7 +137,7 @@ class BookingPaymentController extends Controller
             'client' => $client
         ]);
     }
-    
+
     public function add_payment(Request $request){
         // /accounting/booking/payment
         // Keys

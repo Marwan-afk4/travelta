@@ -36,4 +36,40 @@ class Tour extends Model
         'policy',
         'cancelation',
     ];
+
+    public function destinations(){
+        return $this->hasMany(TourDestination::class, 'tour_id');
+    }
+
+    public function availability(){
+        return $this->hasMany(TourAvailability::class, 'tour_id');
+    }
+
+    public function cancelation_items(){
+        return $this->hasMany(TourCancelation::class, 'tour_id');
+    }
+
+    public function excludes(){
+        return $this->hasMany(TourExclude::class, 'tour_id');
+    }
+
+    public function includes(){
+        return $this->hasMany(TourInclude::class, 'tour_id');
+    }
+
+    public function itinerary(){
+        return $this->hasMany(TourItinerary::class, 'tour_id');
+    }
+
+    public function tour_type(){
+        return $this->belongsTo(TourType::class, 'tour_id');
+    }
+
+    public function pick_up_country(){
+        return $this->belongsTo(Country::class, 'pick_up_country_id');
+    }
+
+    public function pick_up_city(){
+        return $this->belongsTo(City::class, 'pick_up_city_id');
+    }
 }
