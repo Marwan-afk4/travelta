@@ -178,6 +178,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(BookingController::class)->group(function(){
             Route::get('/', 'booking');
             Route::get('/details/{id}', 'details');
+            Route::put('/special_request/{id}', 'special_request');
         });
         Route::controller(BookingStatusController::class)->group(function(){
             Route::put('/confirmed/{id}', 'confirmed');
