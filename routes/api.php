@@ -258,9 +258,9 @@ Route::get('/super/subscribers',[SubscriptionController::class,'subscribers']);
 
         Route::post('/super/add/tourtype', [TourTypeController::class , 'addTourtype']);
 
-        Route::post('/super/update/tourtype/{id}', [TourTypeController::class , 'updateTourtype']);
+        Route::put('/super/update/tourtype/{id}', [TourTypeController::class , 'updateTourtype']);
 
-        Route::post('/super/delete/tourtype/{id}', [TourTypeController::class , 'deleteTourtype']);
+        Route::delete('/super/delete/tourtype/{id}', [TourTypeController::class , 'deleteTourtype']);
 
 //////////////////////////////////////////////////// Room Data ///////////////////////////////////////////////////////////
 
