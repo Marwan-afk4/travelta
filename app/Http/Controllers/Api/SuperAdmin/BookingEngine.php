@@ -103,7 +103,7 @@ class BookingEngine extends Controller
         }
 
         // ✅ Fetch hotels with available rooms & images
-        $hotelsQuery = Hotel::query()->with(['images' , 'rooms.gallery']);
+        $hotelsQuery = Hotel::query()->with(['images' , 'rooms.gallery', 'facilities','features','policies','acceptedCards','themes']);
 
         if (!empty($validated['hotel_id'])) {
             $hotelsQuery->where('id', $validated['hotel_id']);
@@ -175,6 +175,11 @@ class BookingEngine extends Controller
                     'hotel_name' => $hotel->hotel_name,
                     'hotel_stars' => $hotel->stars,
                     'hotel_logo' => $hotel->hotel_logo? asset('storage/' . $hotel->hotel_logo) : null,
+                    'hotel_facilities' => $hotel->facilities,
+                    'hotel_features' => $hotel->features,
+                    'hotel_policies' => $hotel->policies,
+                    'hotel_accepted_cards' => $hotel->acceptedCards,
+                    'hotel_themes' => $hotel->themes,
                     'city' => $hotel->city->name,
                     'country' => $hotel->city->country->name,
                     'images' => HotelImage::where('hotel_id', $hotel->id)
