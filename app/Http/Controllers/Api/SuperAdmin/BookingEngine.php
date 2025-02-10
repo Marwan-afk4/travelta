@@ -210,11 +210,6 @@ class BookingEngine extends Controller
 
 
 
-
-
-
-
-
     public function bookRoom(Request $request,BookingEngineListRequest $bookinglistrequest)
 {
     $validator = Validator::make($request->all(), [
