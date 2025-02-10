@@ -1127,7 +1127,7 @@ class ManualBookingController extends Controller
                 $agent = $manuel_booking->affilate; 
             }
             else{
-                $agent = $manuel_booking->affilate; 
+                $agent = $manuel_booking->agent; 
             }
             $agent_data = [
                 'name' => $agent->name,
