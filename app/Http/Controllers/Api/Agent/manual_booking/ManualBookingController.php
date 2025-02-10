@@ -1134,7 +1134,6 @@ class ManualBookingController extends Controller
                 'email' => $agent->email,
                 'phone' => $agent->phone,
             ];
-            $booking_payment->makeHidden('manuel_booking');
         //     $this->manuel_data_cart
         //    ->where('id', $request->cart_id)
         //    ->delete();
