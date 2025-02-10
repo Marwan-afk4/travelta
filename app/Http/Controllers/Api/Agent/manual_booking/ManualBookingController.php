@@ -1097,9 +1097,9 @@ class ManualBookingController extends Controller
             $data['payment_date'] = date('Y-m-d');
             $data['agent'] = $agent_data->name;;
             Mail::to($agent_data->email)->send(new PaymentMail($data));
-            $this->manuel_data_cart
-           ->where('id', $request->cart_id)
-           ->delete();
+        //     $this->manuel_data_cart
+        //    ->where('id', $request->cart_id)
+        //    ->delete();
            
         //    if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
         //         $hotel = ManuelHotelResource::collection($hotel);
