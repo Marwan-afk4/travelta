@@ -820,7 +820,8 @@ class ManualBookingController extends Controller
             $role => $agent_id,
             'code' => $code,
             'payment_type' => $request->payment_type,
-        ]); 
+        ]);
+        try{
             if (isset($request->adults_data) && !empty($request->adults_data)) {
                 $adults_data = json_decode($request->adults_data) ?? [];
                 foreach ($adults_data as $item) {	
@@ -1140,11 +1141,17 @@ class ManualBookingController extends Controller
         //     }
             return response()->json([
                 'success' => $request->all(), 
-                'hotel' => $hotel->first(),
-                'bus' => $bus->first(),
-                'visa' => $visa->first(),
-                'flight' => $flight->first(),
-                'tour' => $tour->first(),
-            ]); 
+                'hotel' => $hotel[0] ?? null,
+                'bus' => $bus[0] ?? null,
+                'visa' => $visa[0] ?? null,
+                'flight' => $flight[0] ?? null,
+                'tour' => $tour[0] ?? null,
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            $manuel_booking->delete();
+            return response()->json([
+                'faild' => $e,
+            ], 400);
+        }
     }
 }
