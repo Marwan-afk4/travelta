@@ -357,8 +357,8 @@ class ManualBookingController extends Controller
                     'hotel_name' => 'required',
                     'room_type' => 'required',
                     'room_quantity' => 'required|numeric',
-                    'adults' => 'required|numeric',
-                    'childreen' => 'required|numeric',
+                    'adults' => 'numeric',
+                    'childreen' => 'numeric',
                 ]);
                 if($validation->fails()){
                     return response()->json(['errors'=>$validation->errors()], 401);
@@ -370,8 +370,8 @@ class ManualBookingController extends Controller
                     'to' => 'required',
                     'departure' => 'required|date',
                     'arrival' => 'required|date',
-                    'adults' => 'required|numeric',
-                    'childreen' => 'required|numeric',
+                    'adults' => 'numeric',
+                    'childreen' => 'numeric',
                     'adult_price' => 'required|numeric',
                     'child_price' => 'required|numeric',
                     'bus' => 'required',
@@ -387,8 +387,8 @@ class ManualBookingController extends Controller
                     'country' => 'required',
                     'travel_date' => 'required|date', 
                     'appointment_date' => 'date',
-                    'adults' => 'required|numeric',
-                    'childreen' => 'required|numeric',
+                    'adults' => 'numeric',
+                    'childreen' => 'numeric',
                 ]);
                 if($validation->fails()){
                     return response()->json(['errors'=>$validation->errors()], 401);
@@ -863,7 +863,7 @@ class ManualBookingController extends Controller
                 $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_hotel = $this->manuel_hotel
                 ->create($hotelRequest);
-                $hotel = ManuelHotelResource::collection(collect([$hotel]));
+                $hotel = ManuelHotelResource::collection(collect([$manuel_booking]));
                 $bus = null;
                 $visa = null;
                 $flight = null;
@@ -887,7 +887,7 @@ class ManualBookingController extends Controller
                 $manuel_bus = $this->manuel_bus
                 ->create($busRequest);  
                 $hotel = null;
-                $bus = ManuelBusResource::collection(collect([$manuel_bus])); 
+                $bus = ManuelBusResource::collection(collect([$manuel_booking])); 
                 $visa = null;
                 $flight = null;
                 $tour = null;
@@ -906,7 +906,7 @@ class ManualBookingController extends Controller
                 ->create($visaRequest);
                 $hotel = null;
                 $bus = null; 
-                $visa = ManuelVisaResource::collection(collect([$manuel_visa]));
+                $visa = ManuelVisaResource::collection(collect([$manuel_booking]));
                 $flight = null;
                 $tour = null;
             }
@@ -933,7 +933,7 @@ class ManualBookingController extends Controller
                 $hotel = null;
                 $bus = null; 
                 $visa = null;
-                $flight = ManuelFlightResource::collection(collect([$manuel_flight]));
+                $flight = ManuelFlightResource::collection(collect([$manuel_booking]));
                 $tour = null;
             }
             elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
@@ -983,7 +983,7 @@ class ManualBookingController extends Controller
                 $bus = null; 
                 $visa = null;
                 $flight = null;
-                $tour = ManuelTourResource::collection(collect([$manuel_tour]));
+                $tour = ManuelTourResource::collection(collect([$manuel_booking]));
             }
             if (isset($manuel_data_cart['adults_data']) && !empty($manuel_data_cart['adults_data'])) {
                 $adults = is_string($manuel_data_cart['adults_data']) ?json_decode($manuel_data_cart['adults_data']) :$manuel_data_cart['adults_data'];
