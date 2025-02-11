@@ -52,9 +52,7 @@ class BookingPaymentController extends Controller
         }
         $booking = $this->manuel_bookings
         ->with(['hotel', 'bus', 'flight', 'tour', 'visa', 'adults', 'children', 
-        'payments.financial' => function($query){
-            $query->select('name');
-        }])
+        'payments.financial'])
         ->where('code', $request->code )
         ->first();
         if (empty($booking)) {
