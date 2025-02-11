@@ -99,6 +99,7 @@ class BookingController extends Controller
 
         // Booking engine
         $booking_engine = $this->booking_engine
+        ->where($agent_type, $agent_id)
         ->get();
         $engine_hotel = EngineHotelResource::collection($booking_engine);
 

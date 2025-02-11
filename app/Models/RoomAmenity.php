@@ -10,6 +10,7 @@ class RoomAmenity extends Model
         'name',
         'selected',
         'status',
+        'logo',
         'affilate_id',
         'agent_id',
     ];
