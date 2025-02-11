@@ -24,8 +24,22 @@ class BookingengineList extends Model
         'payment_status',
         'code',
         'status',
+        'special_request',
     ];
     protected $appends = ['to_client'];
+
+
+    public function operation_confirmed(){
+        return $this->hasMany(OperationBookingConfirmed::class, 'booking_engine_id');
+    }
+
+    public function operation_vouchered(){
+        return $this->hasMany(OperationBookingVouchered::class, 'booking_engine_id');
+    }
+
+    public function operation_canceled(){
+        return $this->hasMany(OperationBookingCanceled::class, 'booking_engine_id');
+    }
 
     public function agent(){
         return $this->belongsTo(Agent::class,'agent_id');

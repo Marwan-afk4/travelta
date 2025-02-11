@@ -8,6 +8,7 @@ class OperationBookingCanceled extends Model
 {
     protected $fillable = [
         'manuel_booking_id',
-        'cancelation_reason', 
+        'booking_engine_id',
+        'cancelation_reason',
     ];
 }

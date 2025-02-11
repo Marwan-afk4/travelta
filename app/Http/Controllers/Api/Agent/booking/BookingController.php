@@ -97,10 +97,6 @@ class BookingController extends Controller
         $flight_upcoming = ManuelFlightResource::collection($flight_upcoming);
         $tour_upcoming = ManuelTourResource::collection($tour_upcoming);
 
-        // Booking engine
-        $booking_engine = $this->booking_engine
-        ->where($agent_type, $agent_id)
-        ->get();
  
         $upcoming = [
             'hotels' => $hotel_upcoming,
@@ -219,6 +215,10 @@ class BookingController extends Controller
             'tours' => $tour_past,
         ]; 
 
+        // Booking engine
+        $booking_engine = $this->booking_engine
+        ->where($agent_type, $agent_id)
+        ->get();
         $engine_hotel = EngineHotelResource::collection($booking_engine);
         $engine_upcoming = $engine_hotel->where('check_in', '>=', date('Y-m-d'));
         $engine_current = $engine_hotel->where('check_in', '=', date('Y-m-d'));
@@ -321,6 +321,103 @@ class BookingController extends Controller
             return response()->json(['errors'=>$validation->errors()], 401);
         }
         $this->manuel_booking
+        ->where('id', $id)
+        ->update([
+            'special_request' => $request->special_request
+        ]);
+
+        return response()->json([
+            'success' => $request->special_request
+        ]);
+    } 
+
+    // Booking Engine
+    public function engine_details(Request $request, $id){
+        // https://travelta.online/agent/booking/engine_details/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+            $affilate = $this->affilate
+            ->where('id', $agent_id)
+            ->first();
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+            $agent = $this->agent
+            ->where('id', $agent_id)
+            ->first();
+        }
+        else{
+            $agent_id = $request->user()->id;
+            $agent = $request->user();
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
+        }
+        else{
+            $agent_type = 'agent_id';
+        }
+        $booking_engine = $this->booking_engine
+        // ->with([
+        //     'payments.financial' => function ($query) {
+        //         $query->select('id', 'name');
+        //     }
+        // ])
+        ->where('id', $id)
+        ->where($agent_type, $agent_id)
+        ->first();
+        if (empty($booking_engine)) {
+            return response()->json([
+                'errors' => 'booking engine not found'
+            ], 400);
+        }
+        $traveler = null;
+        $data = $booking_engine->to_client;
+        if (!empty($booking_engine->to_supplier_id)) {
+            $traveler['id'] = $data->id;
+            $traveler['name'] = $data->agent;
+            $traveler['phone'] = is_string($data->phones) ? json_decode($data->phones)[0] 
+            ?? $data->phones: $data->phones[0];
+            $traveler['email'] = is_string($data->emails) ? json_decode($data->emails)[0] 
+            ?? $data->emails: $data->emails[0];
+            $traveler['position'] = 'Supplier';
+        }
+        else{
+            $traveler['id'] = $data->id;
+            $traveler['name'] = $data->name;
+            $traveler['phone'] = $data->phone;
+            $traveler['email'] = $data->email;
+            $traveler['position'] = 'Customer';
+        }
+        //$payments = $booking_engine->payments;
+        $actions = [
+            'confirmed' => $booking_engine->operation_confirmed,
+            'vouchered' => $booking_engine->operation_vouchered,
+            'canceled' => $booking_engine->operation_canceled,
+        ];
+        $agent_data = [
+            'name' => $agent->name,
+            'email' => $agent->email,
+            'phone' => $agent->phone,
+        ];
+        return response()->json([
+            'traveler' => $traveler,
+          //  'payments' => $payments,
+            'actions' => $actions,
+            'agent_data' => $agent_data,
+        ]);
+    }
+
+    public function engine_special_request(Request $request, $id){
+        // https://travelta.online/agent/booking/engine_special_request/{id}
+        // Keys
+        // special_request
+        $validation = Validator::make($request->all(), [
+            'special_request' => 'required',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        $this->booking_engine
         ->where('id', $id)
         ->update([
             'special_request' => $request->special_request
