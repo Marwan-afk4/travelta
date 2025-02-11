@@ -25,7 +25,7 @@ class HotelController extends Controller
         'country:id,name',
         'zone:id,name,city_id,country_id',
         'themes:id,name',
-        'facilities:id,name',
+        'facilities:id,name,logo',
         'acceptedCards:id,card_name',
         'features:id,name,description,image',
         'images',
@@ -48,6 +48,12 @@ class HotelController extends Controller
         $hotel->images->each(function ($image) use ($baseUrl) {
             if (!empty($image->image)) {
                 $image->image = $baseUrl . '/' . $image->image;
+            }
+        });
+
+        $hotel->facilities->each(function ($facility) use ($baseUrl) {
+            if (!empty($facility->logo)) {
+                $facility->logo = $baseUrl . '/' . $facility->logo;
             }
         });
 

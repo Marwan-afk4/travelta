@@ -118,6 +118,8 @@ class BookingEngine extends Controller
             });
         }
 
+
+
         $hotels = $hotelsQuery->get();
         $results = [];
 
@@ -170,14 +172,29 @@ class BookingEngine extends Controller
                 }
             }
 
+
+
             if (!empty($availableRooms)) {
                 $results[] = [
                     'hotel_id' => $hotel->id,
                     'hotel_name' => $hotel->hotel_name,
                     'hotel_stars' => $hotel->stars,
                     'hotel_logo' => $hotel->hotel_logo? asset('storage/' . $hotel->hotel_logo) : null,
-                    'hotel_facilities' => $hotel->facilities,
-                    'hotel_features' => $hotel->features,
+                    'hotel_facilities' => $hotel->facilities->map(function ($facility) {
+                        return [
+                            'id' => $facility->id,
+                            'name' => $facility->name,
+                            'logo' => $facility->logo ? asset('storage/' . $facility->logo) : null,
+                        ];
+                    }),
+                    'hotel_features' => $hotel->features->map(function ($feature) {
+                        return [
+                            'id' => $feature->id,
+                            'name' => $feature->name,
+                            'description' => $feature->description,
+                            'image' => $feature->image ? asset('storage/' . $feature->image) : null,
+                        ];
+                    }),
                     'hotel_policies' => $hotel->policies,
                     'hotel_accepted_cards' => $hotel->acceptedCards,
                     'hotel_themes' => $hotel->themes,
