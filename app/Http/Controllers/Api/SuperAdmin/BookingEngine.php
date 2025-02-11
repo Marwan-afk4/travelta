@@ -104,7 +104,7 @@ class BookingEngine extends Controller
         }
 
         // ✅ Fetch hotels with available rooms & images
-        $hotelsQuery = Hotel::query()->with(['images' , 'rooms.gallery', 'rooms.aminities','facilities','features','policies','acceptedCards','themes']);
+        $hotelsQuery = Hotel::query()->with(['images' , 'rooms.gallery', 'rooms.amenity','facilities','features','policies','acceptedCards','themes']);
 
         if (!empty($validated['hotel_id'])) {
             $hotelsQuery->where('id', $validated['hotel_id']);
