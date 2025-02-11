@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class BookingEngine extends Controller
 {
@@ -103,7 +104,7 @@ class BookingEngine extends Controller
         }
 
         // ✅ Fetch hotels with available rooms & images
-        $hotelsQuery = Hotel::query()->with(['images' , 'rooms.gallery', 'facilities','features','policies','acceptedCards','themes']);
+        $hotelsQuery = Hotel::query()->with(['images' , 'rooms.gallery', 'rooms.aminities','facilities','features','policies','acceptedCards','themes']);
 
         if (!empty($validated['hotel_id'])) {
             $hotelsQuery->where('id', $validated['hotel_id']);
@@ -330,8 +331,13 @@ class BookingEngine extends Controller
         ]);
 
         $validationList = $bookinglistrequest->validated();
-        $bookingList = BookingengineList::create($validationList);
-        $validationList['status'] = 'inprogress';
+
+        $bookingList = BookingengineList::create([
+            $validationList,
+            $validationList['status'] = 'inprogress',
+            $validationList['code'] = 'e' . rand(10000, 9999999) . strtolower(str::random(1)),
+        ]);
+
 
 
 
