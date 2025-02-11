@@ -17,6 +17,6 @@ class RoomAmenity extends Model
     protected $appends = ['logo_link'];
 
     public function getLogoLinkAttribute(){
-        return url('storage/' . $this->attributes['logo']);
+        return isset($this->attributes['logo']) ? url('storage/' . $this->attributes['logo']):null;
     }
 }
