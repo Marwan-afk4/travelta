@@ -27,12 +27,20 @@ class BookingengineList extends Model
     ];
     protected $appends = ['to_client'];
 
+    public function agent(){
+        return $this->belongsTo(Agent::class,'agent_id');
+    } 
+
+    public function affilate(){
+        return $this->belongsTo(AffilateAgent::class,'affilate_id');
+    } 
+
     public function from_supplier(){
         return $this->belongsTo(Agent::class,'from_supplier_id');
     } 
     public function getToClientAttribute(){
-        if (!empty($this->attributes['to_supplier_id'])) {
-            return $this->belongsTo(SupplierAgent::class, 'to_supplier_id')->first();
+        if (!empty($this->attributes['to_agent_id'])) {
+            return $this->belongsTo(Agent::class, 'to_agent_id')->first();
         }
         return $this->belongsTo(Customer::class, 'to_customer_id')->first();
     }
