@@ -102,7 +102,7 @@ class BookingController extends Controller
         ->where($agent_type, $agent_id)
         ->get();
         $engine_hotel = EngineHotelResource::collection($booking_engine);
-
+ 
         $upcoming = [
             'hotels' => $hotel_upcoming,
             'buses' => $bus_upcoming,

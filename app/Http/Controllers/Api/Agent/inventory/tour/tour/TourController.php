@@ -40,6 +40,22 @@ class TourController extends Controller
         ]);
     }
 
+    public function lists(Request $request){
+        // /agent/tour/lists
+        $tour_types = $this->tour_types
+        ->get();
+        $countries = $this->countries
+        ->get();
+        $cities = $this->cities
+        ->get();
+    
+        return response()->json([
+            'tour_types' => $tour_types,
+            'countries' => $countries,
+            'cities' => $cities,
+        ]);
+    }
+
     public function status(Request $request, $id){
         // /agent/tour/status/{id}
         $validation = Validator::make($request->all(), [
