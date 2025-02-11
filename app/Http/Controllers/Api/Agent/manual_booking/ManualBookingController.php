@@ -1137,8 +1137,7 @@ class ManualBookingController extends Controller
             $this->manuel_data_cart
            ->where('id', $request->cart_id)
            ->delete();
-            return response()->json([
-                'success' => $request->all(), 
+            return response()->json([ 
                 'hotel' => $hotel[0] ?? null,
                 'bus' => $bus[0] ?? null,
                 'visa' => $visa[0] ?? null,
