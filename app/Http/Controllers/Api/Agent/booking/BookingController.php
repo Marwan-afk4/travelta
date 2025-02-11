@@ -9,18 +9,20 @@ use App\Http\Resources\ManuelFlightResource;
 use App\Http\Resources\ManuelHotelResource;
 use App\Http\Resources\ManuelTourResource;
 use App\Http\Resources\ManuelVisaResource;
+use App\Http\Resources\EngineHotelResource;
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\Service;
+use App\Models\BookingengineList;
 use App\Models\ManuelBooking;
 use App\Models\AffilateAgent;
+use App\Models\Service;
 use App\Models\Agent;
 
 class BookingController extends Controller
 {
     public function __construct(private Service $services, 
     private ManuelBooking $manuel_booking, private AffilateAgent $affilate,
-    private Agent $agent){}
+    private Agent $agent, private BookingengineList $booking_engine){}
 
     public function services(){
         $services = $this->services
@@ -94,6 +96,12 @@ class BookingController extends Controller
         $visa_upcoming = ManuelVisaResource::collection($visa_upcoming);
         $flight_upcoming = ManuelFlightResource::collection($flight_upcoming);
         $tour_upcoming = ManuelTourResource::collection($tour_upcoming);
+
+        // Booking engine
+        $booking_engine = $this->booking_engine
+        ->where($agent_type, $agent_id)
+        ->get();
+        $engine_hotel = EngineHotelResource::collection($booking_engine);
 
         $upcoming = [
             'hotels' => $hotel_upcoming,

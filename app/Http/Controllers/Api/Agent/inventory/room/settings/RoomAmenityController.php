@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\api\agent\inventory\room\settings\RoomAmenityRequest;
+use App\trait\image;
 
 use App\Models\RoomAmenity;
 
@@ -17,6 +18,8 @@ class RoomAmenityController extends Controller
         'selected',
         'status',
     ];
+    use image;
+
     public function view(Request $request){
         // /agent/room/settings/amenity
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
@@ -110,7 +113,7 @@ class RoomAmenityController extends Controller
     public function create(RoomAmenityRequest $request){
         // /agent/room/settings/amenity/add
         // Keys
-        // name, selected, status
+        // name, selected, status, logo
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -127,6 +130,10 @@ class RoomAmenityController extends Controller
             $role = 'agent_id';
         }
         $roomRequest = $request->validated();
+        if (!is_string($request->logo)) {
+            $image_path = $this->upload($request, 'logo', 'agent/inventory/room/amenities/logo');
+            $roomRequest['logo'] = $image_path;
+        }
         $roomRequest[$role] = $agent_id;
         $room_amenity = $this->room_amenity
         ->create($roomRequest);
@@ -161,6 +168,11 @@ class RoomAmenityController extends Controller
         ->where('id', $id)
         ->where($role, $agent_id)
         ->first();
+        if (!is_string($request->logo)) {
+            $image_path = $this->upload($request, 'logo', 'agent/inventory/room/amenities/logo');
+            $roomRequest['logo'] = $image_path;
+            $this->deleteImage($room_amenity->logo);
+        }
         $room_amenity->update($roomRequest);
 
         return response()->json([
@@ -185,10 +197,12 @@ class RoomAmenityController extends Controller
         else { 
             $role = 'agent_id';
         }
-        $this->room_amenity
+        $room_amenity = $this->room_amenity
         ->where('id', $id)
         ->where($role, $agent_id)
-        ->delete();
+        ->first();
+        $this->deleteImage($room_amenity->logo);
+        $room_amenity->delete();
 
         return response()->json([
             'success' => 'You delete room types success'
