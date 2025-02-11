@@ -101,7 +101,6 @@ class BookingController extends Controller
         $booking_engine = $this->booking_engine
         ->where($agent_type, $agent_id)
         ->get();
-        $engine_hotel = EngineHotelResource::collection($booking_engine);
  
         $upcoming = [
             'hotels' => $hotel_upcoming,
@@ -212,7 +211,6 @@ class BookingController extends Controller
         $visa_past = ManuelVisaResource::collection($visa_past);
         $flight_past = ManuelFlightResource::collection($flight_past);
         $tour_past = ManuelTourResource::collection($tour_past);
-
         $past = [
             'hotels' => $hotel_past,
             'buses' => $bus_past,
@@ -220,10 +218,19 @@ class BookingController extends Controller
             'flights' => $flight_past,
             'tours' => $tour_past,
         ]; 
+
+        $engine_hotel = EngineHotelResource::collection($booking_engine);
+        $engine_upcoming = $engine_hotel->where('check_in', '>=', date('Y-m-d'));
+        $engine_current = $engine_hotel->where('check_in', '=', date('Y-m-d'));
+        $engine_past = $engine_hotel->where('check_in', '<=', date('Y-m-d'));
+
         return response()->json([
             'upcoming' => $upcoming,
             'current' => $current,
             'past' => $past,
+            'engine_upcoming' => $engine_upcoming,
+            'engine_current' => $engine_current,
+            'engine_past' => $engine_past,
         ]);
     }
 
