@@ -91,6 +91,15 @@ class BookingPaymentController extends Controller
         $remaining_payment = $booking->payments_cart
         ->sum('due_payment');
         $payments = $booking->payments;
+        $payments = $payments->map(function($item){
+            return [ 
+                "id" => $item->id, 
+                "amount" => $item->amount,
+                "date" => $item->date, 
+                "code" => $item->code, 
+                "financial" => $item->financial->name,
+            ];
+        });
         $remaining_list = $booking->payments_cart
         ->select('id', 'date', 'due_payment')
         ->where('due_payment', '>', 0);
