@@ -41,6 +41,7 @@ class TourController extends Controller
     }
 
     public function status(Request $request, $id){
+        // /agent/tour/status/{id}
         $validation = Validator::make($request->all(), [
             'status' => 'required|boolean',
         ]);
@@ -75,6 +76,7 @@ class TourController extends Controller
     }
 
     public function accepted(Request $request, $id){
+        // /agent/tour/accepted/{id}
         $validation = Validator::make($request->all(), [
             'accepted' => 'required|boolean',
         ]);
