@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BookingengineList extends Model
 {
     protected $fillable =[
+        'room_id',
         'affilate_id',
         'agent_id',
         'from_supplier_id',
@@ -72,5 +73,8 @@ class BookingengineList extends Model
     }
     public function hotel(){
         return $this->belongsTo(Hotel::class,'hotel_id');
+    }
+    public function room(){
+        return $this->belongsTo(Room::class,'room_id');
     }
 }
