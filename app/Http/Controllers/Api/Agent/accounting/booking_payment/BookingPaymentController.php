@@ -119,6 +119,22 @@ class BookingPaymentController extends Controller
 
     public function invoice(Request $request, $id){
         // /accounting/booking/invoice/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+            $agent = $this->affilate_agent
+            ->where('id', $agent_id)
+            ->first();
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+            $agent = $this->agent
+            ->where('id', $agent_id)
+            ->first();
+        }
+        else{
+            $agent_id = $request->user()->id;
+            $agent = $request->user();
+        }
         $booking_payment = $this->booking_payment
         ->where('id', $id)
         ->with('financial')
@@ -139,9 +155,20 @@ class BookingPaymentController extends Controller
         }
         $booking_payment->makeHidden('manuel_booking');
 
+        $agent_data = [
+            'name' => $agent->name,
+            'email' => $agent->email,
+            'phone' => $agent->phone,
+        ];
+        $agent_data = [
+            'name' => $agent->name,
+            'email' => $agent->email,
+            'phone' => $agent->phone,
+        ];
         return response()->json([
             'booking_payment' => $booking_payment,
-            'client' => $client
+            'client' => $client,
+            'agent_data' => $agent_data,
         ]);
     }
 

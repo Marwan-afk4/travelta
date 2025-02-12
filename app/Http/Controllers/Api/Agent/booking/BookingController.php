@@ -239,7 +239,7 @@ class BookingController extends Controller
         // invoice => /accounting/booking/invoice/{id} 
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
-            $affilate = $this->affilate
+            $agent = $this->affilate
             ->where('id', $agent_id)
             ->first();
         }
