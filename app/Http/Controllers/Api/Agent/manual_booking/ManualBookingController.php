@@ -914,7 +914,8 @@ class ManualBookingController extends Controller
                 $flightRequest = [
                     'type' => $manuel_data_cart['type'] ?? null,
                     'direction' => $manuel_data_cart['direction'] ?? null,
-                    'from_to' => $manuel_data_cart['from_to'] ?? null,
+                    'from_to' => is_string($manuel_data_cart['from_to']) ?? 
+                    json_encode($manuel_data_cart['from_to']),
                     'departure' => $manuel_data_cart['departure'] ?? null,
                     'arrival' => $manuel_data_cart['arrival'] ?? null,
                     'class' => $manuel_data_cart['class'] ?? null,

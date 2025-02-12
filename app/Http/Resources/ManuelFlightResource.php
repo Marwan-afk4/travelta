@@ -29,8 +29,7 @@ class ManuelFlightResource extends JsonResource
             'flight_direction' => $this->flight->direction ?? null,
             'depature' => $this->flight->departure ?? null,
             'arrival' => $this->flight->arrival ?? null,
-            'from_to' => is_string($this->flight->from_to) ? json_decode($this->flight->from_to) 
-            ?? $this->flight->from_to : $this->flight->from_to,
+            'from_to' => $this->flight->from_to ?? null,
             'children_no' => $this->flight->childreen ?? null,
             'adults_no' => $this->flight->adults ?? null,
             'infants_no' => $this->flight->infants ?? null,
