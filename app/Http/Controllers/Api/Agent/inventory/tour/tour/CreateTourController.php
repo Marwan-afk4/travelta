@@ -49,6 +49,7 @@ class CreateTourController extends Controller
         'payments_options', 
         'policy', 
         'cancelation', 
+        'arrival'
     ]; 
 
     public function create(TourRequest $request){
@@ -57,7 +58,7 @@ class CreateTourController extends Controller
         // name, description, video_link, tour_type[private, group], status, days, 
         // nights, tour_type_id, featured[yes, no], featured_from, featured_to, 
         // deposit, deposit_type[precentage, fixed], tax, tax_type[precentage, fixed], pick_up_country_id, 
-        // pick_up_city_id, pick_up_map, destination_type[single, multiple], 
+        // pick_up_city_id, pick_up_map, arrival, destination_type[single, multiple], 
         // tour_email, tour_website, tour_phone, tour_address, payments_options, 
         // policy, cancelation,
         // destinations [{country_id, city_id, arrival_map}]
@@ -175,8 +176,8 @@ class CreateTourController extends Controller
         // name, description, video_link, tour_type[private, group], status, days, 
         // nights, tour_type_id, featured[yes, no], featured_from, featured_to, 
         // deposit, deposit_type[precentage, fixed], tax, tax_type[precentage, fixed], pick_up_country_id, 
-        // pick_up_city_id, pick_up_map, destination_type[single, multiple], 
-        // tour_email, tour_website, tour_phone, tour_address, payments_options, 
+        // pick_up_city_id, pick_up_map, arrival, destination_type[single, multiple],
+        // tour_email, tour_website, tour_phone, tour_address, payments_options,
         // policy, cancelation,
         // destinations [{country_id, city_id, arrival_map}]
         // availability [{date, last_booking, quantity}]
