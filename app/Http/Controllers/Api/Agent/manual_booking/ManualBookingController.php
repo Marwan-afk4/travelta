@@ -1139,7 +1139,9 @@ class ManualBookingController extends Controller
                 'visa' => $visa[0] ?? null,
                 'flight' => $flight[0] ?? null,
                 'tour' => $tour[0] ?? null,
-                'agent_data' => $agent_data
+                'agent_data' => $agent_data,
+                'total_payment' => $amount_payment,
+                'due_payments' => $request->payments ?? [],
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             $manuel_booking->delete();
