@@ -63,7 +63,9 @@ class BookingPaymentController extends Controller
         ->first();
         if (empty($booking)) {
             return response()->json([
-                'errors' => 'Code is wrong'
+                'errors' => [
+                    'code' => 'Code is wrong'
+                ]
             ], 400);
         }
         $data = collect([]);

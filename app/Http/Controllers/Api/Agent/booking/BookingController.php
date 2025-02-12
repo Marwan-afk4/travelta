@@ -213,7 +213,7 @@ class BookingController extends Controller
             'visas' => $visa_past,
             'flights' => $flight_past,
             'tours' => $tour_past,
-        ]; 
+        ];
 
         // Booking engine
         $booking_engine = $this->booking_engine
