@@ -37,6 +37,10 @@ class ManuelBooking extends Model
         return $this->belongsTo(Agent::class, 'agent_id');
     }
 
+    public function service(){
+        return $this->belongsTo(Service::class, 'from_service_id');
+    }
+
     public function operation_confirmed(){
         return $this->hasMany(OperationBookingConfirmed::class, 'manuel_booking_id');
     }
