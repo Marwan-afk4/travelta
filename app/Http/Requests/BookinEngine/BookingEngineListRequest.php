@@ -35,7 +35,9 @@ class BookingEngineListRequest extends FormRequest
             'room_type' => ['required'],
             'no_of_adults' => ['required','integer','min:1'],
             'no_of_children' => ['required','integer','min:0'],
+            'no_of_nights'=> ['required','integer','min:1'],
             'payment_status' => ['required','in:later,full,partial,half'],
+            'status' => ['nullable','in:inprogress,done,faild'],
         ];
     }
 

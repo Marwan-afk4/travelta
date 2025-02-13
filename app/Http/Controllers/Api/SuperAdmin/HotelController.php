@@ -26,7 +26,7 @@ class HotelController extends Controller
         'zone:id,name,city_id,country_id',
         'themes:id,name',
         'facilities:id,name,logo',
-        'acceptedCards:id,card_name',
+        'acceptedCards:id,card_name,logo',
         'features:id,name,description,image',
         'images',
         'policies'
@@ -57,6 +57,18 @@ class HotelController extends Controller
             }
         });
 
+        $hotel->acceptedCards->each(function ($acceptedCard) use ($baseUrl) {
+            if (!empty($acceptedCard->logo)) {
+                $acceptedCard->logo = $baseUrl . '/' . $acceptedCard->logo;
+            }
+        });
+
+        $hotel->policies->each(function ($policy) use ($baseUrl) {
+            if (!empty($policy->logo)) {
+                $policy->logo = $baseUrl . '/' . $policy->logo;
+            }
+        });
+
         $hotel->themes->each->setHidden(['pivot']);
         $hotel->facilities->each->setHidden(['pivot']);
         $hotel->acceptedCards->each->setHidden(['pivot']);
@@ -67,7 +79,7 @@ class HotelController extends Controller
     ]);
 }
 
-
+// ha3dl 34an ybano url fi el avalible rooms fi el booking engine w el get hotels
 
     public function storeHotel(Request $request)
 {

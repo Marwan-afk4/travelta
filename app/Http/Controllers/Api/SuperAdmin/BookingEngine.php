@@ -72,7 +72,7 @@ class BookingEngine extends Controller
     $checkOut = Carbon::parse($validated['check_out']);
 
     try {
-        // ✅ Get pricing data that supports the requested guests
+        // ✅ Get pricing data for the requested guests
         $pricingData = DB::table('room_pricing_data')
             ->where('adults', '>=', $validated['max_adults'])
             ->where('children', '>=', $validated['max_children'])
@@ -83,10 +83,7 @@ class BookingEngine extends Controller
         }
 
         // ✅ Map pricing data
-        $pricingDataMap = [];
-        foreach ($pricingData as $data) {
-            $pricingDataMap[$data->id] = $data->room_type;
-        }
+        $pricingDataMap = $pricingData->pluck('room_type', 'id')->toArray();
 
         // ✅ Get room IDs and room types
         $roomPricings = DB::table('room_pricings')
@@ -98,13 +95,14 @@ class BookingEngine extends Controller
         }
 
         // ✅ Map room_id to room_type
-        $roomTypeMap = [];
-        foreach ($roomPricings as $pricing) {
-            $roomTypeMap[$pricing->room_id] = $pricingDataMap[$pricing->pricing_data_id];
-        }
+        $roomTypeMap = $roomPricings->mapWithKeys(function ($pricing) use ($pricingDataMap) {
+            return [$pricing->room_id => $pricingDataMap[$pricing->pricing_data_id]];
+        })->toArray();
 
         // ✅ Fetch hotels with available rooms & images
-        $hotelsQuery = Hotel::query()->with(['images' , 'rooms.gallery', 'rooms.amenity','facilities','features','policies','acceptedCards','themes']);
+        $hotelsQuery = Hotel::with([
+            'images', 'rooms.gallery', 'rooms.amenity', 'facilities', 'features', 'policies', 'acceptedCards', 'themes'
+        ]);
 
         if (!empty($validated['hotel_id'])) {
             $hotelsQuery->where('id', $validated['hotel_id']);
@@ -118,11 +116,8 @@ class BookingEngine extends Controller
             });
         }
 
-
-
         $hotels = $hotelsQuery->get();
         $results = [];
-
 
         foreach ($hotels as $hotel) {
             $availableRooms = [];
@@ -172,21 +167,19 @@ class BookingEngine extends Controller
                 }
             }
 
-
-
             if (!empty($availableRooms)) {
                 $results[] = [
                     'hotel_id' => $hotel->id,
                     'hotel_name' => $hotel->hotel_name,
                     'hotel_stars' => $hotel->stars,
-                    'hotel_logo' => $hotel->hotel_logo? asset('storage/' . $hotel->hotel_logo) : null,
-                    'hotel_facilities' => $hotel->facilities->map(function ($facility) {
+                    'hotel_logo' => $hotel->hotel_logo ? asset('storage/' . $hotel->hotel_logo) : null,
+                    'hotel_facilities' => $hotel->facilities->unique('id')->map(function ($facility) {
                         return [
                             'id' => $facility->id,
                             'name' => $facility->name,
                             'logo' => $facility->logo ? asset('storage/' . $facility->logo) : null,
                         ];
-                    }),
+                    })->values(),
                     'hotel_features' => $hotel->features->map(function ($feature) {
                         return [
                             'id' => $feature->id,
@@ -195,19 +188,31 @@ class BookingEngine extends Controller
                             'image' => $feature->image ? asset('storage/' . $feature->image) : null,
                         ];
                     }),
-                    'hotel_policies' => $hotel->policies,
-                    'hotel_accepted_cards' => $hotel->acceptedCards,
+                    'hotel_policies' => $hotel->policies->map(function ($policy) {
+                        return [
+                            'id' => $policy->id,
+                            'title' => $policy->title,
+                            'description' => $policy->description,
+                            'logo' => asset('storage/' . $policy->logo),
+                        ];
+                    }),
+                    'hotel_accepted_cards' => $hotel->acceptedCards->map(function ($card) {
+                        return [
+                            'id' => $card->id,
+                            'card_name' => $card->card_name,
+                            'logo' => asset('storage/' . $card->logo),
+                        ];
+                    }),
                     'hotel_themes' => $hotel->themes,
                     'city' => $hotel->city->name,
                     'country' => $hotel->city->country->name,
                     'images' => HotelImage::where('hotel_id', $hotel->id)
-                    ->pluck('image')
-                    ->map(fn($image) => asset('storage/' . $image))
-                    ->toArray(),
+                        ->pluck('image')
+                        ->map(fn($image) => asset('storage/' . $image))
+                        ->toArray(),
                     'available_rooms' => $availableRooms,
                 ];
             }
-
         }
 
         return response()->json([
@@ -217,8 +222,7 @@ class BookingEngine extends Controller
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
-            'message' => 'An error occurred while fetching available rooms.',
-            'error' => $e->getMessage(),
+            'message' => $e->getMessage(),
         ], 500);
     }
 }
@@ -228,7 +232,9 @@ class BookingEngine extends Controller
 
 
 
-    public function bookRoom(Request $request,BookingEngineListRequest $bookinglistrequest)
+
+
+public function bookRoom(Request $request, BookingEngineListRequest $bookinglistrequest)
 {
     $validator = Validator::make($request->all(), [
         'room_id'       => 'required|integer|exists:rooms,id',
@@ -241,7 +247,6 @@ class BookingEngine extends Controller
         'nationality_id' => 'required|integer|exists:nationalities,id',
     ]);
 
-    // Check validation
     if ($validator->fails()) {
         return response()->json([
             'success' => false,
@@ -249,7 +254,6 @@ class BookingEngine extends Controller
             'errors'  => $validator->errors(),
         ], 422);
     }
-
 
     $validated = $validator->validated();
 
@@ -265,70 +269,41 @@ class BookingEngine extends Controller
     DB::beginTransaction();
 
     try {
-        $remainingQuantity = $quantity;
+        // Check if there is enough availability for the requested period
+        $availableDates = RoomAvailability::where('room_id', $roomId)
+            ->whereDate('from', '<=', $checkOut)
+            ->whereDate('to', '>=', $checkIn)
+            ->orderBy('from', 'asc')
+            ->lockForUpdate()
+            ->get();
 
-        // First pass: Check availability
-        $currentDate = clone $checkIn;
-        while ($currentDate <= $checkOut) {
-            $dailyAvailable = RoomAvailability::where('room_id', $roomId)
-                ->whereDate('from', '<=', $currentDate)
-                ->whereDate('to', '>=', $currentDate)
-                ->sum('quantity');
+        foreach ($availableDates as $availability) {
+            $dailyAvailable = $availability->quantity;
             $dailyBooked = ModelsBookingEngine::where('room_id', $roomId)
-                ->whereDate('check_in', '<=', $currentDate)
-                ->whereDate('check_out', '>', $currentDate)
+                ->whereDate('check_in', '<=', $availability->to)
+                ->whereDate('check_out', '>', $availability->from)
                 ->sum('quantity');
 
-            if ($dailyAvailable - $dailyBooked < $remainingQuantity) {
+            $remainingRooms = $dailyAvailable - $dailyBooked;
+
+            if ($remainingRooms < $quantity) {
                 DB::rollBack();
                 return response()->json([
                     'success' => false,
-                    'message' => "Not enough rooms available on {$currentDate->toDateString()}",
+                    'message' => "Not enough rooms available for some dates in the requested range.",
                 ], 400);
             }
-
-            $currentDate = $currentDate->addDay();
         }
 
-        // Second pass: Deduct quantity
-        $currentDate = clone $checkIn;
-
-        while ($currentDate <= $checkOut) {
-            $availabilities = RoomAvailability::where('room_id', $roomId)
-                ->whereDate('from', '<=', $currentDate)
-                ->whereDate('to', '>=', $currentDate)
-                ->orderBy('from', 'asc')
-                ->lockForUpdate()
-                ->get();
-
-            foreach ($availabilities as $availability) {
-                if ($remainingQuantity <= 0) {
-                    break;
-                }
-
-                if ($availability->quantity >= $remainingQuantity) {
-                    $availability->quantity -= $remainingQuantity;
-                    $availability->save();
-                    $remainingQuantity = 0;
-                } else {
-                    $remainingQuantity -= $availability->quantity;
-                    $availability->quantity = 0;
-                    $availability->save();
-                }
+        // Deduct availability for each overlapping period
+        foreach ($availableDates as $availability) {
+            if ($availability->quantity >= $quantity) {
+                $availability->quantity -= $quantity;
+                $availability->save();
             }
-
-            $currentDate = $currentDate->addDay();
         }
 
-        if ($remainingQuantity > 0) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => "Not enough rooms available after adjusting availability.",
-            ], 400);
-        }
-
-        // Create the booking record
+        // Create booking record
         $booking = ModelsBookingEngine::create([
             'room_id'   => $roomId,
             'check_in'  => $checkIn->toDateString(),
@@ -349,14 +324,24 @@ class BookingEngine extends Controller
 
         $validationList = $bookinglistrequest->validated();
 
+        // Create booking list entry
         $bookingList = BookingengineList::create([
-            $validationList,
-            $validationList['status'] = 'inprogress',
-            $validationList['code'] = 'e' . rand(10000, 9999999) . strtolower(str::random(1)),
+            'from_supplier_id' => $validationList['from_supplier_id'],
+            'country_id' => $validationList['country_id'],
+            'city_id' => $validationList['city_id'],
+            'hotel_id' => $validationList['hotel_id'],
+            'to_agent_id' => $validationList['to_agent_id'] ?? null,
+            'to_customer_id' => $validationList['to_customer_id'] ?? null,
+            'check_in' => $validationList['check_in'],
+            'check_out' => $validationList['check_out'],
+            'room_type' => $validationList['room_type'],
+            'no_of_adults' => $validationList['no_of_adults'],
+            'no_of_children' => $validationList['no_of_children'],
+            'no_of_nights' => $validationList['no_of_nights'],
+            'payment_status' => $validationList['payment_status'],
+            'status' => $validationList['status'] ?? 'inprogress',
+            'code' => 'e' . rand(10000, 9999999) . strtolower(Str::random(1)),
         ]);
-
-
-
 
         DB::commit();
 

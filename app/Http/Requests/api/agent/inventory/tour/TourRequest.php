@@ -50,7 +50,7 @@ class TourRequest extends FormRequest
             'destinations.*.arrival_map' => ['required'],
 
             'availability.*.date' => ['required','date'],
-            'availability.*.last_booking' => ['required','numeric'],
+            'availability.*.last_booking' => ['required','date'],
             'availability.*.quantity' => ['required','numeric'],
 
             'cancelation_items.*.type' => ['required','in:precentage,fixed'],
@@ -58,7 +58,7 @@ class TourRequest extends FormRequest
             'cancelation_items.*.days' => ['required','numeric'],
 
             'excludes.*.name' => ['required'],
- 
+
             'includes.*.name' => ['required'],
 
             'itinerary.*.day_name' => ['required'],
