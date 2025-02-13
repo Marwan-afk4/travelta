@@ -10,6 +10,7 @@ class Tour extends Model
         'agent_id',
         'affilate_id',
         'name',
+        'arrival',
         'description',
         'video_link',
         'tour_type',

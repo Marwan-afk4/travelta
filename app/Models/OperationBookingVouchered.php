@@ -8,6 +8,7 @@ class OperationBookingVouchered extends Model
 {
     protected $fillable = [
         'manuel_booking_id',
+        'booking_engine_id',
         'confirmation_num',
         'totally_paid',
         'name',

@@ -8,6 +8,7 @@ class OperationBookingConfirmed extends Model
 {
     protected $fillable = [
         'manuel_booking_id',
+        'booking_engine_id',
         'comfirmed',
         'deposits',
     ];

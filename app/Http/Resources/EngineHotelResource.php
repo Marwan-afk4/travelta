@@ -36,7 +36,10 @@ class EngineHotelResource extends JsonResource
             'code' => $this->code ?? null,  
             'payment_status' => $this->payment_status ?? null,
             'status' => $this->status ?? null, 
-           // 'special_request' => $this->special_request ?? null,
+            'special_request' => $this->special_request ?? null,
+            'action' => ($this->room->agent_id == $this->agent_id && is_numeric($this->agent_id)) 
+            || ($this->room->affilate_id == $this->affilate_id && is_numeric($this->affilate_id))
+            ? true : false,
         ];
     }
 }

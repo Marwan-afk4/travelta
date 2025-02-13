@@ -855,7 +855,7 @@ class ManualBookingController extends Controller
                     'check_out' => $manuel_data_cart['check_out'] ?? null,
                     'nights' => $manuel_data_cart['nights'] ?? null,
                     'hotel_name' => $manuel_data_cart['hotel_name'] ?? null,
-                    'room_type' => $manuel_data_cart['room_type'] ?? null,
+                    'room_type' => json_encode($manuel_data_cart['room_type']) ?? null,
                     'room_quantity' => $manuel_data_cart['room_quantity'] ?? null,
                     'adults' => $manuel_data_cart['adults'] ?? null,
                     'childreen' => $manuel_data_cart['childreen'] ?? null,
@@ -914,7 +914,8 @@ class ManualBookingController extends Controller
                 $flightRequest = [
                     'type' => $manuel_data_cart['type'] ?? null,
                     'direction' => $manuel_data_cart['direction'] ?? null,
-                    'from_to' => $manuel_data_cart['from_to'] ?? null,
+                    'from_to' => is_string($manuel_data_cart['from_to']) ?? 
+                    json_encode($manuel_data_cart['from_to']),
                     'departure' => $manuel_data_cart['departure'] ?? null,
                     'arrival' => $manuel_data_cart['arrival'] ?? null,
                     'class' => $manuel_data_cart['class'] ?? null,
@@ -1043,10 +1044,6 @@ class ManualBookingController extends Controller
                         'payment' => $item->amount ?? $item['amount'],
                         'payment_method_id' => $item->payment_method_id ?? $item['payment_method_id'],
                     ];
-                    if ($item->image ?? $item['image'] && !empty($item->image ?? $item['image'])) {
-                        $image_path = $this->storeBase64Image($item->image ?? $item['image']);
-                        $cartRequest['image'] = $image_path;
-                    }
                     $manuel_cart = $this->manuel_cart
                     ->create($cartRequest);
                     $financial_accounting = $this->financial_accounting
@@ -1143,7 +1140,9 @@ class ManualBookingController extends Controller
                 'visa' => $visa[0] ?? null,
                 'flight' => $flight[0] ?? null,
                 'tour' => $tour[0] ?? null,
-                'agent_data' => $agent_data
+                'agent_data' => $agent_data,
+                'total_payment' => $amount_payment,
+                'due_payments' => $request->payments ?? [],
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             $manuel_booking->delete();

@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentMail;
+use App\Http\Resources\ManuelBusResource;
+use App\Http\Resources\ManuelFlightResource;
+use App\Http\Resources\ManuelHotelResource;
+use App\Http\Resources\ManuelTourResource;
+use App\Http\Resources\ManuelVisaResource;
+use App\Http\Resources\EngineHotelResource;
 
 use App\Models\ManuelBooking;
 use App\Models\FinantiolAcounting;
@@ -57,7 +63,9 @@ class BookingPaymentController extends Controller
         ->first();
         if (empty($booking)) {
             return response()->json([
-                'errors' => 'Code is wrong'
+                'errors' => [
+                    'code' => 'Code is wrong'
+                ]
             ], 400);
         }
         $data = collect([]);
@@ -116,32 +124,107 @@ class BookingPaymentController extends Controller
             'remaining_list' => array_values($remaining_list->toArray()),
         ]);
     }
-
+    
     public function invoice(Request $request, $id){
         // /accounting/booking/invoice/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+            $agent = $this->affilate_agent
+            ->where('id', $agent_id)
+            ->first();
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+            $agent = $this->agent
+            ->where('id', $agent_id)
+            ->first();
+        }
+        else{
+            $agent_id = $request->user()->id;
+            $agent = $request->user();
+        }
         $booking_payment = $this->booking_payment
         ->where('id', $id)
         ->with('financial')
         ->first();
         $client = [];
-        $manuel_booking = $booking_payment->manuel_booking;
+        $manuel_booking = clone $booking_payment->manuel_booking;
         if (!empty($manuel_booking->to_supplier_id)) {
-            $manuel_booking = $manuel_booking->to_client;
-            $client['name'] = $manuel_booking->name;
-            $client['phone'] = $manuel_booking->phones[0] ?? $manuel_booking->phones;
-            $client['email'] = $manuel_booking->emails[0] ?? $manuel_booking->emails;
+            $client_data = $manuel_booking->to_client;
+            $client['name'] = $client_data->name;
+            $client['phone'] = $client_data->phones[0] ?? $client_data->phones;
+            $client['email'] = $client_data->emails[0] ?? $client_data->emails;
         }
         else{
-            $manuel_booking = $manuel_booking->to_client;
-            $client['name'] = $manuel_booking->name;
-            $client['phone'] = $manuel_booking->phone;
-            $client['email'] = $manuel_booking->email;
+            $client_data = $manuel_booking->to_client;
+            $client['name'] = $client_data->name;
+            $client['phone'] = $client_data->phone;
+            $client['email'] = $client_data->email;
+        }
+        $service = $manuel_booking->service->service_name;
+        $manuel_booking->from_supplier;
+        $manuel_booking->country;
+        $manuel_booking->bus;
+        $manuel_booking->hotel;
+        $manuel_booking->flight;
+        $manuel_booking->tour;
+        $manuel_booking->visa; 
+        if ($service == 'hotel' || $service == 'Hotel' || $service == 'hotels' || $service == 'Hotels') {
+            $hotel = ManuelHotelResource::collection([$manuel_booking]);
+            $visa = null;
+            $bus = null;
+            $flight = null;
+            $tour = null;
+        }
+        elseif ($service == 'visa' || $service == 'Visa' || $service == 'visas' || $service == 'Visas') {
+            $visa = ManuelVisaResource::collection([$manuel_booking]);
+            $hotel = null;
+            $bus = null;
+            $flight = null;
+            $tour = null;
+        }
+        elseif ($service == 'bus' || $service == 'Bus' || $service == 'buses' || $service == 'Buses') {
+            $bus = ManuelBusResource::collection([$manuel_booking]);
+            $hotel = null;
+            $visa = null;
+            $flight = null;
+            $tour = null;
+        }
+        elseif ($service == 'flight' || $service == 'Flight' || $service == 'flights' || $service == 'Flights') {
+            $flight = ManuelFlightResource::collection([$manuel_booking]);
+            $hotel = null;
+            $visa = null;
+            $bus = null;
+            $tour = null;
+        }
+        elseif ($service == 'tour' || $service == 'Tour' || $service == 'tours' || $service == 'Tours') {
+            $tour = ManuelTourResource::collection([$manuel_booking]);
+            $hotel = null;
+            $visa = null;
+            $bus = null;
+            $flight = null;
         }
         $booking_payment->makeHidden('manuel_booking');
 
+        $agent_data = [
+            'name' => $agent->name,
+            'email' => $agent->email,
+            'phone' => $agent->phone,
+        ];
+        $agent_data = [
+            'name' => $agent->name,
+            'email' => $agent->email,
+            'phone' => $agent->phone,
+        ];
         return response()->json([
             'booking_payment' => $booking_payment,
-            'client' => $client
+            'client' => $client,
+            'agent_data' => $agent_data,
+            'hotel' => $hotel[0] ?? null,
+            'bus' => $bus[0] ?? null,
+            'flight' => $flight[0] ?? null,
+            'visa' => $visa[0] ?? null,
+            'tour' => $tour[0] ?? null,
         ]);
     }
 

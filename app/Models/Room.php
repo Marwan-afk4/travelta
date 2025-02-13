@@ -49,8 +49,7 @@ class Room extends Model
         }
         else {
             return $this->attributes['id'];
-        }
-
+        } 
     }
 
     public function room_type(){

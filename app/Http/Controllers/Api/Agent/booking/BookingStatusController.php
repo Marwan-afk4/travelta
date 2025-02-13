@@ -109,4 +109,89 @@ class BookingStatusController extends Controller
             'success' => 'you update data success'
         ]);
     }
+
+    public function engine_confirmed(Request $request, $id){
+        // agent/booking/engine_confirmed/{id}
+        // Keys
+        // comfirmed, deposits[{deposit, date}]
+        $validation = Validator::make($request->all(), [
+            'comfirmed' => 'required|boolean',
+            'deposits' => 'required',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        $deposits = is_string($request->deposits) ? $request->deposits
+        : json_encode($request->deposits);
+        $operation_confirmed = $this->operation_confirmed
+        ->create([
+            'comfirmed' => $request->comfirmed,
+            'deposits' => $deposits,
+            'booking_engine_id' => $id,
+        ]);
+        $this->manuel_booking
+        ->where('id', $id)
+        ->update([
+            'status' => 'confirmed'
+        ]);
+
+        return response()->json([
+            'success' => 'you update data success'
+        ]);
+    }
+
+    public function engine_vouchered(Request $request, $id){
+        // agent/booking/vouchered/{id}
+        // Keys
+        // totally_paid, confirmation_num, name, phone, email
+        $validation = Validator::make($request->all(), [
+            'totally_paid' => 'required|boolean',
+            'confirmation_num' => 'required',
+            'name' => 'required',
+            'phone' => 'required',
+            'email' => 'required|email',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        $voucheredRequest = $request->only($this->voucheredRequest);
+        $voucheredRequest['booking_engine_id'] = $id;
+        $operation_vouchered = $this->operation_vouchered
+        ->create($voucheredRequest);
+        $this->manuel_booking
+        ->where('id', $id)
+        ->update([
+            'status' => 'vouchered'
+        ]);
+
+        return response()->json([
+            'success' => 'you update data success'
+        ]);
+    }
+
+    public function engine_canceled(Request $request, $id){
+        // agent/booking/canceled/{id}
+        // Keys
+        // cancelation_reason
+        $validation = Validator::make($request->all(), [
+            'cancelation_reason' => 'required',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        $this->operation_canceled
+        ->create([
+            'booking_engine_id' => $id,
+            'cancelation_reason' => $request->cancelation_reason,
+        ]);
+        $this->manuel_booking
+        ->where('id', $id)
+        ->update([
+            'status' => 'canceled',
+        ]);
+
+        return response()->json([
+            'success' => 'you update data success'
+        ]);
+    }
 }

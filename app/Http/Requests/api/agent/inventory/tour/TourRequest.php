@@ -27,6 +27,7 @@ class TourRequest extends FormRequest
         return [
             'name' => ['required'],
             'tour_type' => ['required','in:private,group'],
+            'arrival' => ['required', 'date'],
             'status' => ['required','boolean'],
             'days' => ['required','numeric'],
             'nights' => ['required','numeric'],
