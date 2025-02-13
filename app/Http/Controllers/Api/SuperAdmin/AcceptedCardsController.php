@@ -23,12 +23,14 @@ class AcceptedCardsController extends Controller
     public function addCard(Request $request){
         $validation = Validator::make($request->all(), [
             'card_name'=>'required|unique:accepted_cards,card_name',
+            'logo' =>'nullable'
         ]);
         if($validation->fails()){
             return response()->json(['errors' => $validation->errors()], 401);
         }
         $card = AcceptedCard::create([
             'card_name' => $request->card_name,
+            'logo' => $request->logo
         ]);
         return response()->json([
             'message' => 'Card name added successfully',

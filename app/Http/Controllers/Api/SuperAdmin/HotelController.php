@@ -102,6 +102,7 @@ class HotelController extends Controller
         'policies' => 'nullable|array',
         'policies.*.title' => 'nullable|string',
         'policies.*.description' => 'nullable|string',
+        'policies.*.logo' => 'nullable',
         'features' => 'nullable|array',
         'features.*' => 'required|integer|exists:features,id',
         'facilities' => 'nullable|array',
