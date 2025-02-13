@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AcceptedCard;
+use App\trait\image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class AcceptedCardsController extends Controller
 {
-
+    use image;
     protected $updateCard =['card_name'];
 
     public function getAllCards(){
@@ -30,7 +31,7 @@ class AcceptedCardsController extends Controller
         }
         $card = AcceptedCard::create([
             'card_name' => $request->card_name,
-            'logo' => $request->logo
+            'logo' => $this->storeBase64Image($request->logo, 'admin/acceptedCard/logos'),
         ]);
         return response()->json([
             'message' => 'Card name added successfully',

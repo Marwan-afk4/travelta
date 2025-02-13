@@ -256,77 +256,66 @@ public function bookRoom(Request $request, BookingEngineListRequest $bookinglist
     }
 
     $validated = $validator->validated();
+
     $roomId = $validated['room_id'];
     $checkIn = Carbon::parse($validated['check_in']);
     $checkOut = Carbon::parse($validated['check_out']);
     $quantity = $validated['quantity'];
 
     DB::beginTransaction();
+
     try {
-        $existingAvailability = RoomAvailability::where('room_id', $roomId)
+        // Fetch the availability that overlaps with the booking
+        $availability = RoomAvailability::where('room_id', $roomId)
             ->whereDate('from', '<=', $checkOut)
             ->whereDate('to', '>=', $checkIn)
-            ->orderBy('from', 'asc')
             ->lockForUpdate()
-            ->get();
+            ->first();
 
-        foreach ($existingAvailability as $availability) {
-            if ($availability->from < $checkIn && $availability->to > $checkOut) {
-                // Case: Booking splits an existing period into three parts
-                RoomAvailability::create([
-                    'room_id'  => $roomId,
-                    'from'     => $availability->from,
-                    'to'       => $checkIn->subDay()->toDateString(),
-                    'quantity' => $availability->quantity - $quantity,
-                ]);
-
-                RoomAvailability::create([
-                    'room_id'  => $roomId,
-                    'from'     => $checkIn->toDateString(),
-                    'to'       => $checkOut->toDateString(),
-                    'quantity' => $availability->quantity,
-                ]);
-
-                RoomAvailability::create([
-                    'room_id'  => $roomId,
-                    'from'     => $checkOut->addDay()->toDateString(),
-                    'to'       => $availability->to,
-                    'quantity' => $availability->quantity - $quantity,
-                ]);
-
-                $availability->delete();
-                break;
-            } elseif ($availability->from < $checkIn) {
-                // Case: Booking shortens the existing availability at the start
-                $availability->to = $checkIn->subDay()->toDateString();
-                $availability->quantity -= $quantity;
-                $availability->save();
-
-                RoomAvailability::create([
-                    'room_id'  => $roomId,
-                    'from'     => $checkIn->toDateString(),
-                    'to'       => $checkOut->toDateString(),
-                    'quantity' => $availability->quantity + $quantity,
-                ]);
-            } elseif ($availability->to > $checkOut) {
-                // Case: Booking shortens the existing availability at the end
-                $availability->from = $checkOut->addDay()->toDateString();
-                $availability->quantity -= $quantity;
-                $availability->save();
-
-                RoomAvailability::create([
-                    'room_id'  => $roomId,
-                    'from'     => $checkIn->toDateString(),
-                    'to'       => $checkOut->toDateString(),
-                    'quantity' => $availability->quantity + $quantity,
-                ]);
-            } else {
-                // Case: Booking fully overlaps with an existing period
-                $availability->delete();
-            }
+        if (!$availability) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => "No available rooms found for the selected period.",
+            ], 400);
         }
 
-        // Create booking record
+        // Step 1: Check if enough rooms are available
+        if ($availability->quantity < $quantity) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => "Not enough rooms available for this period.",
+            ], 400);
+        }
+
+        // Store original values
+        $originalFrom = Carbon::parse($availability->from);
+        $originalTo = Carbon::parse($availability->to);
+        $originalQuantity = $availability->quantity;
+
+        // Delete the original record since we will split it
+        $availability->delete();
+
+        // Step 2: Create a new availability for the period BEFORE the booking (if needed)
+        if ($originalFrom->lt($checkIn)) {
+            RoomAvailability::create([
+                'room_id'  => $roomId,
+                'from'     => $originalFrom->toDateString(),
+                'to'       => $checkIn->subDay()->toDateString(),
+                'quantity' => $originalQuantity, // Same quantity before the booking
+            ]);
+        }
+
+        // Step 3: Create a new availability for the period AFTER the booking with updated quantity
+        RoomAvailability::create([
+            'room_id'  => $roomId,
+            'from'     => $checkIn->toDateString(),
+            'to'       => $originalTo->toDateString(),
+            'quantity' => $originalQuantity - $quantity, // Reduce quantity after booking
+        ]);
+
+        // Step 4: Create booking record
         $booking = ModelsBookingEngine::create([
             'room_id'   => $roomId,
             'check_in'  => $checkIn->toDateString(),
@@ -335,11 +324,13 @@ public function bookRoom(Request $request, BookingEngineListRequest $bookinglist
         ]);
 
         DB::commit();
+
         return response()->json([
             'success' => true,
             'message' => 'Booking successful!',
             'booking' => $booking,
         ]);
+
     } catch (\Exception $e) {
         DB::rollBack();
         return response()->json([
@@ -349,6 +340,8 @@ public function bookRoom(Request $request, BookingEngineListRequest $bookinglist
         ], 500);
     }
 }
+
+
 
 
 
