@@ -42,7 +42,6 @@ class CreateTourController extends Controller
         'pick_up_city_id',
         'pick_up_map',
         'destination_type',
-<<<<<<< HEAD
         'tour_email',
         'tour_website',
         'tour_phone',
@@ -51,34 +50,15 @@ class CreateTourController extends Controller
         'policy',
         'cancelation',
     ];
-=======
-        'tour_email', 
-        'tour_website', 
-        'tour_phone', 
-        'tour_address', 
-        'payments_options', 
-        'policy', 
-        'cancelation', 
-        'arrival'
-    ]; 
->>>>>>> 83bd5f5b4a1e0d10d9b05f7d71bf78b7655f0fd9
 
     public function create(TourRequest $request){
         // /agent/tour/add
         // Keys
-<<<<<<< HEAD
         // name, description, video_link, tour_type[private, group], status, days,
         // nights, tour_type_id, featured[yes, no], featured_from, featured_to,
         // deposit, deposit_type[precentage, fixed], tax, tax_type[precentage, fixed], pick_up_country_id,
         // pick_up_city_id, pick_up_map, destination_type[single, multiple],
         // tour_email, tour_website, tour_phone, tour_address, payments_options,
-=======
-        // name, description, video_link, tour_type[private, group], status, days, 
-        // nights, tour_type_id, featured[yes, no], featured_from, featured_to, 
-        // deposit, deposit_type[precentage, fixed], tax, tax_type[precentage, fixed], pick_up_country_id, 
-        // pick_up_city_id, pick_up_map, arrival, destination_type[single, multiple], 
-        // tour_email, tour_website, tour_phone, tour_address, payments_options, 
->>>>>>> 83bd5f5b4a1e0d10d9b05f7d71bf78b7655f0fd9
         // policy, cancelation,
         // destinations [{country_id, city_id, arrival_map}]
         // availability [{date, last_booking, quantity}]
@@ -192,17 +172,10 @@ class CreateTourController extends Controller
         // /agent/tour/update/{id}
         // هتبعت id itinerary لو قديم
         // Keys
-<<<<<<< HEAD
         // name, description, video_link, tour_type[private, group], status, days,
         // nights, tour_type_id, featured[yes, no], featured_from, featured_to,
         // deposit, deposit_type[precentage, fixed], tax, tax_type[precentage, fixed], pick_up_country_id,
         // pick_up_city_id, pick_up_map, destination_type[single, multiple],
-=======
-        // name, description, video_link, tour_type[private, group], status, days, 
-        // nights, tour_type_id, featured[yes, no], featured_from, featured_to, 
-        // deposit, deposit_type[precentage, fixed], tax, tax_type[precentage, fixed], pick_up_country_id, 
-        // pick_up_city_id, pick_up_map, arrival, destination_type[single, multiple],
->>>>>>> 83bd5f5b4a1e0d10d9b05f7d71bf78b7655f0fd9
         // tour_email, tour_website, tour_phone, tour_address, payments_options,
         // policy, cancelation,
         // destinations [{country_id, city_id, arrival_map}]
