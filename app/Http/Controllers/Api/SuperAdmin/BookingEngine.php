@@ -256,50 +256,73 @@ public function bookRoom(Request $request, BookingEngineListRequest $bookinglist
     }
 
     $validated = $validator->validated();
-
     $roomId = $validated['room_id'];
     $checkIn = Carbon::parse($validated['check_in']);
     $checkOut = Carbon::parse($validated['check_out']);
     $quantity = $validated['quantity'];
-    $customerId = $validated['customer_id'] ?? null;
-    $adults = $validated['adults'];
-    $children = $validated['children'] ?? 0;
-    $nationality = $validated['nationality_id'];
 
     DB::beginTransaction();
-
     try {
-        // Check if there is enough availability for the requested period
-        $availableDates = RoomAvailability::where('room_id', $roomId)
+        $existingAvailability = RoomAvailability::where('room_id', $roomId)
             ->whereDate('from', '<=', $checkOut)
             ->whereDate('to', '>=', $checkIn)
             ->orderBy('from', 'asc')
             ->lockForUpdate()
             ->get();
 
-        foreach ($availableDates as $availability) {
-            $dailyAvailable = $availability->quantity;
-            $dailyBooked = ModelsBookingEngine::where('room_id', $roomId)
-                ->whereDate('check_in', '<=', $availability->to)
-                ->whereDate('check_out', '>', $availability->from)
-                ->sum('quantity');
+        foreach ($existingAvailability as $availability) {
+            if ($availability->from < $checkIn && $availability->to > $checkOut) {
+                // Case: Booking splits an existing period into three parts
+                RoomAvailability::create([
+                    'room_id'  => $roomId,
+                    'from'     => $availability->from,
+                    'to'       => $checkIn->subDay()->toDateString(),
+                    'quantity' => $availability->quantity - $quantity,
+                ]);
 
-            $remainingRooms = $dailyAvailable - $dailyBooked;
+                RoomAvailability::create([
+                    'room_id'  => $roomId,
+                    'from'     => $checkIn->toDateString(),
+                    'to'       => $checkOut->toDateString(),
+                    'quantity' => $availability->quantity,
+                ]);
 
-            if ($remainingRooms < $quantity) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => "Not enough rooms available for some dates in the requested range.",
-                ], 400);
-            }
-        }
+                RoomAvailability::create([
+                    'room_id'  => $roomId,
+                    'from'     => $checkOut->addDay()->toDateString(),
+                    'to'       => $availability->to,
+                    'quantity' => $availability->quantity - $quantity,
+                ]);
 
-        // Deduct availability for each overlapping period
-        foreach ($availableDates as $availability) {
-            if ($availability->quantity >= $quantity) {
+                $availability->delete();
+                break;
+            } elseif ($availability->from < $checkIn) {
+                // Case: Booking shortens the existing availability at the start
+                $availability->to = $checkIn->subDay()->toDateString();
                 $availability->quantity -= $quantity;
                 $availability->save();
+
+                RoomAvailability::create([
+                    'room_id'  => $roomId,
+                    'from'     => $checkIn->toDateString(),
+                    'to'       => $checkOut->toDateString(),
+                    'quantity' => $availability->quantity + $quantity,
+                ]);
+            } elseif ($availability->to > $checkOut) {
+                // Case: Booking shortens the existing availability at the end
+                $availability->from = $checkOut->addDay()->toDateString();
+                $availability->quantity -= $quantity;
+                $availability->save();
+
+                RoomAvailability::create([
+                    'room_id'  => $roomId,
+                    'from'     => $checkIn->toDateString(),
+                    'to'       => $checkOut->toDateString(),
+                    'quantity' => $availability->quantity + $quantity,
+                ]);
+            } else {
+                // Case: Booking fully overlaps with an existing period
+                $availability->delete();
             }
         }
 
@@ -311,47 +334,12 @@ public function bookRoom(Request $request, BookingEngineListRequest $bookinglist
             'quantity'  => $quantity,
         ]);
 
-        // Associate with CustomerBookingEngine
-        $customerBooking = CustomerBookingengine::create([
-            'customer_id'        => $customerId,
-            'booking_engine_id'  => $booking->id,
-            'adults'             => $adults,
-            'check_in'           => $checkIn->toDateString(),
-            'check_out'          => $checkOut->toDateString(),
-            'children'           => $children,
-            'nationality'        => $nationality,
-        ]);
-
-        $validationList = $bookinglistrequest->validated();
-
-        // Create booking list entry
-        $bookingList = BookingengineList::create([
-            'from_supplier_id' => $validationList['from_supplier_id'],
-            'country_id' => $validationList['country_id'],
-            'city_id' => $validationList['city_id'],
-            'hotel_id' => $validationList['hotel_id'],
-            'to_agent_id' => $validationList['to_agent_id'] ?? null,
-            'to_customer_id' => $validationList['to_customer_id'] ?? null,
-            'check_in' => $validationList['check_in'],
-            'check_out' => $validationList['check_out'],
-            'room_type' => $validationList['room_type'],
-            'no_of_adults' => $validationList['no_of_adults'],
-            'no_of_children' => $validationList['no_of_children'],
-            'no_of_nights' => $validationList['no_of_nights'],
-            'payment_status' => $validationList['payment_status'],
-            'status' => $validationList['status'] ?? 'inprogress',
-            'code' => 'e' . rand(10000, 9999999) . strtolower(Str::random(1)),
-        ]);
-
         DB::commit();
-
         return response()->json([
             'success' => true,
             'message' => 'Booking successful!',
             'booking' => $booking,
-            'customer_booking' => $customerBooking,
         ]);
-
     } catch (\Exception $e) {
         DB::rollBack();
         return response()->json([
@@ -361,5 +349,8 @@ public function bookRoom(Request $request, BookingEngineListRequest $bookinglist
         ], 500);
     }
 }
+
+
+
 
 }
