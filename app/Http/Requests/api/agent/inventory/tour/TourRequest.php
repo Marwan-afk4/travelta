@@ -95,7 +95,7 @@ class TourRequest extends FormRequest
             'cancelation_items.*.days' => ['required','numeric'],
 
             'excludes.*.name' => ['required'],
- 
+
             'includes.*.name' => ['required'],
 
             'itinerary.*.day_name' => ['required'],

@@ -11,6 +11,7 @@ class HotelPolicy extends Model
         'hotel_id',
         'title',
         'description',
+        'logo'
     ];
 
     public function hotel()

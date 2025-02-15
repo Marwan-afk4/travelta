@@ -8,7 +8,8 @@ class AcceptedCard extends Model
 {
 
     protected $fillable = [
-        'card_name'
+        'card_name',
+        'logo'
     ];
 
 
