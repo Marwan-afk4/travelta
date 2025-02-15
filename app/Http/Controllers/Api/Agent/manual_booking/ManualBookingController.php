@@ -577,10 +577,10 @@ class ManualBookingController extends Controller
             "country"=> $this->contries->where('id', $manuel_data_cart->country_id)->first()->name ?? null,
             "city"=> $this->cities->where('id', $manuel_data_cart->city_id ?? 0)->first()->name ?? null,
             "currency"=> $this->currency->where('id', $manuel_data_cart->currency_id ?? 0)->first()->name ?? null,
-            "to_client"=> $manuel_data_cart->to_supplier_id ?
+            "to_client"=> !empty($manuel_data_cart->to_supplier_id) ?
             $this->supplier_agent->where('id', $manuel_data_cart->to_supplier_id)->first()->name ?? null
             :$this->customers->where('id', $manuel_data_cart->to_customer_id)->first()->name ?? null,
-            "role"=> $manuel_data_cart->to_supplier_id ? 'supplier' : 'customer',
+            "role"=> !empty($manuel_data_cart->to_supplier_id) ? 'supplier' : 'customer',
             "taxes"=> json_decode($manuel_data_cart->taxes ?? '[]') ?? [],
             "tax_type"=> $manuel_data_cart->tax_type,
             "cost"=> $manuel_data_cart->cost,

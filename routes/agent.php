@@ -207,6 +207,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(TourController::class)->group(function(){
             Route::get('/', 'view');
             Route::get('/lists', 'lists');
+            Route::get('/item/{id}', 'tour');
             Route::put('/status/{id}', 'status');
             Route::put('/accepted/{id}', 'accepted');
         });

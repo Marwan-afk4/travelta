@@ -40,6 +40,22 @@ class TourController extends Controller
         ]);
     }
 
+    public function tour($id){ 
+        // /agent/tour/item/{id}
+        $tour = $this->tour
+        ->with(['destinations' => function($query){
+            $query->with('city', 'country');
+        }, 'availability', 'cancelation_items',
+        'excludes', 'includes', 'itinerary', 'tour_type', 'pick_up_country',
+        'pick_up_city'])
+        ->where('id', $id)
+        ->first();
+
+        return response()->json([
+            'tour' => $tour,
+        ]);
+    }
+
     public function lists(Request $request){
         // /agent/tour/lists
         $tour_types = $this->tour_types
