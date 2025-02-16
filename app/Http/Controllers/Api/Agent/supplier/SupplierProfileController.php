@@ -88,12 +88,12 @@ class SupplierProfileController extends Controller
                   ->orWhere('to_supplier_id', $id);
         })
         ->get()
-        ->map(function ($data) {
+        ->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $bus_current = $this->manuel_booking
@@ -104,12 +104,12 @@ class SupplierProfileController extends Controller
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
                   ->orWhere('to_supplier_id', $id);
-        })->get()->map(function ($data) {
+        })->get()->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $visa_current = $this->manuel_booking
@@ -121,12 +121,12 @@ class SupplierProfileController extends Controller
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
                   ->orWhere('to_supplier_id', $id);
-        })->get()->map(function ($data) {
+        })->get()->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $flight_current = $this->manuel_booking
@@ -138,12 +138,12 @@ class SupplierProfileController extends Controller
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
                   ->orWhere('to_supplier_id', $id);
-        })->get()->map(function ($data) {
+        })->get()->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $tour_current = $this->manuel_booking
@@ -156,12 +156,12 @@ class SupplierProfileController extends Controller
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
                   ->orWhere('to_supplier_id', $id);
-        })->get()->map(function ($data) {
+        })->get()->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $transactions_current = collect()->merge($hotel_current)->merge($bus_current)
@@ -177,12 +177,12 @@ class SupplierProfileController extends Controller
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
                   ->orWhere('to_supplier_id', $id);
-        })->get()->map(function ($data) {
+        })->get()->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $t_bus_past = $this->manuel_booking
@@ -194,12 +194,12 @@ class SupplierProfileController extends Controller
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
                   ->orWhere('to_supplier_id', $id);
-        })->get()->map(function ($data) {
+        })->get()->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $t_visa_past = $this->manuel_booking
@@ -211,12 +211,12 @@ class SupplierProfileController extends Controller
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
                   ->orWhere('to_supplier_id', $id);
-        })->get()->map(function ($data) {
+        })->get()->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $t_flight_past = $this->manuel_booking
@@ -228,12 +228,12 @@ class SupplierProfileController extends Controller
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
                   ->orWhere('to_supplier_id', $id);
-        })->get()->map(function ($data) {
+        })->get()->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $t_tour_past = $this->manuel_booking
@@ -246,12 +246,12 @@ class SupplierProfileController extends Controller
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
                   ->orWhere('to_supplier_id', $id);
-        })->get()->map(function ($data) {
+        })->get()->map(function ($data) use($id) {
             return [
                 'manuel_booking_id' => $data->id ?? null,
-                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
         $transactions_history = collect()->merge($t_hotel_past)->merge($t_bus_past)
@@ -277,7 +277,7 @@ class SupplierProfileController extends Controller
             $debt = $due_from_agent - $due_from_supplier;
         }
         $due = [
-            'due_from_supplier' => $due_supplier,
+            'due_from_supplier' => $due_supplier->select('id', 'manuel_booking_id', 'amount', 'payment', 'due_payment', 'date'),
             'total_credit' => $credit,
             'total_debt' => $debt,
         ];
