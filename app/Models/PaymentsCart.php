@@ -9,6 +9,8 @@ class PaymentsCart extends Model
     protected $fillable = [
         'manuel_booking_id',
         'supplier_id',
+        'agent_id',
+        'affilate_id',
         'amount',
         'date',
         'payment',

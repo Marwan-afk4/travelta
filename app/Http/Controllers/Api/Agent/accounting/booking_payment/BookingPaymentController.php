@@ -320,7 +320,7 @@ class BookingPaymentController extends Controller
         }
         $manuel_booking = $booking_payment->manuel_booking;
         $customer = $manuel_booking->to_client;
-        if (empty($manuel_booking->to_customer_id )) { 
+        if (!empty($manuel_booking->to_customer_id )) { 
             $position = 'Customer';
             $customer = $this->customer_data
             ->where('customer_id', $manuel_booking->to_customer_id ?? null)
