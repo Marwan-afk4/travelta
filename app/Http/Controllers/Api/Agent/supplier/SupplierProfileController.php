@@ -53,4 +53,207 @@ class SupplierProfileController extends Controller
             'legal_papers' => $legal_papers,
         ]);
     }
+
+    public function transactions(Request $request ,$id){
+        // agent/supplier/transactions/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $agent_type = 'affilate_id';
+        }
+        else {
+            $agent_type = 'agent_id';
+        }
+
+        $hotel_current = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('hotel', function($query){
+            $query->where('check_in', '>', date('Y-m-d'));
+        })  
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })
+        ->get()
+        ->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $bus_current = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('bus', function($query){
+            $query->where('departure', '>', date('Y-m-d'));
+        }) 
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $visa_current = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('visa', function($query){
+            $query->where('travel_date', '>', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $flight_current = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('flight', function($query){
+            $query->where('departure', '>', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $tour_current = $this->manuel_booking
+        ->whereHas('tour.hotel')
+        ->where($agent_type, $agent_id)
+        ->whereDoesntHave('tour.hotel', function($query){
+            $query->where('check_in', '<=', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $transactions_current = collect()->merge($hotel_current)->merge($bus_current)
+        ->merge($visa_current)->merge($flight_current)->merge($tour_current);
+        
+        $t_hotel_past = $this->manuel_booking
+        ->with([ 'payments', 'payments_cart'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('hotel', function($query){
+            $query->whereDate('check_in', '<=', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $t_bus_past = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('bus', function($query){
+            $query->whereDate('departure', '<=', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $t_visa_past = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('visa', function($query){
+            $query->whereDate('travel_date', '<=', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $t_flight_past = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('flight', function($query){
+            $query->whereDate('departure', '<=', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $t_tour_past = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('tour.hotel')
+        ->whereDoesntHave('tour.hotel', function($query){
+            $query->where('check_in', '>=', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+            ];
+        });
+        $transactions_history = collect()->merge($t_hotel_past)->merge($t_bus_past)
+        ->merge($t_visa_past)->merge($t_flight_past)->merge($t_tour_past); 
+        
+        return response()->json([
+            'transactions_history' => $transactions_history,
+            'transactions_current' => $transactions_current,
+        ]);
+    }
 }
