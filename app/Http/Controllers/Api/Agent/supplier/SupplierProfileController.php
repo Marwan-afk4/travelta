@@ -252,8 +252,10 @@ class SupplierProfileController extends Controller
         ->merge($t_visa_past)->merge($t_flight_past)->merge($t_tour_past); 
         
         return response()->json([
-            'transactions_history' => $transactions_history,
-            'transactions_current' => $transactions_current,
+            'transactions_history_debt' => array_values($transactions_history->where('type', 'debt')->toArray()),
+            'transactions_history_credit' => array_values($transactions_history->where('type', 'credit')->toArray()),
+            'transactions_current_debt' => array_values($transactions_current->where('type', 'debt')->toArray()),
+            'transactions_current_credit' => array_values($transactions_current->where('type', 'credit')->toArray()),
         ]);
     }
 }
