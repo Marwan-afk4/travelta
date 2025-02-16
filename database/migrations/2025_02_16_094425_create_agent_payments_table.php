@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('supplier_payments', function (Blueprint $table) {
+        Schema::create('agent_payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('agent_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('affilate_id')->nullable()->constrained('affilate_agents')->onUpdate('cascade')->onDelete('cascade');
@@ -19,6 +19,7 @@ return new class extends Migration
             $table->float('amount');
             $table->enum('type', ['collect', 'payment']);
             $table->date('date')->nullable();
+            $table->string('code');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('supplier_payments');
+        Schema::dropIfExists('agent_payments');
     }
 };

@@ -1084,6 +1084,7 @@ class ManualBookingController extends Controller
                 foreach ($payments as $item) {
                     $this->payments_cart
                     ->create([
+                        'supplier_id' => $manuelRequest['to_supplier_id'] ?? null,
                         'manuel_booking_id' => $manuel_booking->id,
                         'amount' => $item->amount ?? $item['amount'],
                         'date' => $item->date ?? $item['date'],

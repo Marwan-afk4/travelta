@@ -9,11 +9,17 @@ use App\Http\Resources\ManuelBookingResource;
 use App\Models\SupplierAgent; 
 use App\Models\ManuelBooking;
 use App\Models\LegalPaper;
+use App\Models\PaymentsCart;
+use App\Models\AgentPayment;
 
 class SupplierProfileController extends Controller
 {
-    public function __construct(private SupplierAgent $supplier,
-    private ManuelBooking $manuel_booking, private LegalPaper $legal_papers){}
+    public function __construct(
+        private SupplierAgent $supplier,
+        private ManuelBooking $manuel_booking, 
+        private LegalPaper $legal_papers,
+        private AgentPayment $agent_payment, 
+        private PaymentsCart $payment_cart){}
 
     public function profile(Request $request, $id){
         // https://travelta.online/agent/supplier/profile/{id}
@@ -87,7 +93,7 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $bus_current = $this->manuel_booking
@@ -103,7 +109,7 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $visa_current = $this->manuel_booking
@@ -120,7 +126,7 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $flight_current = $this->manuel_booking
@@ -137,7 +143,7 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $tour_current = $this->manuel_booking
@@ -155,7 +161,7 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $transactions_current = collect()->merge($hotel_current)->merge($bus_current)
@@ -176,7 +182,7 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $t_bus_past = $this->manuel_booking
@@ -193,7 +199,7 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $t_visa_past = $this->manuel_booking
@@ -210,7 +216,7 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $t_flight_past = $this->manuel_booking
@@ -227,7 +233,7 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $t_tour_past = $this->manuel_booking
@@ -245,17 +251,43 @@ class SupplierProfileController extends Controller
                 'manuel_booking_id' => $data->id ?? null,
                 'amount' => !empty($data->from_supplier_id) ? $data->cost : $data->total_price,
                 'date' => $data->created_at->format('Y-m-d') ?? null,
-                'type' => !empty($data->from_supplier_id) ? 'debt': 'credit',
+                'type' => !empty($data->from_supplier_id) ? 'credit': 'debt',
             ];
         });
         $transactions_history = collect()->merge($t_hotel_past)->merge($t_bus_past)
         ->merge($t_visa_past)->merge($t_flight_past)->merge($t_tour_past); 
+        
+        $due_supplier = $this->payment_cart
+        ->where('supplier_id', $id)
+        ->where('status', 'approve')
+        ->get();
+        $due_from_supplier = $due_supplier->sum('due_payment');
+        $due_from_agent = $this->manuel_booking
+        ->where('from_supplier_id', $id)
+        ->sum('cost');
+        $due_from_agent -= $this->agent_payment
+        ->where($agent_type, $agent_id)
+        ->where('supplier_id', $id)
+        ->sum('amount');
+        $debt = 0;
+        $credit = 0;
+        if ($due_from_supplier > $due_from_agent) {
+            $credit = $due_from_supplier - $due_from_agent;
+        } else {
+            $debt = $due_from_agent - $due_from_supplier;
+        }
+        $due = [
+            'due_from_supplier' => $due_supplier,
+            'total_credit' => $credit,
+            'total_debt' => $debt,
+        ];
         
         return response()->json([
             'transactions_history_debt' => array_values($transactions_history->where('type', 'debt')->toArray()),
             'transactions_history_credit' => array_values($transactions_history->where('type', 'credit')->toArray()),
             'transactions_current_debt' => array_values($transactions_current->where('type', 'debt')->toArray()),
             'transactions_current_credit' => array_values($transactions_current->where('type', 'credit')->toArray()),
+            'due' => $due
         ]);
     }
 }
