@@ -1036,6 +1036,8 @@ class ManualBookingController extends Controller
                         'amount' => $item->amount ?? $item['amount'],
                         'financial_id' => $item->payment_method_id ?? $item['payment_method_id'],
                         'code' => $code,
+                        $role => $agent_id,
+                        'supplier_id' => $manuel_booking->to_supplier_id ,
                     ]);
 // ___________________________________________________________________________________ \
                     $cartRequest = [
@@ -1070,6 +1072,8 @@ class ManualBookingController extends Controller
                     'date' => date('Y-m-d'),
                     'amount' => 0,
                     'code' => $code,
+                    $role => $agent_id,
+                    'supplier_id' => $manuel_booking->to_supplier_id ,
                 ]);
             }
             if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
@@ -1084,6 +1088,7 @@ class ManualBookingController extends Controller
                 foreach ($payments as $item) {
                     $this->payments_cart
                     ->create([
+                        $role => $agent_id,
                         'supplier_id' => $manuelRequest['to_supplier_id'] ?? null,
                         'manuel_booking_id' => $manuel_booking->id,
                         'amount' => $item->amount ?? $item['amount'],

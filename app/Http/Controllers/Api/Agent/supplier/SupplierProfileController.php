@@ -262,6 +262,7 @@ class SupplierProfileController extends Controller
         ->merge($t_visa_past)->merge($t_flight_past)->merge($t_tour_past); 
         
         $due_supplier = $this->payment_cart
+        ->where($agent_type, $agent_id)
         ->where('supplier_id', $id)
         ->where('status', 'approve')
         ->get();
@@ -294,6 +295,7 @@ class SupplierProfileController extends Controller
             'due' => $due
         ]);
     }
+    
     public function transaction_details(Request $request ,$id){
         // agent/supplier/transaction_details/{manuel_booking_id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Agent\supplier\SupplierProfileController;
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
 use App\Http\Controllers\Api\Agent\accounting\booking_payment\BookingPaymentController;
+use App\Http\Controllers\Api\Agent\accounting\supplier_payment\SupplierPaymentController;
 
 use App\Http\Controllers\Api\Agent\accounting_methods\Wallet\WalletController;
 use App\Http\Controllers\Api\Agent\accounting_methods\financial\FinancialController;
@@ -122,7 +123,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(BookingPaymentController::class)->prefix('booking')->group(function(){
             Route::post('/search', 'search');
             Route::post('/payment', 'add_payment');
-            Route::get('/invoice/{id}', 'invoice');
+            Route::get('/invoice/{id}', 'invoice'); 
+        });
+        Route::controller(SupplierPaymentController::class)->group(function(){
+            Route::get('/transactions/{id}', 'transactions');
         });
     });
 

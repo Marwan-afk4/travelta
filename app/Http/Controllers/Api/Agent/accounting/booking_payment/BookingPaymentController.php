@@ -275,6 +275,9 @@ class BookingPaymentController extends Controller
                 ->where('code', $code)
                 ->first();
             }
+            $manuel_bookings = $this->manuel_bookings
+            ->where('id', $request->manuel_booking_id)
+            ->first();
             $booking_payment = $this->booking_payment
             ->create([
                 'manuel_booking_id' => $request->manuel_booking_id,
@@ -282,6 +285,8 @@ class BookingPaymentController extends Controller
                 'amount' => $item->amount,
                 'financial_id' => $item->financial_accounting_id,
                 'code' => $code,
+                $role => $agent_id,
+                'supplier_id' => $manuel_bookings->to_supplier_id ,
             ]);
             $payment_carts = $this->payment_cart
             ->where('manuel_booking_id', $request->manuel_booking_id)
