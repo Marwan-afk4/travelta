@@ -108,6 +108,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(SupplierProfileController::class)->group(function(){
             Route::get('/profile/{id}', 'profile');
             Route::get('/transactions/{id}', 'transactions');
+            Route::get('/transaction_details/{manuel_booking_id}', 'transaction_details');
         });
     });
 

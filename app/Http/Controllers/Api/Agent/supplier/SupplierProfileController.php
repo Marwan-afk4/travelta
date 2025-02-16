@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Api\Agent\supplier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request; 
 use App\Http\Resources\ManuelBookingResource;
+use App\Http\Resources\ManuelBusResource;
+use App\Http\Resources\ManuelFlightResource;
+use App\Http\Resources\ManuelHotelResource;
+use App\Http\Resources\ManuelTourResource;
+use App\Http\Resources\ManuelVisaResource;
 
 use App\Models\SupplierAgent; 
 use App\Models\ManuelBooking;
@@ -168,7 +173,6 @@ class SupplierProfileController extends Controller
         ->merge($visa_current)->merge($flight_current)->merge($tour_current);
         
         $t_hotel_past = $this->manuel_booking
-        ->with([ 'payments', 'payments_cart'])
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
             $query->whereDate('check_in', '<=', date('Y-m-d'));
@@ -288,6 +292,76 @@ class SupplierProfileController extends Controller
             'transactions_current_debt' => array_values($transactions_current->where('type', 'debt')->toArray()),
             'transactions_current_credit' => array_values($transactions_current->where('type', 'credit')->toArray()),
             'due' => $due
+        ]);
+    }
+    public function transaction_details(Request $request ,$id){
+        // agent/supplier/transaction_details/{manuel_booking_id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $agent_type = 'affilate_id';
+        }
+        else {
+            $agent_type = 'agent_id';
+        }
+        $hotel = $this->manuel_booking
+        ->with(['from_supplier', 'country', 'hotel'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('hotel')
+        ->where('id', $id)
+        ->first();
+        $bus = $this->manuel_booking
+        ->with(['from_supplier', 'country', 'bus'])
+        ->where($agent_type, $agent_id)
+        ->where('id', $id)
+        ->whereHas('bus')
+        ->first();
+        $visa = $this->manuel_booking
+        ->with(['from_supplier', 'country', 'visa'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('visa')
+        ->where('id', $id)
+        ->first();
+        $flight = $this->manuel_booking
+        ->with(['from_supplier', 'country', 'flight'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('flight')
+        ->where('id', $id)
+        ->first();
+        $tour = $this->manuel_booking
+        ->with(['from_supplier', 'country', 
+        'tour' => function($query){
+            $query->with('hotel', 'bus');
+        }])
+        ->where($agent_type, $agent_id)
+        ->whereHas('tour.hotel')
+        ->where('id', $id)
+        ->first(); 
+        $hotel = empty($hotel) ? []: collect([$hotel]);
+        $bus = empty($bus) ? []: collect([$bus]); 
+        $visa = empty($visa) ? []: collect([$visa]); 
+        $flight = empty($flight) ? []: collect([$flight]); 
+        $tour = empty($tour) ? []: collect([$tour]);  
+        
+        $hotel = ManuelHotelResource::collection($hotel); 
+        $bus = ManuelBusResource::collection($bus); 
+        $visa = ManuelVisaResource::collection($visa); 
+        $flight = ManuelFlightResource::collection($flight); 
+        $tour = ManuelTourResource::collection($tour);
+
+        return response()->json([
+            'hotel' => $hotel[0] ?? null,
+            'bus' => $bus[0] ?? null,
+            'visa' => $visa[0] ?? null,
+            'flight' => $flight[0] ?? null,
+            'tour' => $tour[0] ?? null,
         ]);
     }
 }
