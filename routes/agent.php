@@ -127,6 +127,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(SupplierPaymentController::class)->group(function(){
             Route::get('/transactions/{id}', 'transactions');
+            Route::post('/transactions_payment', 'add_payment');
         });
     });
 
