@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+use App\Models\CurrencyAgent;
 use App\Models\TourType;
 use App\Models\Country;
 use App\Models\City;
@@ -14,7 +15,8 @@ use App\Models\Tour;
 class TourController extends Controller
 {
     public function __construct(private TourType $tour_types, 
-    private Country $countries, private City $cities, private Tour $tour){}
+    private Country $countries, private City $cities, private Tour $tour,
+    private CurrencyAgent $currencies){}
 
     public function view(Request $request){
         // /agent/tour
@@ -40,19 +42,55 @@ class TourController extends Controller
         ]);
     }
 
+    public function tour($id){ 
+        // /agent/tour/item/{id}
+        $tour = $this->tour
+        ->with(['destinations' => function($query){
+            $query->with('city', 'country');
+        }, 'availability', 'cancelation_items',
+        'excludes', 'includes', 'itinerary', 'tour_type', 'pick_up_country',
+        'pick_up_city'])
+        ->where('id', $id)
+        ->first();
+
+        return response()->json([
+            'tour' => $tour,
+        ]);
+    }
+
     public function lists(Request $request){
         // /agent/tour/lists
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        } 
         $tour_types = $this->tour_types
         ->get();
         $countries = $this->countries
         ->get();
         $cities = $this->cities
         ->get();
+        $currencies = $this->currencies
+        ->select('id', 'name')
+        ->where($role, $agent_id)
+        ->get();
     
         return response()->json([
             'tour_types' => $tour_types,
             'countries' => $countries,
             'cities' => $cities,
+            'currencies' => $currencies,
         ]);
     }
 

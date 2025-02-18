@@ -44,7 +44,43 @@ class TourRequest extends FormRequest
             'pick_up_map' => ['required'],
             'destination_type' => ['required','in:single,multiple'],
             'cancelation' => ['required','boolean'],
+// ________________________________________________________________
+            'enable_person_type' => ['required','boolean'],
+            'with_accomodation' => ['required','boolean'],
+            'enabled_extra_price' => ['required','boolean'],
+            
+            'discounts.*.from' => ['required', 'numeric'],
+            'discounts.*.to' => ['required', 'numeric'],
+            'discounts.*.discount' => ['required', 'numeric'],
+            'discounts.*.type' => ['required', 'in:precentage,fixed'],
 
+            'extra.*.name' => ['required'],
+            'extra.*.price' => ['required', 'numeric'],
+            'extra.*.currency_id' => ['required', 'exists:currency_agents,id'],
+            'extra.*.type' => ['required', 'in:one_time,person,night'],
+
+            'hotels.*.name' => ['required'],
+
+            'tour_price.*.price' => ['required', 'numeric'],
+            'tour_price.*.currency_id' => ['required', 'exists:currency_agents,id'],
+
+            'pricing.*.person_type' => ['required', 'in:adult,child,infant'],
+            'pricing.*.min_age' => ['required', 'numeric'],
+            'pricing.*.max_age' => ['required', 'numeric'],
+            'pricing.*.pricing_item' => ['required'],
+            'pricing.*.pricing_item.*.currency_id' => ['required', 'exists:currency_agents,id'],
+            'pricing.*.pricing_item.*.price' => ['required', 'numeric'],
+            'pricing.*.pricing_item.*.type' => ['required', 'in:precentage,fixed'],
+
+            'tour_room.*.adult_single' => ['required', 'numeric'],
+            'tour_room.*.adult_double' => ['required', 'numeric'],
+            'tour_room.*.adult_triple' => ['required', 'numeric'],
+            'tour_room.*.adult_quadruple' => ['required', 'numeric'],
+            'tour_room.*.children_single' => ['required', 'numeric'],
+            'tour_room.*.children_double' => ['required', 'numeric'],
+            'tour_room.*.children_triple' => ['required', 'numeric'],
+            'tour_room.*.children_quadruple' => ['required', 'numeric'],
+// ________________________________________________________________
             'destinations' => ['required', 'array'],
             'destinations.*.country_id' => ['required', 'exists:countries,id'],
             'destinations.*.city_id' => ['required', 'exists:cities,id'],

@@ -36,6 +36,9 @@ class Tour extends Model
         'payments_options',
         'policy',
         'cancelation',
+        'enabled_extra_price',
+        'with_accomodation',
+        'enable_person_type',
     ];
 
     public function destinations(){

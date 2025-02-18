@@ -18,6 +18,9 @@ use App\Http\Controllers\Api\Agent\supplier\SupplierProfileController;
 use App\Http\Controllers\Api\Agent\department\DepartmentController;
 
 use App\Http\Controllers\Api\Agent\accounting\booking_payment\BookingPaymentController;
+use App\Http\Controllers\Api\Agent\accounting\supplier_payment\SupplierPaymentController;
+use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesCategoryController;
+use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesController;
 
 use App\Http\Controllers\Api\Agent\accounting_methods\Wallet\WalletController;
 use App\Http\Controllers\Api\Agent\accounting_methods\financial\FinancialController;
@@ -107,6 +110,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
         Route::controller(SupplierProfileController::class)->group(function(){
             Route::get('/profile/{id}', 'profile');
+            Route::get('/transactions/{id}', 'transactions');
+            Route::get('/transaction_details/{manuel_booking_id}', 'transaction_details');
         });
     });
 
@@ -120,7 +125,35 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(BookingPaymentController::class)->prefix('booking')->group(function(){
             Route::post('/search', 'search');
             Route::post('/payment', 'add_payment');
-            Route::get('/invoice/{id}', 'invoice');
+            Route::get('/invoice/{id}', 'invoice'); 
+        });
+        Route::controller(SupplierPaymentController::class)->group(function(){
+            Route::get('/paid_to_suppliers/{id}', 'paid_to_suppliers');
+            Route::post('/paid_to_suppliers_filter/{id}', 'paid_to_suppliers_filter');
+            
+            Route::get('/payable_to_suppliers/{id}', 'payable_to_suppliers');
+            Route::post('/payable_to_suppliers_filter/{id}', 'payable_to_suppliers_filter');
+
+            Route::get('/transactions/{id}', 'transactions');
+            Route::post('/transactions_payment', 'add_payment');
+        });
+        Route::controller(ExpensesCategoryController::class)->prefix('expenses/category')
+        ->group(function(){
+            Route::get('/', 'view');
+            Route::get('/item/{id}', 'category');
+            Route::post('add', 'create');
+            Route::put('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
+        });
+        Route::controller(ExpensesController::class)->prefix('expenses')
+        ->group(function(){
+            Route::get('/', 'view');
+            Route::get('/lists', 'lists');
+            Route::get('/item/{id}', 'category');
+            Route::post('/filter', 'filter');
+            Route::post('add', 'create');
+            Route::put('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
         });
     });
 
@@ -207,6 +240,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(TourController::class)->group(function(){
             Route::get('/', 'view');
             Route::get('/lists', 'lists');
+            Route::get('/item/{id}', 'tour');
             Route::put('/status/{id}', 'status');
             Route::put('/accepted/{id}', 'accepted');
         });
