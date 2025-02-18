@@ -985,7 +985,8 @@ class ManualBookingController extends Controller
                             'nights' => $item->nights,
                         ]);
                     } 
-                    $due_date = $manuel_tour_hotel->min('check_in') ?? null;
+                    $due_date = collect($manuel_tour_hotel);
+                    $due_date = $due_date->min('check_in');
                 }
                 $hotel = null;
                 $bus = null; 
