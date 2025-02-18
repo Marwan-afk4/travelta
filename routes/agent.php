@@ -128,6 +128,12 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/invoice/{id}', 'invoice'); 
         });
         Route::controller(SupplierPaymentController::class)->group(function(){
+            Route::get('/paid_to_suppliers/{id}', 'paid_to_suppliers');
+            Route::post('/paid_to_suppliers_filter/{id}', 'paid_to_suppliers_filter');
+            
+            Route::get('/payable_to_suppliers/{id}', 'payable_to_suppliers');
+            Route::post('/payable_to_suppliers_filter/{id}', 'payable_to_suppliers_filter');
+
             Route::get('/transactions/{id}', 'transactions');
             Route::post('/transactions_payment', 'add_payment');
         });

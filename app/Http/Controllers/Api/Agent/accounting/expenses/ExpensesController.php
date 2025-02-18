@@ -125,6 +125,9 @@ class ExpensesController extends Controller
 
     public function create(ExpensesRequest $request){
         // agent/accounting/expenses/add
+        // Keys
+        // category_id, financiale_id, currency_id
+        // title, date, amount, description
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -153,6 +156,9 @@ class ExpensesController extends Controller
 
     public function modify(ExpensesRequest $request, $id){
         // agent/accounting/expenses/update/{id}
+        // Keys
+        // category_id, financiale_id, currency_id
+        // title, date, amount, description
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }

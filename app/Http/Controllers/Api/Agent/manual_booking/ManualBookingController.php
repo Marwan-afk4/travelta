@@ -42,6 +42,7 @@ use App\Models\Customer;
 use App\Models\FinantiolAcounting;
 use App\Models\Agent;
 use App\Models\AffilateAgent;
+use App\Models\AgentPayable;
 use App\trait\image;
 
 class ManualBookingController extends Controller
@@ -58,7 +59,7 @@ class ManualBookingController extends Controller
     private PaymentsCart $payments_cart, private ManuelDataCart $manuel_data_cart,
     private Customer $customers, private FinantiolAcounting $financial_accounting,
     private BookingPayment $booking_payment, private Agent $agent,
-    private AffilateAgent $affilate_agent){}
+    private AffilateAgent $affilate_agent, private AgentPayable $agent_payable){}
     
     protected $hotelRequest = [
         'check_in',
@@ -821,6 +822,7 @@ class ManualBookingController extends Controller
             'code' => $code,
             'payment_type' => $request->payment_type,
         ]);
+        $due_date = null;
         try{
             if (isset($request->adults_data) && !empty($request->adults_data)) {
                 $adults_data = json_decode($request->adults_data) ?? [];
@@ -860,6 +862,7 @@ class ManualBookingController extends Controller
                     'adults' => $manuel_data_cart['adults'] ?? null,
                     'childreen' => $manuel_data_cart['childreen'] ?? null,
                 ];
+                $due_date = $manuel_data_cart['check_in'] ?? null;
                 $hotelRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_hotel = $this->manuel_hotel
                 ->create($hotelRequest);
@@ -883,6 +886,7 @@ class ManualBookingController extends Controller
                     'bus_number' => $manuel_data_cart['bus_number'] ?? null,
                     'driver_phone' => $manuel_data_cart['driver_phone'] ?? null,
                 ];
+                $due_date = $manuel_data_cart['departure'] ?? null;
                 $busRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_bus = $this->manuel_bus
                 ->create($busRequest);  
@@ -901,6 +905,7 @@ class ManualBookingController extends Controller
                     "childreen" =>  $manuel_data_cart['childreen'] ?? null,
                     "adults" =>  $manuel_data_cart['adults'] ?? null, 
                 ];
+                $due_date = $manuel_data_cart['travel_date'] ?? null;
                 $visaRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_visa = $this->manuel_visa
                 ->create($visaRequest);
@@ -928,6 +933,7 @@ class ManualBookingController extends Controller
                     'child_price' => $manuel_data_cart['child_price'] ?? null,
                     'ref_pnr' => $manuel_data_cart['ref_pnr'] ?? null,
                 ];
+                $due_date = $manuel_data_cart['departure'] ?? null;
                 $flightRequest['manuel_booking_id'] = $manuel_booking->id;
                 $manuel_flight = $this->manuel_flight
                 ->create($flightRequest);
@@ -967,18 +973,19 @@ class ManualBookingController extends Controller
                         }
                 }
                 if ($manuel_tour_hotel) {
-                        foreach ($manuel_tour_hotel as $item) {
-                            $this->manuel_tour_hotel
-                            ->create([
-                                'destination' => $item->destination,
-                                'manuel_tour_id' => $manuel_tour->id,
-                                'hotel_name' => $item->hotel_name,
-                                'room_type' => $item->room_type,
-                                'check_in' => $item->check_in,
-                                'check_out' => $item->check_out,
-                                'nights' => $item->nights,
-                            ]);
-                        }
+                    foreach ($manuel_tour_hotel as $item) {
+                        $this->manuel_tour_hotel
+                        ->create([
+                            'destination' => $item->destination,
+                            'manuel_tour_id' => $manuel_tour->id,
+                            'hotel_name' => $item->hotel_name,
+                            'room_type' => $item->room_type,
+                            'check_in' => $item->check_in,
+                            'check_out' => $item->check_out,
+                            'nights' => $item->nights,
+                        ]);
+                    } 
+                    $due_date = $manuel_tour_hotel->min('check_in') ?? null;
                 }
                 $hotel = null;
                 $bus = null; 
@@ -1007,6 +1014,19 @@ class ManualBookingController extends Controller
                         'last_name' => $item->last_name,
                     ]);
                 }
+            }
+            if (!empty($manuel_booking->from_supplier_id)) {
+                $this->agent_payable
+                ->create([
+                    $role => $agent_id, 
+                    'supplier_id' => $manuel_booking->from_supplier_id,
+                    'manuel_booking_id' => $manuel_booking->id,
+                    'currency_id' => $manuel_booking->currency_id,
+                    'paid' => 0,
+                    'payable' => $manuel_booking->cost,
+                    'due_date' => $due_date,
+                    'manuel_date' => date('Y-m-d'),
+                ]);
             }
             // Cart
             // payment_type, total_cart, cart_id

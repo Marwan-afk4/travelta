@@ -79,6 +79,8 @@ class ExpensesCategoryController extends Controller
 
     public function create(Request $request){
         // agent/accounting/expenses/category/add
+        // Keys
+        // name, category_id
         $validation = Validator::make($request->all(), [
             'name' => 'required',
             'category_id' => 'nullable|exists:expenses_categories,id'
@@ -114,6 +116,8 @@ class ExpensesCategoryController extends Controller
 
     public function modify(Request $request, $id){
         // agent/accounting/expenses/category/update/{id}
+        // Keys
+        // name, category_id
         $validation = Validator::make($request->all(), [
             'name' => 'required',
             'category_id' => 'nullable|exists:expenses_categories,id'
