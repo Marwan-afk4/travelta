@@ -8,6 +8,7 @@ use App\Http\Requests\api\agent\accounting\OE\OwnerRequest;
 
 use App\Models\Owner;
 use App\Models\CurrencyAgent;
+use App\Models\FinantiolAcounting;
 
 class OwnerController extends Controller
 {
@@ -71,6 +72,7 @@ class OwnerController extends Controller
 
         return response()->json([ 
             'currencies' => $currencies,
+            'financials' => $financials,
         ]);
     }
 

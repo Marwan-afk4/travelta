@@ -144,6 +144,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(OwnerController::class)->prefix('owner')
         ->group(function(){
             Route::get('/', 'view');
+            Route::get('/lists', 'lists');
             Route::get('/item/{id}', 'owner');
             Route::post('add', 'create');
             Route::put('update/{id}', 'modify');
