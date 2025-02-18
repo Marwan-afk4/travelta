@@ -81,8 +81,8 @@ class SupplierPaymentController extends Controller
     // }
     
 
-    public function paid_to_suppliers(Request $request ,$id){
-        // agent/accounting/paid_to_suppliers/1 
+    public function paid_to_suppliers(Request $request){
+        // agent/accounting/paid_to_suppliers
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -100,24 +100,20 @@ class SupplierPaymentController extends Controller
         }
 
         $agent_payment = $this->agent_payment
-        ->where($agent_type, $agent_id)
-        ->where('supplier_id', $id)
+        ->where($agent_type, $agent_id) 
         ->with(['supplier:id,agent', 'manuel:id,code,cost', 
         'financial:id,name', 'currency:id,name'])
         ->get();
-        // $booking_payment = $this->booking_payment
-        // ->where($agent_type, $agent_id)
-        // ->where('supplier_id', $id)
-        // ->get();
         
         return response()->json([
             'agent_payment' => $agent_payment, 
         ]);
     }
 
-    public function paid_to_suppliers_filter(Request $request ,$id){
-        // agent/accounting/paid_to_suppliers_filter/1 
-       
+    public function paid_to_suppliers_filter(Request $request){
+        // agent/accounting/paid_to_suppliers_filter
+       // keys
+       // from, to
         $validation = Validator::make($request->all(), [
             'from' => 'nullable|date',
             'to' => 'nullable|date'
@@ -143,7 +139,6 @@ class SupplierPaymentController extends Controller
 
         $agent_payment = $this->agent_payment
         ->where($agent_type, $agent_id)
-        ->where('supplier_id', $id)
         ->with(['supplier:id,agent', 'manuel:id,code,cost', 
         'financial:id,name', 'currency:id,name'])
         ->get();
@@ -153,19 +148,14 @@ class SupplierPaymentController extends Controller
         if ($request->to) {
             $agent_payment = $agent_payment->where('date', '<=', $request->to);
         }
-        // $booking_payment = $this->booking_payment
-        // ->where($agent_type, $agent_id)
-        // ->where('supplier_id', $id)
-        // ->get();
         
         return response()->json([
             'agent_payment' => $agent_payment->values(), 
         ]);
     }
 
-    public function payable_to_suppliers(Request $request ,$id){
-        // agent/accounting/transactions/{id}
-        // if invoice agent_payment
+    public function payable_to_suppliers(Request $request){
+        // agent/accounting/payable_to_suppliers
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -182,18 +172,145 @@ class SupplierPaymentController extends Controller
             $agent_type = 'agent_id';
         }
 
-        $agent_payment = $this->agent_payment
+        $agent_payable = $this->agent_payable
         ->where($agent_type, $agent_id)
-        ->where('supplier_id', $id)
-        ->with(['supplier:id,agent', 'manuel:id,code,cost'])
+        ->with(['supplier:id,agent', 'currency:id,name'])
         ->get();
-        // $booking_payment = $this->booking_payment
-        // ->where($agent_type, $agent_id)
-        // ->where('supplier_id', $id)
-        // ->get();
         
         return response()->json([
-            'agent_payment' => $agent_payment, 
+            'agent_payable' => $agent_payable, 
+        ]);
+    }
+
+    public function payable_to_suppliers_filter(Request $request){
+        // agent/accounting/payable_to_suppliers_filter 
+        // Keys
+        // payable_from, payable_to, due_from, due_to
+        $validation = Validator::make($request->all(), [
+            'payable_from' => 'nullable|date',
+            'payable_to' => 'nullable|date',
+            'due_from' => 'nullable|date',
+            'due_to' => 'nullable|date',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        } 
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $agent_type = 'affilate_id';
+        }
+        else {
+            $agent_type = 'agent_id';
+        }
+
+        $agent_payable = $this->agent_payable
+        ->where($agent_type, $agent_id)
+        ->with(['supplier:id,agent', 'currency:id,name'])
+        ->get(); 
+        if ($request->payable_from) {
+            $agent_payable = $agent_payable->where('manuel_date', '>=', $request->payable_from);
+        }
+        if ($request->payable_to) {
+            $agent_payable = $agent_payable->where('manuel_date', '<=', $request->payable_to);
+        }
+        if ($request->due_from) {
+            $agent_payable = $agent_payable->where('due_date', '>=', $request->due_from);
+        }
+        if ($request->due_to) {
+            $agent_payable = $agent_payable->where('due_date', '<=', $request->due_to);
+        }
+        
+        return response()->json([
+            'agent_payable' => $agent_payable->values(), 
+        ]);
+    }
+
+    public function due_to_suppliers(Request $request){
+        // agent/accounting/due_to_suppliers
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $agent_type = 'affilate_id';
+        }
+        else {
+            $agent_type = 'agent_id';
+        }
+
+        $agent_payable = $this->agent_payable
+        ->where($agent_type, $agent_id)
+        ->where('due_date', '<=', date('Y-m-d'))
+        ->with(['supplier:id,agent', 'currency:id,name'])
+        ->get();
+        
+        return response()->json([
+            'agent_payable' => $agent_payable, 
+        ]);
+    }
+
+    public function due_to_suppliers_filter(Request $request){
+        // agent/accounting/due_to_suppliers_filter
+        // Keys
+        // payable_from, payable_to, due_from, due_to
+        $validation = Validator::make($request->all(), [
+            'payable_from' => 'nullable|date',
+            'payable_to' => 'nullable|date',
+            'due_from' => 'nullable|date',
+            'due_to' => 'nullable|date',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        } 
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $agent_type = 'affilate_id';
+        }
+        else {
+            $agent_type = 'agent_id';
+        }
+
+        $agent_payable = $this->agent_payable
+        ->where($agent_type, $agent_id)
+        ->where('due_date', '<=', date('Y-m-d'))
+        ->with(['supplier:id,agent', 'currency:id,name'])
+        ->get(); 
+        if ($request->payable_from) {
+            $agent_payable = $agent_payable->where('manuel_date', '>=', $request->payable_from);
+        }
+        if ($request->payable_to) {
+            $agent_payable = $agent_payable->where('manuel_date', '<=', $request->payable_to);
+        }
+        if ($request->due_from) {
+            $agent_payable = $agent_payable->where('due_date', '>=', $request->due_from);
+        }
+        if ($request->due_to) {
+            $agent_payable = $agent_payable->where('due_date', '<=', $request->due_to);
+        }
+        
+        return response()->json([
+            'agent_payable' => $agent_payable->values(), 
         ]);
     }
 
@@ -256,8 +373,13 @@ class SupplierPaymentController extends Controller
         $agent_payable = $this->agent_payable
         ->where('manuel_booking_id', $request->manuel_booking_id)
         ->first();
-        $agent_payable->paid += $request->amount;
-        $agent_payable->save();
+        if (!empty($agent_payable)) {
+            $agent_payable->paid += $request->amount;
+            $agent_payable->save();
+        }
+        $this->agent_payable
+        ->whereColumn('paid', '>=', 'payable')
+        ->delete();
 
         return response()->json([
             'success' => 'You add data success'

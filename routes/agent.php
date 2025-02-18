@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\Agent\accounting\booking_payment\BookingPaymentCont
 use App\Http\Controllers\Api\Agent\accounting\supplier_payment\SupplierPaymentController;
 use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesCategoryController;
 use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesController;
+use App\Http\Controllers\Api\Agent\accounting\OE\OwnerController;
 
 use App\Http\Controllers\Api\Agent\accounting_methods\Wallet\WalletController;
 use App\Http\Controllers\Api\Agent\accounting_methods\financial\FinancialController;
@@ -128,14 +129,25 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/invoice/{id}', 'invoice'); 
         });
         Route::controller(SupplierPaymentController::class)->group(function(){
-            Route::get('/paid_to_suppliers/{id}', 'paid_to_suppliers');
-            Route::post('/paid_to_suppliers_filter/{id}', 'paid_to_suppliers_filter');
+            Route::get('/paid_to_suppliers', 'paid_to_suppliers');
+            Route::post('/paid_to_suppliers_filter', 'paid_to_suppliers_filter');
             
-            Route::get('/payable_to_suppliers/{id}', 'payable_to_suppliers');
-            Route::post('/payable_to_suppliers_filter/{id}', 'payable_to_suppliers_filter');
+            Route::get('/payable_to_suppliers', 'payable_to_suppliers');
+            Route::post('/payable_to_suppliers_filter', 'payable_to_suppliers_filter');
+            
+            Route::get('/due_to_suppliers', 'due_to_suppliers');
+            Route::post('/due_to_suppliers_filter', 'due_to_suppliers_filter');
 
-            Route::get('/transactions/{id}', 'transactions');
+            Route::get('/transactions', 'transactions');
             Route::post('/transactions_payment', 'add_payment');
+        });
+        Route::controller(OwnerController::class)->prefix('owner')
+        ->group(function(){
+            Route::get('/', 'view');
+            Route::get('/item/{id}', 'owner');
+            Route::post('add', 'create');
+            Route::put('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
         });
         Route::controller(ExpensesCategoryController::class)->prefix('expenses/category')
         ->group(function(){

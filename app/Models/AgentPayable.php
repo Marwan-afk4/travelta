@@ -17,4 +17,16 @@ class AgentPayable extends Model
         'due_date',
         'manuel_date',
     ];
+
+    public function supplier(){
+        return $this->belongsTo(SupplierAgent::class, 'supplier_id');
+    }
+
+    public function manuel(){
+        return $this->belongsTo(ManuelBooking::class, 'manuel_booking_id');
+    } 
+
+    public function currency(){
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
 }
