@@ -23,6 +23,11 @@ use Illuminate\Support\Str;
 
 class BookingEngine extends Controller
 {
+
+    public function __construct(private RoomAvailability $room_availability,
+    private ModelsBookingEngine $booking_engine){}
+
+
     public function gethotels(){
         $hotels = Hotel::all();
         $data = $hotels->map(function ($hotel) {
@@ -234,116 +239,115 @@ class BookingEngine extends Controller
 
 
 
-public function bookRoom(Request $request, BookingEngineListRequest $bookinglistrequest)
+    public function bookRoom(Request $request,BookingEngineListRequest $booklist_request)
 {
+    $user = $request->user();
     $validator = Validator::make($request->all(), [
         'room_id'       => 'required|integer|exists:rooms,id',
         'check_in'      => 'required|date|before:check_out',
         'check_out'     => 'required|date|after:check_in',
         'quantity'      => 'required|integer|min:1',
-        'customer_id'   => 'nullable|integer|exists:customers,id',
-        'adults'        => 'required|integer|min:1',
-        'children'      => 'nullable|integer|min:0',
-        'nationality_id' => 'required|integer|exists:nationalities,id',
     ]);
 
     if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Validation errors occurred.',
-            'errors'  => $validator->errors(),
-        ], 422);
+        return response()->json(['errors' => $validator->errors()], 401);
+    }
+    $check_in = $request->check_in;
+    $check_out = $request->check_out;
+    $room_id = $request->room_id;
+
+    $startdate = Carbon::parse($check_in);
+    $enddate = Carbon::parse($check_out);
+
+    $booking = $this->booking_engine->create([
+        'room_id' => $room_id,
+        'check_in' => $check_in,
+        'check_out' => $check_out,
+        'quantity' => $request->quantity,
+
+    ]);
+
+    $ListValidation = $booklist_request->validated();
+    $userRole =0;
+    if($user->role == 'agent' || $user->role == 'supplier'){
+        $bookingList = BookingengineList::create([
+        'agent_id' => $user->id,
+        'from_supplier_id'=> $ListValidation['from_supplier_id']??null,
+        'country_id'=> $ListValidation['country_id'],
+        'city_id'=> $ListValidation['city_id'],
+        'hotel_id'=> $ListValidation['hotel_id'],
+        'to_agent_id'=> $ListValidation['to_agent_id']??null,
+        'to_customer_id'=> $ListValidation['to_customer_id']??null,
+        'check_in'=> $ListValidation['check_in'],
+        'check_out'=> $ListValidation['check_out'],
+        'room_type'=> $ListValidation['room_type'],
+        'no_of_adults'=> $ListValidation['no_of_adults'],
+        'no_of_children'=> $ListValidation['no_of_children'],
+        'no_of_nights'=> $ListValidation['no_of_nights'],
+        'payment_status'=> $ListValidation['payment_status']??'later',
+        'status'=> $ListValidation['status']??'inprogress',
+        ]);
+    }
+    elseif($user->role =='affilate' || $user->role == 'freelancer'){
+        $bookingList = BookingengineList::create([
+        'supplier_id' => $user->id,
+        'from_supplier_id'=> $ListValidation['from_supplier_id']??null,
+        'country_id'=> $ListValidation['country_id'],
+        'city_id'=> $ListValidation['city_id'],
+        'hotel_id'=> $ListValidation['hotel_id'],
+        'to_agent_id'=> $ListValidation['to_agent_id']??null,
+        'to_customer_id'=> $ListValidation['to_customer_id']??null,
+        'check_in'=> $ListValidation['check_in'],
+        'check_out'=> $ListValidation['check_out'],
+        'room_type'=> $ListValidation['room_type'],
+        'no_of_adults'=> $ListValidation['no_of_adults'],
+        'no_of_children'=> $ListValidation['no_of_children'],
+        'no_of_nights'=> $ListValidation['no_of_nights'],
+        'payment_status'=> $ListValidation['payment_status']??'later',
+        'status'=> $ListValidation['status']??'inprogress',
+        ]);
     }
 
-    $validated = $validator->validated();
+    
 
-    $roomId = $validated['room_id'];
-    $checkIn = Carbon::parse($validated['check_in']);
-    $checkOut = Carbon::parse($validated['check_out']);
-    $quantity = $validated['quantity'];
+    return response()->json([
+        'message' => 'the room has been booked successfully',
+        'booking_list' => 'booking_list has been created successfully',
+        'booking' => $booking,
+    ]);
 
-    DB::beginTransaction();
+    // $roomAvailability = $this->room_availability
+    //         ->where('room_id', $room_id)
+    //         ->where(function ($query) use ($startdate, $enddate) {
+    //             $query->whereBetween('from', [$startdate, $enddate])
+    //                 ->orWhereBetween('to', [$startdate, $enddate])
+    //                 ->orWhere(function ($subQuery) use ($startdate, $enddate) {
+    //                     $subQuery->where('from', '<=', $startdate)
+    //                             ->where('to', '>=', $enddate);
+    //                 });
+    //         })
+    //         ->get();
 
-    try {
-        // Fetch the availability that overlaps with the booking
-        $availability = RoomAvailability::where('room_id', $roomId)
-            ->whereDate('from', '<=', $checkOut)
-            ->whereDate('to', '>=', $checkIn)
-            ->lockForUpdate()
-            ->first();
+    //         $bookings = $this->booking_engine
+    //         ->where('room_id', $room_id)
+    //         ->where(function ($query) use ($startdate, $enddate) {
+    //             $query->whereBetween('check_in', [$startdate, $enddate])
+    //                 ->orWhereBetween('check_out', [$startdate, $enddate])
+    //                 ->orWhere(function ($subQuery) use ($startdate, $enddate) {
+    //                     $subQuery->where('check_in', '<=', $startdate)
+    //                             ->where('check_out', '>=', $enddate);
+    //                 });
+    //         })
+    //         ->get();
 
-        if (!$availability) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => "No available rooms found for the selected period.",
-            ], 400);
-        }
+    //         $remainingQuantity = $roomAvailability->sum('quantity') - $bookings->sum('quantity');
+    //         if ($remainingQuantity < $request->quantity) {
+    //             return response()->json(['message' => 'No rooms available for the specified dates.'], 400);
+    //         }
 
-        // Step 1: Check if enough rooms are available
-        if ($availability->quantity < $quantity) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => "Not enough rooms available for this period.",
-            ], 400);
-        }
 
-        // Store original values
-        $originalFrom = Carbon::parse($availability->from);
-        $originalTo = Carbon::parse($availability->to);
-        $originalQuantity = $availability->quantity;
 
-        // Delete the original record since we will split it
-        $availability->delete();
 
-        // Step 2: Create a new availability for the period BEFORE the booking (if needed)
-        if ($originalFrom->lt($checkIn)) {
-            RoomAvailability::create([
-                'room_id'  => $roomId,
-                'from'     => $originalFrom->toDateString(),
-                'to'       => $checkIn->subDay()->toDateString(),
-                'quantity' => $originalQuantity, // Same quantity before the booking
-            ]);
-        }
-
-        // Step 3: Create a new availability for the period AFTER the booking with updated quantity
-        RoomAvailability::create([
-            'room_id'  => $roomId,
-            'from'     => $checkIn->toDateString(),
-            'to'       => $originalTo->toDateString(),
-            'quantity' => $originalQuantity - $quantity, // Reduce quantity after booking
-        ]);
-
-        // Step 4: Create booking record
-        $booking = ModelsBookingEngine::create([
-            'room_id'   => $roomId,
-            'check_in'  => $checkIn->toDateString(),
-            'check_out' => $checkOut->toDateString(),
-            'quantity'  => $quantity,
-        ]);
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking successful!',
-            'booking' => $booking,
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json([
-            'success' => false,
-            'message' => 'An error occurred during the booking process.',
-            'error' => $e->getMessage(),
-        ], 500);
-    }
 }
-
-
-
-
-
 
 }
