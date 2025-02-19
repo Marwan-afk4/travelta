@@ -17,7 +17,7 @@ class OwnerTransactionController extends Controller
     public function transaction(TransactionRequest $request){
         // /agent/accounting/owner/transaction
         // Keys
-        // owner_id, financial_id, amount, type
+        // owner_id, financial_id, amount, type => [withdraw, depost]
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
