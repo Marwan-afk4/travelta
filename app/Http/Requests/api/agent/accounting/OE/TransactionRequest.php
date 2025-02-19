@@ -24,7 +24,6 @@ class TransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'currency_id' => ['required', 'exists:currency_agents,id'],
             'owner_id' => ['required', 'exists:owners,id'],
             'financial_id' => ['required', 'exists:finantiol_acountings,id'],
             'amount' => ['required', 'numeric'],

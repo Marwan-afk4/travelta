@@ -184,10 +184,21 @@ class OwnerController extends Controller
             $role = 'agent_id';
         }
 
-        $this->owners
+        $owner = $this->owners
         ->where($role, $agent_id)
         ->where('id', $id)
-        ->delete();
+        ->first();
+        if (empty($owner)) {
+            return response()->json([
+                'errors' => 'id is wrong'
+            ], 400);
+        }
+        if ($owner->balance	> 0) {
+            return response()->json([
+                'errors' => 'Balance of owner must be zero'
+            ], 403);
+        }
+        $owner->delete();
 
         return response()->json([
             'success' => 'You delete data success'

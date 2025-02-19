@@ -23,4 +23,8 @@ class OwnerTransaction extends Model
     public function owner(){
         return $this->belongsTo(Owner::class, 'owner_id');
     }
+
+    public function financial(){
+        return $this->belongsTo(FinantiolAcounting::class, 'financial_id');
+    }
 }

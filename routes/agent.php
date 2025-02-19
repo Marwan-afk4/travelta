@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\Agent\accounting\booking_payment\BookingPaymentCont
 use App\Http\Controllers\Api\Agent\accounting\supplier_payment\SupplierPaymentController;
 use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesCategoryController;
 use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesController;
+use App\Http\Controllers\Api\Agent\accounting\OE\OwnerTransactionController;
 use App\Http\Controllers\Api\Agent\accounting\OE\OwnerController;
 
 use App\Http\Controllers\Api\Agent\accounting_methods\Wallet\WalletController;
@@ -149,6 +150,11 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::post('add', 'create');
             Route::put('update/{id}', 'modify');
             Route::delete('delete/{id}', 'delete');
+        });
+        Route::controller(OwnerTransactionController::class)->prefix('owner')
+        ->group(function(){
+            Route::get('/transactions_list', 'transactions_list');
+            Route::post('/transaction', 'transaction');
         });
         Route::controller(ExpensesCategoryController::class)->prefix('expenses/category')
         ->group(function(){
