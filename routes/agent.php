@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesCategoryControlle
 use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesController;
 use App\Http\Controllers\Api\Agent\accounting\OE\OwnerTransactionController;
 use App\Http\Controllers\Api\Agent\accounting\OE\OwnerController;
+use App\Http\Controllers\Api\Agent\accounting\payment_receivable\PaymentReceivableController;
 
 use App\Http\Controllers\Api\Agent\accounting_methods\Wallet\WalletController;
 use App\Http\Controllers\Api\Agent\accounting_methods\financial\FinancialController;
@@ -155,6 +156,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         ->group(function(){
             Route::get('/transactions_list', 'transactions_list');
             Route::post('/transaction', 'transaction');
+        });
+        Route::controller(PaymentReceivableController::class)->prefix('payment_receivable')
+        ->group(function(){
+            Route::get('/', 'view'); 
         });
         Route::controller(ExpensesCategoryController::class)->prefix('expenses/category')
         ->group(function(){
