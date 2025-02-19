@@ -107,6 +107,8 @@ class OwnerController extends Controller
 
     public function create(OwnerRequest $request){
         // /agent/accounting/owner/add
+        // Keys
+        // currency_id, name, phone, balance
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -135,6 +137,8 @@ class OwnerController extends Controller
 
     public function modify(OwnerRequest $request, $id){
         // /agent/accounting/owner/update/{id}
+        // Keys
+        // currency_id, name, phone, balance
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }

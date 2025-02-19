@@ -11,9 +11,9 @@ class OwnerTransaction extends Model
         'affilate_id',
         'owner_id',
         'currency_id',
+        'financial_id',
         'amount',
         'type',
-        'financial',
     ];
 
     public function currency(){
