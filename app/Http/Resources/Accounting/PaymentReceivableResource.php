@@ -24,7 +24,8 @@ class PaymentReceivableResource extends JsonResource
             'total' => $this->total_price,
             'paid' => $this->payments->sum('amount'),
             'remaining' => $this->total_price - $this->payments->sum('amount'),
-            'status' => $this->payment_type
+            'status' => $this->payment_type,
+            
         ];
     }
 }

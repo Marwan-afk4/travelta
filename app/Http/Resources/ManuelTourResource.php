@@ -24,7 +24,7 @@ class ManuelTourResource extends JsonResource
             'to_name' => $this->to_client->name ?? null,
             'to_role' => $this->to_client->agent ? 'Supplier' : 'Customer',
             'to_email' => $this->to_client->emails ? $this->to_client->emails[0]: $this->to_client->email,
-            'to_phone' => $this->to_client->phones ? $this->to_client->phones[0]: $this->to_client->phone,
+            'to_phone' => $this->to_client->phones ? strval($this->to_client->phones[0]): $this->to_client->phone,
             'tour_name' => $this->tour->tour ?? null,
             'tour_type' => $this->tour->type ?? null ,
             'children_no' => $this->tour->childreen  ?? null,

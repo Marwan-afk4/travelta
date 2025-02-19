@@ -24,7 +24,7 @@ class ManuelBusResource extends JsonResource
             'to_name' => $this->to_client->name ?? null,
             'to_role' => $this->to_client->agent ? 'Supplier' : 'Customer',
             'to_email' => $this->to_client->emails ? $this->to_client->emails[0]: $this->to_client->email,
-            'to_phone' => $this->to_client->phones ? $this->to_client->phones[0]: $this->to_client->phone,
+            'to_phone' => $this->to_client->phones ? strval($this->to_client->phones[0]): $this->to_client->phone,
             'from' => $this->bus->from ?? null,
             'to' => $this->bus->to ?? null,
             'depature' => $this->bus->departure ?? null,
