@@ -160,6 +160,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(PaymentReceivableController::class)->prefix('payment_receivable')
         ->group(function(){
             Route::get('/', 'view'); 
+            Route::post('/filter', 'filter'); 
         });
         Route::controller(ExpensesCategoryController::class)->prefix('expenses/category')
         ->group(function(){
