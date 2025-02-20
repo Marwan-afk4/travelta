@@ -13,10 +13,10 @@ class AgentPayment extends Model
         'manuel_booking_id',
         'financial_id',
         'currency_id',
-        'amount', 
-        'type', 
-        'date', 
-        'code', 
+        'amount',
+        'type',
+        'date',
+        'code',
     ];
 
     public function supplier(){
