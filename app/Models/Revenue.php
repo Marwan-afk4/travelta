@@ -22,7 +22,7 @@ class Revenue extends Model
         return $this->belongsTo(RevenueCategory::class, 'category_id');
     }
 
-    public function financiale(){
+    public function financial(){
         return $this->belongsTo(FinantiolAcounting::class, 'financiale_id');
     }
 

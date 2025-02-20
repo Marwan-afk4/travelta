@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId(column: 'affilate_id')->nullable()->constrained('affilate_agents')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId(column: 'agent_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId(column: 'category_id')->nullable()->constrained('revenue_categories')->onUpdate('cascade')->onDelete('set null');
-            $table->foreignId(column: 'financiale_id')->nullable()->constrained('finantiol_acountings')->onUpdate('cascade')->onDelete('set null');
+            $table->foreignId(column: 'financial_id')->nullable()->constrained('finantiol_acountings')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId(column: 'currency_id')->nullable()->constrained('currency_agents')->onUpdate('cascade')->onDelete('set null');
             $table->string('title');
             $table->date('date');

@@ -22,7 +22,7 @@ class Expense extends Model
         return $this->belongsTo(ExpensesCategory::class, 'category_id');
     }
 
-    public function financiale(){
+    public function financial(){
         return $this->belongsTo(FinantiolAcounting::class, 'financiale_id');
     }
 

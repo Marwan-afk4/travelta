@@ -38,7 +38,7 @@ class RevenueController extends Controller
 
         $revenue = $this->revenue
         ->where($agent_type, $agent_id)
-        ->with(['category:id,name', 'financiale:id,name,logo', 'currency:id,name'])
+        ->with(['category:id,name', 'financial:id,name,logo', 'currency:id,name'])
         ->get();
 
         return response()->json([
@@ -109,7 +109,7 @@ class RevenueController extends Controller
 
         $revenue = $this->revenue
         ->where($agent_type, $agent_id)
-        ->with(['category:id,name', 'financiale:id,name,logo', 'currency:id,name'])
+        ->with(['category:id,name', 'financial:id,name,logo', 'currency:id,name'])
         ->get();
         if ($request->from) {
             $revenue = $revenue->where('date', '>=', $request->from);
@@ -126,7 +126,7 @@ class RevenueController extends Controller
     public function create(RevenueRequest $request){
         // agent/accounting/revenue/add
         // Keys
-        // category_id, financiale_id, currency_id
+        // category_id, financial_id, currency_id
         // title, date, amount, description
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -157,7 +157,7 @@ class RevenueController extends Controller
     public function modify(RevenueRequest $request, $id){
         // agent/accounting/revenue/update/{id}
         // Keys
-        // category_id, financiale_id, currency_id
+        // category_id, financial_id, currency_id
         // title, date, amount, description
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
