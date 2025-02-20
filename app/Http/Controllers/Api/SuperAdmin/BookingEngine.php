@@ -284,8 +284,8 @@ class BookingEngine extends Controller
         'no_of_adults'=> $ListValidation['no_of_adults'],
         'no_of_children'=> $ListValidation['no_of_children'],
         'no_of_nights'=> $ListValidation['no_of_nights'],
-        'payment_status'=> $ListValidation['payment_status']??'later',
-        'status'=> $ListValidation['status']??'inprogress',
+        'payment_status'=> $ListValidation['payment_status']??'full',
+        'status'=> $ListValidation['status']??'done',
         ]);
     }
     elseif($user->role =='affilate' || $user->role == 'freelancer'){
@@ -303,12 +303,12 @@ class BookingEngine extends Controller
         'no_of_adults'=> $ListValidation['no_of_adults'],
         'no_of_children'=> $ListValidation['no_of_children'],
         'no_of_nights'=> $ListValidation['no_of_nights'],
-        'payment_status'=> $ListValidation['payment_status']??'later',
-        'status'=> $ListValidation['status']??'inprogress',
+        'payment_status'=> $ListValidation['payment_status']??'full',
+        'status'=> $ListValidation['status']??'done',
         ]);
     }
 
-    
+
 
     return response()->json([
         'message' => 'the room has been booked successfully',
