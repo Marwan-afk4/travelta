@@ -10,7 +10,7 @@ class Revenue extends Model
         'affilate_id',
         'agent_id',
         'category_id',
-        'financiale_id',
+        'financial_id',
         'currency_id',
         'title',
         'date',
@@ -22,8 +22,8 @@ class Revenue extends Model
         return $this->belongsTo(RevenueCategory::class, 'category_id');
     }
 
-    public function financiale(){
-        return $this->belongsTo(FinantiolAcounting::class, 'financiale_id');
+    public function financial(){
+        return $this->belongsTo(FinantiolAcounting::class, 'financial_id');
     }
 
     public function currency(){

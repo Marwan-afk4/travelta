@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\Agent\accounting\revenue\RevenueController;
 use App\Http\Controllers\Api\Agent\accounting\OE\OwnerTransactionController;
 use App\Http\Controllers\Api\Agent\accounting\OE\OwnerController;
 use App\Http\Controllers\Api\Agent\accounting\payment_receivable\PaymentReceivableController;
+use App\Http\Controllers\Api\Agent\accounting\general_ledger\GeneralLedgerController;
 
 use App\Http\Controllers\Api\Agent\accounting_methods\Wallet\WalletController;
 use App\Http\Controllers\Api\Agent\accounting_methods\financial\FinancialController;
@@ -158,6 +159,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         ->group(function(){
             Route::get('/transactions_list', 'transactions_list');
             Route::post('/transaction', 'transaction');
+        });
+        Route::controller(GeneralLedgerController::class)->prefix('ledger')
+        ->group(function(){
+            Route::get('/', 'view'); 
         });
         Route::controller(PaymentReceivableController::class)->prefix('payment_receivable')
         ->group(function(){
