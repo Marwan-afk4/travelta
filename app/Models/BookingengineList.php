@@ -16,6 +16,7 @@ class BookingengineList extends Model
         'to_agent_id',
         'to_customer_id',
         'hotel_id',
+        'amount',
         'check_in',
         'check_out',
         'room_type',
