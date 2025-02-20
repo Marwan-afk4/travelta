@@ -44,6 +44,8 @@ class TourRequest extends FormRequest
             'pick_up_map' => ['required'],
             'destination_type' => ['required','in:single,multiple'],
             'cancelation' => ['required','boolean'],
+            'price' => ['nullable', 'numeric'],
+            'currency_id' => ['nullable', 'exists:currency_agents,id'],
 // ________________________________________________________________
             'enable_person_type' => ['required','boolean'],
             'with_accomodation' => ['required','boolean'],

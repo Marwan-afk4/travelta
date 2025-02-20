@@ -39,8 +39,10 @@ class Tour extends Model
         'enabled_extra_price',
         'with_accomodation',
         'enable_person_type',
+        'price',
+        'currency_id',
     ];
-
+ 
     public function destinations(){
         return $this->hasMany(TourDestination::class, 'tour_id');
     }

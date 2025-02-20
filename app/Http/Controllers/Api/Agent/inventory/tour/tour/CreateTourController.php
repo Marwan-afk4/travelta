@@ -18,7 +18,6 @@ use App\Models\TourDestination;
 use App\Models\TourDiscount;
 use App\Models\TourExtra;
 use App\Models\TourHotel;
-use App\Models\TourPrice;
 use App\Models\TourPricing;
 use App\Models\TourPricingItems;
 use App\Models\TourRoom; 
@@ -30,7 +29,7 @@ class CreateTourController extends Controller
     private TourInclude $include, private TourItinerary $itinerary,
     private TourDestination $destinations,
     private TourDiscount $discounts, private TourExtra $extra, private TourHotel $hotels, 
-    private TourPrice $tour_price, private TourPricing $pricing,private TourRoom $tour_room,
+    private TourPricing $pricing,private TourRoom $tour_room,
     private TourPricingItems $pricing_item){}
     use image;
     protected $tourRequest = [
@@ -88,7 +87,7 @@ class CreateTourController extends Controller
         // discounts[{from, to, discount, type => [precentage, fixed]}]
         // extra[{name, price, currency_id, type => [one_time, person, night]}]
         // hotels[{name}]
-        // tour_price[{price, currency_id}]
+        // price, currency_id
         // pricing[{person_type => [adult,child,infant], min_age, max_age, pricing_item[{currency_id, price, type => [precentage,fixed]}]}]
         // tour_room[{adult_single, adult_double, adult_triple, adult_quadruple, 
         // children_single, children_double, children_triple, children_quadruple}]
@@ -217,18 +216,7 @@ class CreateTourController extends Controller
                         'name' => $item['name'],
                     ]);
                 }
-             }
-             if ($request->tour_price) {
-                $tour_price = $request->tour_price;
-                foreach ($tour_price as $item) {
-                    $this->tour_price
-                    ->create([
-                        'tour_id' => $tour->id,
-                        'price' => $item['price'],
-                        'currency_id' => $item['currency_id'],
-                    ]);
-                }
-             }
+             } 
              if ($request->pricing) {
                 $pricing = $request->pricing;
                 foreach ($pricing as $item) {
@@ -489,21 +477,7 @@ class CreateTourController extends Controller
                         'name' => $item['name'],
                     ]);
                 }
-             }
-             $this->tour_price
-             ->where('tour_id', $tour->id)
-             ->delete();
-             if ($request->tour_price) {
-                $tour_price = $request->tour_price;
-                foreach ($tour_price as $item) {
-                    $this->tour_price
-                    ->create([
-                        'tour_id' => $tour->id,
-                        'price' => $item['price'],
-                        'currency_id' => $item['currency_id'],
-                    ]);
-                }
-             }
+             } 
              $this->pricing
              ->where('tour_id', $tour->id)
              ->delete();

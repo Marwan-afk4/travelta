@@ -13,6 +13,7 @@ class PaymentReceivableController extends Controller
     public function __construct(private ManuelBooking $manuel_booking){}
 
     public function view(Request $request){
+        // /agent/accounting/payment_receivable
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
             $agent_data = $this->affilate_agent
@@ -37,13 +38,21 @@ class PaymentReceivableController extends Controller
         }
 
         $payments = $this->manuel_booking
-        ->with(['payments'])
+        ->with(['payments', 'payments_cart'])
         ->where($role, $agent_id)
         ->get();
         $payments = PaymentReceivableResource::collection($payments);
+        $total_balance = $payments->sum('total_price');
+        $total_over_due = 0;
+        $total_paid = 0;
+        foreach ($payments as $item) {
+            $total_over_due += $item->over_due;
+        }
 
         return response()->json([
-            'payments' => $payments
+            'payments' => $payments,
+            'total_balance' => $total_balance,
+            'total_over_due' => $total_over_due,
         ]);
     }
 }
