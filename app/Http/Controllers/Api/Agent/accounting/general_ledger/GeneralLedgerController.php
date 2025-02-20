@@ -47,7 +47,7 @@ class GeneralLedgerController extends Controller
         }
         
         $revenues = $this->revenues
-        ->with('category', '')
+        ->with('category', 'financial')
         ->where($role, $agent_id)
         ->get();
         $expenses = $this->expenses

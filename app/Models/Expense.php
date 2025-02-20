@@ -10,7 +10,7 @@ class Expense extends Model
         'affilate_id',
         'agent_id',
         'category_id',
-        'financial_id',
+        'financiale_id',
         'currency_id',
         'title',
         'date',
@@ -23,7 +23,7 @@ class Expense extends Model
     }
 
     public function financial(){
-        return $this->belongsTo(FinantiolAcounting::class, 'financial_id');
+        return $this->belongsTo(FinantiolAcounting::class, 'financiale_id');
     }
 
     public function currency(){

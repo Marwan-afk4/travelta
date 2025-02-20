@@ -16,6 +16,10 @@ class RevenueResource extends JsonResource
     {
         return [
             'title' => $this->title,
+            'date' => $this->date,
+            'description' => $this->description,
+            'category' => $this->category->name,
+            'financial' => $this->financial->name,
         ];
     }
 }
