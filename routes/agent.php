@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\Agent\accounting\booking_payment\BookingPaymentCont
 use App\Http\Controllers\Api\Agent\accounting\supplier_payment\SupplierPaymentController;
 use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesCategoryController;
 use App\Http\Controllers\Api\Agent\accounting\expenses\ExpensesController;
+use App\Http\Controllers\Api\Agent\accounting\revenue\CategoryRevenueController;
+use App\Http\Controllers\Api\Agent\accounting\revenue\RevenueController;
 use App\Http\Controllers\Api\Agent\accounting\OE\OwnerTransactionController;
 use App\Http\Controllers\Api\Agent\accounting\OE\OwnerController;
 use App\Http\Controllers\Api\Agent\accounting\payment_receivable\PaymentReceivableController;
@@ -171,6 +173,24 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::delete('delete/{id}', 'delete');
         });
         Route::controller(ExpensesController::class)->prefix('expenses')
+        ->group(function(){
+            Route::get('/', 'view');
+            Route::get('/lists', 'lists');
+            Route::get('/item/{id}', 'category');
+            Route::post('/filter', 'filter');
+            Route::post('add', 'create');
+            Route::put('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
+        });
+        Route::controller(CategoryRevenueController::class)->prefix('revenue/category')
+        ->group(function(){
+            Route::get('/', 'view');
+            Route::get('/item/{id}', 'category');
+            Route::post('add', 'create');
+            Route::put('update/{id}', 'modify');
+            Route::delete('delete/{id}', 'delete');
+        });
+        Route::controller(RevenueController::class)->prefix('revenue')
         ->group(function(){
             Route::get('/', 'view');
             Route::get('/lists', 'lists');
