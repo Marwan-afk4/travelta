@@ -57,6 +57,8 @@ class PaymentReceivableController extends Controller
 
     public function filter(Request $request){
         // /agent/accounting/payment_receivable/filter
+        // Keys
+        // booking_from, booking_to, due_from, due_to
         $validation = Validator::make($request->all(), [
             'booking_from' => 'nullable|date',
             'booking_to' => 'nullable|date',
