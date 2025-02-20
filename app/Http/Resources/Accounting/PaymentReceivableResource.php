@@ -39,7 +39,7 @@ class PaymentReceivableResource extends JsonResource
             'remaining' => $this->total_price - $this->payments->sum('amount'),
             'status' => $this->payment_type,
             'over_due' => $due_amount,
-            'next_due' => $due_amount + $next_due->due_payment ?? 0,
+            'next_due' => $due_amount + ($next_due->due_payment ?? 0),
             'due_date' => $due_amount <= 0 ? 
             $next_due->date ?? null
             : $first_due->date ?? null,

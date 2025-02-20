@@ -42,18 +42,15 @@ class PaymentReceivableController extends Controller
         ->where($role, $agent_id)
         ->get();
         $payments = PaymentReceivableResource::collection($payments);
-        $payments = collect($payments);
-        $total_balance = $payments->sum('total_price');
-        $total_over_due = 0;
-        $total_paid = 0;
-        foreach ($payments as $item) {
-            $total_over_due += $item->over_due;
-        }
+        $total_balance = $payments->sum('total_price'); 
+        $total_over_due = collect($payments->toArray(request()))->sum('over_due');
+        $total_paid = collect($payments->toArray(request()))->sum('paid'); 
 
         return response()->json([
             'payments' => $payments,
             'total_balance' => $total_balance,
             'total_over_due' => $total_over_due,
+            'total_paid' => $total_paid,
         ]);
     }
 }
