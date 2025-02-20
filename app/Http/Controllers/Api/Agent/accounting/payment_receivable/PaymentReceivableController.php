@@ -42,6 +42,7 @@ class PaymentReceivableController extends Controller
         ->where($role, $agent_id)
         ->get();
         $payments = PaymentReceivableResource::collection($payments);
+        $payments = collect($payments);
         $total_balance = $payments->sum('total_price');
         $total_over_due = 0;
         $total_paid = 0;

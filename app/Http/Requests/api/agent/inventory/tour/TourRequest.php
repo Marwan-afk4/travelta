@@ -63,16 +63,13 @@ class TourRequest extends FormRequest
 
             'hotels.*.name' => ['required'],
 
-            'tour_price.*.price' => ['required', 'numeric'],
-            'tour_price.*.currency_id' => ['required', 'exists:currency_agents,id'],
-
             'pricing.*.person_type' => ['required', 'in:adult,child,infant'],
             'pricing.*.min_age' => ['required', 'numeric'],
             'pricing.*.max_age' => ['required', 'numeric'],
             'pricing.*.pricing_item' => ['required'],
             'pricing.*.pricing_item.*.currency_id' => ['required', 'exists:currency_agents,id'],
             'pricing.*.pricing_item.*.price' => ['required', 'numeric'],
-            'pricing.*.pricing_item.*.type' => ['required', 'in:precentage,fixed'],
+            'pricing.*.pricing_item.*.type' => ['required'],
 
             'tour_room.*.adult_single' => ['required', 'numeric'],
             'tour_room.*.adult_double' => ['required', 'numeric'],
