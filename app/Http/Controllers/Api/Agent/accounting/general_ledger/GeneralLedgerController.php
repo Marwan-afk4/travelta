@@ -63,6 +63,14 @@ class GeneralLedgerController extends Controller
         ->where($role, $agent_id)
         ->get();
         $booking_engine = $this->booking_engine
+        ->with('currency')
+        ->where($role, $agent_id)
+        ->get();
+        $manuel_booking = $this->booking_payment 
+        ->with(['manuel_booking' => function($query){
+            $query->with('currency', 'service', 
+            'hotel', 'visa', 'tour.hotel', 'flight', 'bus');
+        }, 'financial'])
         ->where($role, $agent_id)
         ->get();
 
@@ -70,6 +78,8 @@ class GeneralLedgerController extends Controller
         $expenses = ExpensesResource::collection($expenses);
         $agent_payments = AgentPaymentResource::collection($agent_payments);
         $owner_transactions = OwnerResource::collection($owner_transactions);
+        $booking_engine = BookingEngineResource::collection($booking_engine);
+        $manuel_booking = BookingResource::collection($manuel_booking);
 
         return response()->json([
             'revenues' => $revenues,
@@ -77,6 +87,7 @@ class GeneralLedgerController extends Controller
             'agent_payments' => $agent_payments,
             'owner_transactions' => $owner_transactions,
             'booking_engine' => $booking_engine,
+            'manuel_booking' => $manuel_booking,
         ]);
     }
 }

@@ -48,6 +48,11 @@ class BookingengineList extends Model
         return $this->belongsTo(Agent::class,'agent_id');
     } 
 
+
+    public function currency(){
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
+    
     public function affilate(){
         return $this->belongsTo(AffilateAgent::class,'affilate_id');
     } 
