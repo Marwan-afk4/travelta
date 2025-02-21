@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\Auth\AgentAuthController;
 
+use App\Http\Controllers\Api\Agent\admins\AdminController;
+use App\Http\Controllers\Api\Agent\admins\PositionController;
+
 use App\Http\Controllers\Api\Agent\lead\LeadController;
 use App\Http\Controllers\Api\Agent\lead\LeadProfileController;
 
@@ -121,6 +124,28 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
     });
 
+    Route::prefix('admin')->group(function(){
+        Route::controller(AdminController::class)->group(function(){
+            Route::get('/', 'view');
+            Route::put('/status/{id}', 'status');
+            Route::get('/item/{id}', 'admin');
+            Route::post('/add', 'create');
+            Route::put('/update/{id}', 'modify');
+            Route::delete('/delete/{id}', 'delete');
+        });
+    });
+
+    Route::prefix('admin/position')->group(function(){
+        Route::controller(PositionController::class)->group(function(){
+            Route::get('/', 'view');
+            Route::get('/lists', 'lists');
+            Route::get('/item/{id}', 'position');
+            Route::post('/add', 'create');
+            Route::put('/update/{id}', 'modify');
+            Route::delete('/delete/{id}', 'delete');
+        });
+    });
+
     Route::prefix('invoice')->group(function(){
         Route::controller(InvoiceController::class)->group(function(){
             Route::get('/', 'invoice');
@@ -162,7 +187,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(GeneralLedgerController::class)->prefix('ledger')
         ->group(function(){
-            Route::get('/', 'view'); 
+            Route::get('/', 'view');
         });
         Route::controller(PaymentReceivableController::class)->prefix('payment_receivable')
         ->group(function(){
