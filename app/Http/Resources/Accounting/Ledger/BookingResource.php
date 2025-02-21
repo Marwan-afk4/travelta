@@ -21,15 +21,15 @@ class BookingResource extends JsonResource
             $check_out = $this->manuel_booking->hotel->check_out ?? null;
         }
         elseif (!empty($this->manuel_booking->bus ?? null)) {
-            $check_in = $this->manuel_booking->bus->departure ?? null;
-            $check_out = $this->manuel_booking->bus->arrival ?? null;
+            $check_in = $this->manuel_booking->bus->departure->format('Y-m-d') ?? null;
+            $check_out = $this->manuel_booking->bus->arrival->format('Y-m-d') ?? null;
         }
         elseif (!empty($this->manuel_booking->visa ?? null)) {
             $check_in = $this->manuel_booking->visa->travel_date ?? null; 
         }
         elseif (!empty($this->manuel_booking->flight ?? null)) {
-            $check_in = $this->manuel_booking->flight->departure ?? null;
-            $check_out = $this->manuel_booking->flight->arrival ?? null;
+            $check_in = $this->manuel_booking->flight->departure->format('Y-m-d') ?? null;
+            $check_out = $this->manuel_booking->flight->arrival->format('Y-m-d') ?? null;
         }
         elseif (!empty($this->manuel_booking->tour ?? null)) {
             $check_in = $this->manuel_booking?->tour?->hotel?->min('check_in') ?? null;
