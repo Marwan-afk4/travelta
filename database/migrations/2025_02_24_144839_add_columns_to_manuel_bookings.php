@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('manuel_bookings', function (Blueprint $table) {
-            //
             $table->foreignId(column: 'agent_sales_id')->after('id')->nullable()->constrained('hrm_employees')->onUpdate('cascade')->onDelete('cascade');
         });
     }
