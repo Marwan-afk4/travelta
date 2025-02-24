@@ -30,6 +30,7 @@ class GeneralLedgerController extends Controller
     ){}
 
     public function view(Request $request){
+        // /agent/accounting/ledger
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }

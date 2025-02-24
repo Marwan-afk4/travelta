@@ -11,4 +11,8 @@ class AdminAgentRole extends Model
         'module',
         'action',
     ];
+
+    public function roles(){
+        return $this->belongsTo(AdminAgentPosition::class, 'position_id');
+    }
 }

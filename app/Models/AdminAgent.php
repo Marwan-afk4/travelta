@@ -20,4 +20,8 @@ class AdminAgent extends Model
     public function position(){
         return $this->belongsTo(AdminAgentPosition::class, 'position_id');
     }
+
+    public function user_positions(){
+        return $this->belongsTo(AdminAgentPosition::class, 'position_id');
+    }
 }

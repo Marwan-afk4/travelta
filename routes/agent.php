@@ -39,6 +39,10 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 use App\Http\Controllers\Api\Agent\booking\BookingController;
 use App\Http\Controllers\Api\Agent\booking\BookingStatusController;
 
+use App\Http\Controllers\Api\Agent\HRM\HRMagentController;
+use App\Http\Controllers\Api\Agent\HRM\HRMdepartmentController;
+use App\Http\Controllers\Api\Agent\HRM\HRMemployeeController;
+
 use App\Http\Controllers\Api\Agent\Request\CreateRequestController;
 use App\Http\Controllers\Api\Agent\Request\RequestListsController;
 
@@ -140,6 +144,26 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view');
             Route::get('/lists', 'lists');
             Route::get('/item/{id}', 'position');
+            Route::post('/add', 'create');
+            Route::put('/update/{id}', 'modify');
+            Route::delete('/delete/{id}', 'delete');
+        });
+    });
+
+    Route::prefix('hrm/employee')->group(function(){
+        Route::controller(HRMemployeeController::class)->group(function(){
+            Route::get('/', 'view');
+            Route::put('/status/{id}', 'status');
+            Route::post('/add', 'create');
+            Route::put('/update/{id}', 'modify');
+            Route::delete('/delete/{id}', 'delete');
+        });
+    });
+
+    Route::prefix('hrm/department')->group(function(){
+        Route::controller(HRMdepartmentController::class)->group(function(){
+            Route::get('/', 'view');
+            Route::put('/status/{id}', 'status');
             Route::post('/add', 'create');
             Route::put('/update/{id}', 'modify');
             Route::delete('/delete/{id}', 'delete');
