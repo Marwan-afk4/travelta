@@ -49,7 +49,7 @@ class Room extends Model
         }
         else {
             return $this->attributes['id'];
-        } 
+        }
     }
 
     public function room_type(){
@@ -102,5 +102,9 @@ class Room extends Model
 
     public function pricingData(){
         return $this->hasMany(RoomPricingData::class, 'room_id');
+    }
+
+    public function pricing(){
+        return $this->hasMany(RoomPricing::class, 'room_id');
     }
 }
