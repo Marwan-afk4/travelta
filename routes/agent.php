@@ -150,6 +150,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
     });
 
+    Route::prefix('hrm/agent')->group(function(){
+        Route::controller(HRMagentController::class)->group(function(){
+            Route::get('/', 'view'); 
+            Route::post('/add/{id}', 'add'); 
+            Route::delete('/delete/{id}', 'delete');
+        });
+    });
+
     Route::prefix('hrm/employee')->group(function(){
         Route::controller(HRMemployeeController::class)->group(function(){
             Route::get('/', 'view');

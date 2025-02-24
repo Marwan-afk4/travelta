@@ -201,13 +201,13 @@ class HRMemployeeController extends Controller
         ->where('id', $id)
         ->first();
         $this->deleteImage($employee->image);
-        if (empty($employee->password)) {
-            $employee->delete();
-        } 
-        else {
+        if ($employee->agent) {
             $employee->update([
                 'status' => 0
             ]);
+        } 
+        else {
+            $employee->delete();
         }
 
         return response()->json([

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId(column: 'agent_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->string('name');
             $table->foreignId(column: 'department_id')->nullable()->constrained('hrm_departments')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId(column: 'role_id')->nullable()->constrained('admin_agent_positions')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId(column: 'role_id')->nullable()->constrained('admin_agent_positions')->onUpdate('cascade')->onDelete('set null');
             $table->string('image')->nullable();
             $table->string('user_name')->nullable();
             $table->string('password')->nullable();
