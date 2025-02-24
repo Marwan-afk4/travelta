@@ -106,7 +106,7 @@ class BookingEngine extends Controller
 
         // ✅ Fetch hotels with available rooms & images
         $hotelsQuery = Hotel::with([
-            'images', 'rooms.gallery', 'rooms.amenity', 'facilities', 'features', 'policies', 'acceptedCards', 'themes'
+            'images', 'rooms.gallery', 'rooms.amenity', 'facilities', 'features', 'policies', 'acceptedCards', 'themes','rooms.pricing'
         ]);
 
         if (!empty($validated['hotel_id'])) {
@@ -216,6 +216,20 @@ class BookingEngine extends Controller
                         ->map(fn($image) => asset('storage/' . $image))
                         ->toArray(),
                     'available_rooms' => $availableRooms,
+                    'room_pricings' => $roomPricings = $hotel->rooms->flatMap(function ($room) {
+                        return $room->pricing->map(function ($pricing) {
+                            return [
+                                'id' => $pricing->id,
+                                'room_id' => $pricing->room_id,
+                                'name' => $pricing->name,
+                                'from' => $pricing->from,
+                                'to' => $pricing->to,
+                                'price' => $pricing->price,
+                                'currency_id' => $pricing->currency_id,
+                                'currency_name' => $pricing->currency->name,
+                            ];
+                        });
+                    })
                 ];
             }
         }
