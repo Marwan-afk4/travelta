@@ -145,7 +145,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/lists', 'lists');
             Route::get('/item/{id}', 'position');
             Route::post('/add', 'create');
-            Route::put('/update/{id}', 'modify');
+            Route::post('/update/{id}', 'modify');
             Route::delete('/delete/{id}', 'delete');
         });
     });
