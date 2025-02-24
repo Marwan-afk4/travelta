@@ -15,7 +15,14 @@ class OwnerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'date' => $this->created_at->format('Y-m-d') ?? null,
+            'amount' => $this->amount ?? null,
+            'currency' => $this->currency->name ?? null,
+            'financial' => $this->financial->name ?? null,
+            'owner_name' => $this->owner->name ?? null,
+            'owner_phone' => $this->owner->phone ?? null,
+            'transaction_type' => $this->type ?? null,
+            'type' => 'Owner',
         ];
     }
 }

@@ -17,6 +17,7 @@ class BookingengineList extends Model
         'to_customer_id',
         'hotel_id',
         'amount',
+        'currency_id',
         'check_in',
         'check_out',
         'room_type',
@@ -47,6 +48,11 @@ class BookingengineList extends Model
         return $this->belongsTo(Agent::class,'agent_id');
     } 
 
+
+    public function currency(){
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
+    
     public function affilate(){
         return $this->belongsTo(AffilateAgent::class,'affilate_id');
     } 

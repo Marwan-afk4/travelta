@@ -15,11 +15,14 @@ class RevenueResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'title' => $this->title,
-            'date' => $this->date,
-            'description' => $this->description,
-            'category' => $this->category->name,
-            'financial' => $this->financial->name,
+            'title' => $this->title ?? null,
+            'date' => $this->date ?? null,
+            'amount' => $this->amount ?? null,
+            'description' => $this->description ?? null,
+            'currency' => $this->currency->name ?? null,
+            'category' => $this->category->name ?? null,
+            'financial' => $this->financial->name ?? null,
+            'type' => 'Revenue',
         ];
     }
 }

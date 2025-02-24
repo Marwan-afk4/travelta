@@ -15,7 +15,18 @@ class BookingEngineResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'date' => $this->created_at->format('Y-m-d'),
+            'amount' => $this->amount,
+            'currency' => $this->currency->name ?? null,
+            'financial' => 'Wallet',
+            'type' => 'Booking Engine',
+            'check_in' => $this->check_in,
+            'check_out' => $this->check_out,
+            'booking_code' => $this->code,
+            'total' => $this->amount, 
+            'service' => 'Hotel',
+            'to_name' => $this->to_client->name ?? null,
+            'to_phone' => $this->to_client->phone ?? null,
         ];
     }
 }

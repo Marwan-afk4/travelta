@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+
+use App\Models\AdminAgent;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // if roles have home module
+        Gate::define('isHome', function (AdminAgent $user) {
+            if($user->user_positions && $user->user_positions->roles->pluck('module')->contains('Home')){
+                return true;
+            }
+        });
     }
 }

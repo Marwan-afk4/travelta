@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Resources\Accounting\Ledger\AgentPaymentResource;
 use App\Http\Resources\Accounting\Ledger\BookingEngineResource;
 use App\Http\Resources\Accounting\Ledger\BookingResource;
-use App\Http\Resources\Accounting\Ledger\ExpensesResource;
 use App\Http\Resources\Accounting\Ledger\OwnerResource;
 use App\Http\Resources\Accounting\Ledger\RevenueResource;
+use App\Http\Resources\Accounting\Ledger\ExpensesResource;
 
 use App\Models\Revenue;
 use App\Models\Expense;
@@ -30,6 +30,7 @@ class GeneralLedgerController extends Controller
     ){}
 
     public function view(Request $request){
+        // /agent/accounting/ledger
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -47,19 +48,47 @@ class GeneralLedgerController extends Controller
         }
         
         $revenues = $this->revenues
-        ->with('category', 'financial')
+        ->with('category', 'financial', 'currency')
         ->where($role, $agent_id)
         ->get();
         $expenses = $this->expenses
-        ->with('category')
+        ->with('category', 'financial', 'currency')
+        ->where($role, $agent_id)
+        ->get();
+        $agent_payments = $this->agent_payments
+        ->with('financial', 'currency', 'manuel', 'supplier')
+        ->where($role, $agent_id)
+        ->get();
+        $owner_transactions = $this->owner_transactions
+        ->with('financial', 'currency', 'owner')
+        ->where($role, $agent_id)
+        ->get();
+        $booking_engine = $this->booking_engine
+        ->with('currency')
+        ->where($role, $agent_id)
+        ->get();
+        $manuel_booking = $this->booking_payment 
+        ->with(['manuel_booking' => function($query){
+            $query->with('currency', 'service', 
+            'hotel', 'visa', 'tour.hotel', 'flight', 'bus');
+        }, 'financial'])
         ->where($role, $agent_id)
         ->get();
 
         $revenues = RevenueResource::collection($revenues);
+        $expenses = ExpensesResource::collection($expenses);
+        $agent_payments = AgentPaymentResource::collection($agent_payments);
+        $owner_transactions = OwnerResource::collection($owner_transactions);
+        $booking_engine = BookingEngineResource::collection($booking_engine);
+        $manuel_booking = BookingResource::collection($manuel_booking);
 
         return response()->json([
             'revenues' => $revenues,
             'expenses' => $expenses,
+            'agent_payments' => $agent_payments,
+            'owner_transactions' => $owner_transactions,
+            'booking_engine' => $booking_engine,
+            'manuel_booking' => $manuel_booking,
         ]);
     }
 }

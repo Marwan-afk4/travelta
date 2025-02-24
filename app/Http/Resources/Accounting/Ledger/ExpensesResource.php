@@ -15,7 +15,14 @@ class ExpensesResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'title' => $this->title ?? null,
+            'date' => $this->date ?? null,
+            'amount' => $this->amount ?? null,
+            'description' => $this->description ?? null,
+            'currency' => $this->currency->name ?? null,
+            'category' => $this->category->name ?? null,
+            'financial' => $this->financial->name ?? null,
+            'type' => 'Expenses',
         ];
     }
 }
