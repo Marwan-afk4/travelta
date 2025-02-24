@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Agent\HRM;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\HrmEmployee;
 
@@ -66,7 +67,7 @@ class HRMagentController extends Controller
     }
 
     public function add(Request $request, $id){
-        // /agent/hrm/agent/add
+        // /agent/hrm/agent/add/{id}
         // Keys
         // user_name, password
         $validation = Validator::make($request->all(), [
@@ -98,7 +99,7 @@ class HRMagentController extends Controller
         ->where('id', $id)
         ->update([
             'user_name' => $request->user_name,
-            'password' => $request->password,
+            'password' => bcrypt($request->password),
             'agent' => 1,
         ]);
 
@@ -108,6 +109,7 @@ class HRMagentController extends Controller
     }
 
     public function delete(Request $request, $id){
+        // /agent/hrm/agent/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -125,8 +127,7 @@ class HRMagentController extends Controller
         }
  
         $this->agents
-        ->where($role, $agent_id)
-        ->where('', 1)
+        ->where($role, $agent_id) 
         ->where('id', $id)
         ->update([ 
             'status' => 0,
