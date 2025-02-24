@@ -18,5 +18,10 @@ class HrmEmployee extends Model
         'address',
         'phone',
         'email',
+        'status',
     ];
+
+    public function department(){
+        return $this->belongsTo(HrmDepartment::class, 'department_id');
+    }
 }

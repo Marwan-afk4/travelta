@@ -153,9 +153,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('hrm/employee')->group(function(){
         Route::controller(HRMemployeeController::class)->group(function(){
             Route::get('/', 'view');
+            Route::get('/item/{id}', 'employee');
             Route::put('/status/{id}', 'status');
             Route::post('/add', 'create');
-            Route::put('/update/{id}', 'modify');
+            Route::post('/update/{id}', 'modify');
             Route::delete('/delete/{id}', 'delete');
         });
     });
