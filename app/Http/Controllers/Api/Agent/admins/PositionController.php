@@ -45,44 +45,111 @@ class PositionController extends Controller
     public function lists(){
         // /agent/admin/position/lists
         $modules = [
-            'booking_payment',
-            'expenses',
-            'expenses_category',
-            'general_ledger',
-            'OE_owner',
-            'OE_transaction',
-            'payment_receivable',
-            'revenue',
-            'revenue_category',
-            'supplier_payment_paid',
-            'supplier_payment_payable',
-            'supplier_payment_due',
-            'financial',
-            'wallet',
-            'admin',
-            'admin_position',
-            'manuel_booking',
-            'booking_engine',
-            'bookings',
-            'customer',
-            'department',
-            'inventory_room',
-            'inventory_tour',
-            'invoice',
-            'lead',
-            'request',
-            'setting_currency',
-            'setting_group',
-            'setting_tax',
-            'supplier',
-            'HRM_department',
-            'HRM_agent',
-            'HRM_employee',
+            'booking_payment' => [
+                'view', 'add',
+            ],
+            'expenses' => [
+                'view', 'add','update','delete',
+            ],
+            'expenses_category' => [
+                'view', 'add','update','delete',
+            ],
+            'general_ledger' => [
+                'view',
+            ],
+            'OE_owner' => [
+                'view', 'add','update','delete',
+            ],
+            'OE_transaction' => [
+                'view', 'add',
+            ],
+            'payment_receivable' => [
+                'view',
+            ],
+            'revenue' => [
+                'view', 'add','update','delete',
+            ],
+            'revenue_category' => [
+                'view', 'add','update','delete',
+            ],
+            'supplier_payment_paid' => [
+                'view',
+            ],
+            'supplier_payment_payable' => [
+                'view', 'add',
+            ],
+            'supplier_payment_due' => [
+
+            ],
+            'financial' => [
+
+            ],
+            'wallet' => [
+
+            ],
+            'admin' => [
+
+            ],
+            'admin_position' => [
+
+            ],
+            'manuel_booking' => [
+
+            ],
+            'booking_engine' => [
+
+            ],
+            'bookings' => [
+
+            ],
+            'customer' => [
+
+            ],
+            'department' => [
+
+            ],
+            'inventory_room' => [
+
+            ],
+            'inventory_tour' => [
+
+            ],
+            'invoice' => [
+
+            ],
+            'lead' => [
+
+            ],
+            'request' => [
+
+            ],
+            'setting_currency' => [
+
+            ],
+            'setting_group' => [
+
+            ],
+            'setting_tax' => [
+
+            ],
+            'supplier' => [
+
+            ],
+            'HRM_department' => [
+
+            ],
+            'HRM_agent' => [
+
+            ],
+            'HRM_employee' => [
+
+            ],
         ];
         $actions = [
             'view',
             'transfer', // financial
             'charge', // wallet
+            'status', // booking
             'add',
             'update',
             'delete',

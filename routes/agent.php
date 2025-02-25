@@ -319,16 +319,16 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('booking')->group(function(){
         Route::controller(BookingController::class)->group(function(){
-            Route::get('/', 'booking');
-            Route::get('/details/{id}', 'details');
-            Route::get('/engine_details/{id}', 'engine_details');
-            Route::put('/special_request/{id}', 'special_request');
-            Route::put('/engine_special_request/{id}', 'engine_special_request');
+            Route::get('/', 'booking')->middleware('can:view_bookings');
+            Route::get('/details/{id}', 'details')->middleware('can:view_bookings');
+            Route::get('/engine_details/{id}', 'engine_details')->middleware('can:view_bookings');
+            Route::put('/special_request/{id}', 'special_request')->middleware('can:view_bookings');
+            Route::put('/engine_special_request/{id}', 'engine_special_request')->middleware('can:view_bookings');
         });
         Route::controller(BookingStatusController::class)->group(function(){
-            Route::put('/confirmed/{id}', 'confirmed');
-            Route::put('/vouchered/{id}', 'vouchered');
-            Route::put('/canceled/{id}', 'canceled');
+            Route::put('/confirmed/{id}', 'confirmed')->middleware('can:status_bookings');
+            Route::put('/vouchered/{id}', 'vouchered')->middleware('can:status_bookings');
+            Route::put('/canceled/{id}', 'canceled')->middleware('can:status_bookings');
         });
     });
 
@@ -338,10 +338,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('customer')->group(function(){
         Route::controller(CustomerController::class)->group(function(){
-            Route::get('/', 'view');
+            Route::get('/', 'view')->middleware('can:view_customer');
         });
         Route::controller(CustomerProfileController::class)->group(function(){
-            Route::get('/profile/{id}', 'profile');
+            Route::get('/profile/{id}', 'profile')->middleware('can:view_customer');
         });
     });
 

@@ -7,55 +7,55 @@ use App\Models\HrmEmployee;
 use App\Models\AdminAgent;
 use App\Models\Agent;
 
-class ManuelBookingGate
+class CustomerGate
 {
     public static function defineGates()
     {
         // if roles have booking payment module
-        Gate::define('view_manuel_booking', function ($user) {
+        Gate::define('view_customer', function ($user) {
             if ($user instanceof Agent) {
                 return true;
             }
             if ($user->user_positions && 
             ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
-            $user->user_positions->perimitions->pluck('module')->contains('manuel_booking') &&
+            $user->user_positions->perimitions->pluck('module')->contains('customer') &&
             $user->user_positions->perimitions->pluck('action')->contains('view') ) {
                 return true;
             }
             return false;
         });
-        Gate::define('view_booking_engine', function ($user) {
+        Gate::define('add_customer', function ($user) {
             if ($user instanceof Agent) {
                 return true;
             }
             if ($user->user_positions && 
             ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
-            $user->user_positions->perimitions->pluck('module')->contains('booking_engine') &&
-            $user->user_positions->perimitions->pluck('action')->contains('view') ) {
+            $user->user_positions->perimitions->pluck('module')->contains('customer') &&
+            $user->user_positions->perimitions->pluck('action')->contains('add') ) {
                 return true;
             }
             return false;
         });
-        Gate::define('view_bookings', function ($user) {
+        Gate::define('update_customer', function ($user) {
             if ($user instanceof Agent) {
                 return true;
             }
             if ($user->user_positions && 
             ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
-            $user->user_positions->perimitions->pluck('module')->contains('bookings') &&
-            $user->user_positions->perimitions->pluck('action')->contains('view') ) {
+            $user->user_positions->perimitions->pluck('module')->contains('customer') &&
+            $user->user_positions->perimitions->pluck('action')->contains('update') ) {
                 return true;
             }
             return false;
         });
-        Gate::define('status_bookings', function ($user) {
+        Gate::define('delete_customer', function ($user) {
             if ($user instanceof Agent) {
                 return true;
             }
             if ($user->user_positions && 
             ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
-            $user->user_positions->perimitions->pluck('module')->contains('bookings') &&
-            $user->user_positions->perimitions->pluck('action')->contains('status') ) {
+            $user->user_positions->perimitions->pluck('module')->contains('customer') &&
+            $user->user_positions->perimitions->pluck('action')->contains('delete') ) {
                 return true;
             }
             return false;

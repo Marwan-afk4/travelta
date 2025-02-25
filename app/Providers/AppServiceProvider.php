@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     { 
-        // booking_engine, bookings, customer, department, inventory_room, inventory_tour, 
+        // customer, department, inventory_room, inventory_tour, 
         // invoice, lead, request, setting_currency, setting_group, setting_tax, supplier, HRM
         BookingPaymentGate::defineGates();
         ExpensesCategoryGate::defineGates();
