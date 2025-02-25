@@ -109,10 +109,10 @@ class PositionController extends Controller
                 'view',
             ],
             'inventory_room' => [
-
+                'view', 'add','update','delete', 'duplicated', 'availability', 'gallary', 'pricing'
             ],
             'inventory_tour' => [
-
+                'view', 'add','update','delete', 'gallary',
             ],
             'invoice' => [
 

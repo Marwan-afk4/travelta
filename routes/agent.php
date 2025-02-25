@@ -172,6 +172,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('hrm/department')->group(function(){
         Route::controller(HRMdepartmentController::class)->group(function(){
             Route::get('/', 'view');
+            Route::get('/item/{id}', 'department');
             Route::put('/status/{id}', 'status');
             Route::post('/add', 'create');
             Route::put('/update/{id}', 'modify');
@@ -347,64 +348,64 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('/tour')->group(function(){
         Route::controller(TourController::class)->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'tour');
-            Route::put('/status/{id}', 'status');
-            Route::put('/accepted/{id}', 'accepted');
+            Route::get('/', 'view')->middleware('can:view_inventory_tour');
+            Route::get('/lists', 'lists')->middleware('can:view_inventory_tour');
+            Route::get('/item/{id}', 'tour')->middleware('can:view_inventory_tour');
+            Route::put('/status/{id}', 'status')->middleware('can:update_inventory_tour');
+            Route::put('/accepted/{id}', 'accepted')->middleware('can:update_inventory_tour');
         });
         Route::controller(CreateTourController::class)->group(function(){
-            Route::post('/add', 'create'); 
-            Route::put('/update/{id}', 'modify'); 
-            Route::delete('/delete/{id}', 'delete'); 
+            Route::post('/add', 'create')->middleware('can:add_inventory_tour');
+            Route::put('/update/{id}', 'modify')->middleware('can:update_inventory_tour');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:delete_inventory_tour');
         });
         Route::controller(TourGalleryController::class)->group(function(){
-            Route::get('/gallery/{id}', 'gallery'); 
-            Route::post('/add_gallery', 'add_gallery'); 
-            Route::delete('/gallery/delete/{id}', 'delete'); 
+            Route::get('/gallery/{id}', 'gallery')->middleware('can:gallary_inventory_tour');
+            Route::post('/add_gallery', 'add_gallery')->middleware('can:gallary_inventory_tour');
+            Route::delete('/gallery/delete/{id}', 'delete')->middleware('can:gallary_inventory_tour');
         });
     });
 
     Route::prefix('/room')->group(function(){
         Route::controller(RoomPricingController::class)
         ->prefix('/pricing')->group(function(){
-            Route::get('/{id}', 'view');
-            Route::get('/item/{id}', 'pricing');
-            Route::put('/duplicate/{id}', 'duplicate');
-            Route::post('/add', 'create');
-            Route::post('/update/{id}', 'modify');
-            Route::delete('/delete/{id}', 'delete');
+            Route::get('/{id}', 'view')->middleware('can:pricing_inventory_room');
+            Route::get('/item/{id}', 'pricing')->middleware('can:pricing_inventory_room');
+            Route::put('/duplicate/{id}', 'duplicate')->middleware('can:pricing_inventory_room');
+            Route::post('/add', 'create')->middleware('can:pricing_inventory_room');
+            Route::post('/update/{id}', 'modify')->middleware('can:pricing_inventory_room');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:pricing_inventory_room');
         });
         Route::controller(RoomController::class)
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/room_list', 'room_list');
-            Route::get('/lists', 'lists');
-            Route::post('/hotel_lists', 'hotel_lists');
-            Route::put('/duplicate_room/{id}', 'duplicate_room');
-            Route::get('/item/{id}', 'room');
-            Route::put('/status/{id}', 'status');
-            Route::put('/accepted/{id}', 'accepted');
+            Route::get('/', 'view')->middleware('can:view_inventory_room');
+            Route::get('/room_list', 'room_list')->middleware('can:view_inventory_room');
+            Route::get('/lists', 'lists')->middleware('can:view_inventory_room');
+            Route::post('/hotel_lists', 'hotel_lists')->middleware('can:view_inventory_room');
+            Route::put('/duplicate_room/{id}', 'duplicate_room')->middleware('can:duplicated_inventory_room');
+            Route::get('/item/{id}', 'room')->middleware('can:update_inventory_room');
+            Route::put('/status/{id}', 'status')->middleware('can:update_inventory_room');
+            Route::put('/accepted/{id}', 'accepted')->middleware('can:update_inventory_room');
         });
         Route::controller(RoomAvailabilityController::class)
         ->prefix('/availability')->group(function(){
-            Route::post('/', 'view');
-            Route::get('item/{id}', 'room_availability');
-            Route::post('add', 'create');
-            Route::post('update', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::post('/', 'view')->middleware('can:availability_inventory_room');
+            Route::get('item/{id}', 'room_availability')->middleware('can:availability_inventory_room');
+            Route::post('add', 'create')->middleware('can:availability_inventory_room');
+            Route::post('update', 'modify')->middleware('can:availability_inventory_room');
+            Route::delete('delete/{id}', 'delete')->middleware('can:availability_inventory_room');
         });
         Route::controller(CreateRoomController::class)
         ->group(function(){
-            Route::post('add', 'create');
-            Route::post('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::post('add', 'create')->middleware('can:add_inventory_room');
+            Route::post('update/{id}', 'modify')->middleware('can:update_inventory_room');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_inventory_room');
         });
         Route::controller(RoomGalleryController::class)
         ->group(function(){
-            Route::get('/gallery/{id}', 'gallery');
-            Route::post('/add_gallery', 'add_gallery');
-            Route::delete('/delete_gallery/{id}', 'delete');
+            Route::get('/gallery/{id}', 'gallery')->middleware('can:gallary_inventory_room');
+            Route::post('/add_gallery', 'add_gallery')->middleware('can:gallary_inventory_room');
+            Route::delete('/delete_gallery/{id}', 'delete')->middleware('can:gallary_inventory_room');
         });
 
         Route::prefix('/settings')->group(function(){

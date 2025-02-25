@@ -39,6 +39,34 @@ class HRMdepartmentController extends Controller
         ]);
     }
 
+    public function department(Request $request, $id){
+        // /agent/hrm/department/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
+
+        $department = $this->department
+        ->where($role, $agent_id)
+        ->where('id', $id)
+        ->first();
+
+        return response()->json([
+            'department' => $department
+        ]);
+    }
+
     public function status(Request $request){
         // /agent/hrm/department/status/{id}
         // keys

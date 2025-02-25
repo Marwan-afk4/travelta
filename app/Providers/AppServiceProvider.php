@@ -18,9 +18,10 @@ use App\Providers\gates\PaymentReceivableGate;
 use App\Providers\gates\PositionGate;
 use App\Providers\gates\SupplierPaymentGate;
 use App\Providers\gates\WalletGate;
-
 use App\Providers\gates\BookingGate;
 use App\Providers\gates\DepartmentGate;
+use App\Providers\gates\RoomGate;
+use App\Providers\gates\TourGate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -58,5 +59,7 @@ class AppServiceProvider extends ServiceProvider
         WalletGate::defineGates();
         BookingGate::defineGates();
         DepartmentGate::defineGates();
+        RoomGate::defineGates();
+        TourGate::defineGates();
     }
 }

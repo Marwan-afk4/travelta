@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\HrmEmployee;
+use App\Models\HrmDepartment;
 
 class HRMagentController extends Controller
 {
-    public function __construct(private HrmEmployee $agents){}
+    public function __construct(private HrmEmployee $agents, 
+    private HrmDepartment $department){}
 
     public function view(Request $request){
         // /agent/hrm/agent
@@ -35,35 +37,14 @@ class HRMagentController extends Controller
         ->where('agent', 1)
         ->where('status', 1)
         ->get();
+        $departments = $this->department
+        ->where($role, $agent_id)
+        ->get();
 
         return response()->json([
-            'agents' => $agents
+            'agents' => $agents,
+            'departments' => $departments,
         ]);
-    }
-
-    public function search(Request $request){
-        // /agent/hrm/agent/search
-        $validation = Validator::make($request->all(), [
-            'searc' => 'required|boolean',
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
-        }
-        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
-            $agent_id = $request->user()->affilate_id;
-        }
-        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
-            $agent_id = $request->user()->agent_id;
-        }
-        else{
-            $agent_id = $request->user()->id;
-        }
-        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
-            $role = 'affilate_id';
-        }
-        else{
-            $role = 'agent_id';
-        }
     }
 
     public function add(Request $request, $id){
