@@ -111,6 +111,12 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::get('/getcities', [BookingEngine::class, 'getCities'])->middleware('can:view_booking_engine');
 
     Route::get('/getcountries', [BookingEngine::class, 'getCountries'])->middleware('can:view_booking_engine');
+
+    /////////////////////// Tours ///////////////////////
+
+    Route::get('/agent/tours', [BookingEngine::class, 'getAvailableTours'])->middleware('can:view_booking_engine');
+
+    
 ///////marwan end
     Route::prefix('supplier')->group(function(){
         Route::controller(SupplierController::class)->group(function(){
@@ -152,8 +158,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('hrm/agent')->group(function(){
         Route::controller(HRMagentController::class)->group(function(){
-            Route::get('/', 'view'); 
-            Route::post('/add/{id}', 'add'); 
+            Route::get('/', 'view');
+            Route::post('/add/{id}', 'add');
             Route::delete('/delete/{id}', 'delete');
         });
     });
@@ -185,20 +191,20 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'invoice');
         });
     });
-    
+
     Route::prefix('accounting')->group(function(){
         Route::controller(BookingPaymentController::class)->prefix('booking')->group(function(){
             Route::post('/search', 'search')->middleware('can:view_booking_payment');
             Route::post('/payment', 'add_payment')->middleware('can:add_booking_payment');
-            Route::get('/invoice/{id}', 'invoice')->middleware('can:view_booking_payment'); 
+            Route::get('/invoice/{id}', 'invoice')->middleware('can:view_booking_payment');
         });
         Route::controller(SupplierPaymentController::class)->group(function(){
             Route::get('/paid_to_suppliers', 'paid_to_suppliers')->middleware('can:view_supplier_payment_paid');
             Route::post('/paid_to_suppliers_filter', 'paid_to_suppliers_filter')->middleware('can:view_supplier_payment_paid');
-            
+
             Route::get('/payable_to_suppliers', 'payable_to_suppliers')->middleware('can:supplier_payment_payable');
             Route::post('/payable_to_suppliers_filter', 'payable_to_suppliers_filter')->middleware('can:supplier_payment_payable');
-            
+
             Route::get('/due_to_suppliers', 'due_to_suppliers')->middleware('can:view_supplier_payment_due');
             Route::post('/due_to_suppliers_filter', 'due_to_suppliers_filter')->middleware('can:view_supplier_payment_due');
 
@@ -303,7 +309,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('charge', 'charge')->middleware('can:charge_wallet');
         Route::delete('delete/{id}', 'delete')->middleware('can:delete_wallet');
     });
-    
+
     Route::controller(ManualBookingController::class)->middleware('can:view_manuel_booking')
     ->prefix('manual_booking')->group(function(){
         Route::post('/', 'booking');
