@@ -39,6 +39,10 @@ class HrmEmployee extends Model
         ];
     }
 
+    public function user_positions(){
+        return $this->belongsTo(AdminAgentPosition::class, 'role_id');
+    }
+
     public function department(){
         return $this->belongsTo(HrmDepartment::class, 'department_id');
     }

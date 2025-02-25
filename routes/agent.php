@@ -187,9 +187,9 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     
     Route::prefix('accounting')->group(function(){
         Route::controller(BookingPaymentController::class)->prefix('booking')->group(function(){
-            Route::post('/search', 'search');
-            Route::post('/payment', 'add_payment');
-            Route::get('/invoice/{id}', 'invoice'); 
+            Route::post('/search', 'search')->middleware('can:view_booking_payment');
+            Route::post('/payment', 'add_payment')->middleware('can:add_booking_payment');
+            Route::get('/invoice/{id}', 'invoice')->middleware('can:view_booking_payment'); 
         });
         Route::controller(SupplierPaymentController::class)->group(function(){
             Route::get('/paid_to_suppliers', 'paid_to_suppliers');
@@ -237,13 +237,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(ExpensesController::class)->prefix('expenses')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'category');
-            Route::post('/filter', 'filter');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_expenses');
+            Route::get('/lists', 'lists')->middleware('can:view_expenses');
+            Route::get('/item/{id}', 'category')->middleware('can:view_expenses');
+            Route::post('/filter', 'filter')->middleware('can:view_expenses');
+            Route::post('add', 'create')->middleware('can:add_expenses');
+            Route::put('update/{id}', 'modify')->middleware('can:update_expenses');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_expenses');
         });
         Route::controller(CategoryRevenueController::class)->prefix('revenue/category')
         ->group(function(){

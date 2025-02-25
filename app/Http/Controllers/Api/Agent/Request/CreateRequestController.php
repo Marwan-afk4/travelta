@@ -479,6 +479,8 @@ class CreateRequestController extends Controller
 
     public function priority(Request $request, $id){
         // /agent/request/priority/{id}
+        // key
+        // priority [Low, Normal, High]
         $validation = Validator::make($request->all(), [
             'priority' => 'required|in:Low,Normal,High',
         ]);

@@ -262,7 +262,7 @@ class BookingController extends Controller
         $manuel_booking = $this->manuel_booking
         ->with([
             'payments.financial' => function ($query) {
-                $query->select('id', 'name');
+                $query->select('id', 'name', 'logo');
             }
         ])
         ->where('id', $id)

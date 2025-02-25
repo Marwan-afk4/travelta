@@ -47,6 +47,7 @@ class PositionController extends Controller
         $modules = [
             'booking_payment',
             'expenses',
+            'expenses_category',
             'general_ledger',
             'OE',
             'payment_receivable',
@@ -70,6 +71,9 @@ class PositionController extends Controller
             'setting_group',
             'setting_tax',
             'supplier',
+            'HRM_department',
+            'HRM_agent',
+            'HRM_employee',
         ];
         $actions = [
             'view',
