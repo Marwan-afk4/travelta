@@ -20,8 +20,10 @@ use App\Providers\gates\SupplierPaymentGate;
 use App\Providers\gates\WalletGate;
 use App\Providers\gates\BookingGate;
 use App\Providers\gates\DepartmentGate;
+use App\Providers\gates\CustomerGate;
 use App\Providers\gates\RoomGate;
 use App\Providers\gates\TourGate;
+use App\Providers\gates\LeadGate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,9 +42,8 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(): void
-    { 
-        // customer, department, inventory_room, inventory_tour, 
-        // invoice, lead, request, setting_currency, setting_group, setting_tax, supplier, HRM
+    {
+        // invoice, request, setting_currency, setting_group, setting_tax, supplier, HRM
         BookingPaymentGate::defineGates();
         ExpensesCategoryGate::defineGates();
         ExpensesGate::defineGates();
@@ -61,5 +62,7 @@ class AppServiceProvider extends ServiceProvider
         DepartmentGate::defineGates();
         RoomGate::defineGates();
         TourGate::defineGates();
+        CustomerGate::defineGates();
+        LeadGate::defineGates();
     }
 }

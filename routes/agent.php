@@ -80,16 +80,16 @@ Route::controller(AgentAuthController::class)->group(function(){
 Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('leads')->group(function(){
         Route::controller(LeadController::class)->group(function(){
-            Route::get('/', 'view');
-            Route::get('leads_search', 'leads_search');
-            Route::put('update/{id}', 'modify');
-            Route::post('add_lead', 'add_lead');
-            Route::post('add', 'create');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_lead');
+            Route::get('leads_search', 'leads_search')->middleware('can:add_lead');
+            Route::put('update/{id}', 'modify')->middleware('can:update_lead');
+            Route::post('add_lead', 'add_lead')->middleware('can:add_lead');
+            Route::post('add', 'create')->middleware('can:add_lead');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_lead');
         });
 
         Route::controller(LeadProfileController::class)->group(function(){
-            Route::get('/profile/{id}', 'profile');
+            Route::get('/profile/{id}', 'profile')->middleware('can:update_lead');
         });
     });
     //marwan
@@ -268,21 +268,21 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('request')->group(function(){
         Route::controller(RequestListsController::class)->group(function(){
-            Route::get('/lists', 'lists');
-            Route::get('/', 'view');
-            Route::get('/stages_data', 'stages');
-            Route::get('/item/{id}', 'request_item');
+            Route::get('/lists', 'lists')->middleware('can:view_request');
+            Route::get('/', 'view')->middleware('can:view_request');
+            Route::get('/stages_data', 'stages')->middleware('can:view_request');
+            Route::get('/item/{id}', 'request_item')->middleware('can:view_request');
         });
         Route::controller(CreateRequestController::class)->group(function(){
-            Route::post('/add_hotel', 'add_hotel');
-            Route::post('/add_bus', 'add_bus');
-            Route::post('/add_visa', 'add_visa');
-            Route::post('/add_flight', 'add_flight');
-            Route::post('/add_tour', 'add_tour');
-            Route::put('/priority/{id}', 'priority');
-            Route::put('/stages/{id}', 'stages');
-            Route::put('/notes/{id}', 'notes');
-            Route::delete('/delete/{id}', 'delete');
+            Route::post('/add_hotel', 'add_hotel')->middleware('can:add_request');
+            Route::post('/add_bus', 'add_bus')->middleware('can:add_request');
+            Route::post('/add_visa', 'add_visa')->middleware('can:add_request');
+            Route::post('/add_flight', 'add_flight')->middleware('can:add_request');
+            Route::post('/add_tour', 'add_tour')->middleware('can:add_request');
+            Route::put('/priority/{id}', 'priority')->middleware('can:view_request');
+            Route::put('/stages/{id}', 'stages')->middleware('can:view_request');
+            Route::put('/notes/{id}', 'notes')->middleware('can:view_request');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:delete_request');
         });
     });
 

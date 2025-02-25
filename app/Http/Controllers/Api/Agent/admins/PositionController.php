@@ -118,10 +118,10 @@ class PositionController extends Controller
 
             ],
             'lead' => [
-
+                'view', 'add','update','delete',
             ],
             'request' => [
-
+                'view', 'add','priority','delete',
             ],
             'setting_currency' => [
 
