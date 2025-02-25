@@ -300,6 +300,9 @@ class BookingEngine extends Controller
         'no_of_nights'=> $ListValidation['no_of_nights'],
         'payment_status'=> $ListValidation['payment_status']??'full',
         'status'=> $ListValidation['status']??'done',
+        'special_request' =>$ListValidation['special_request']??null,
+        'currancy_id'=>$ListValidation['currancy_id'],
+        'amount'=>$ListValidation['amount'],
         ]);
     }
     elseif($user->role =='affilate' || $user->role == 'freelancer'){
@@ -319,6 +322,9 @@ class BookingEngine extends Controller
         'no_of_nights'=> $ListValidation['no_of_nights'],
         'payment_status'=> $ListValidation['payment_status']??'full',
         'status'=> $ListValidation['status']??'done',
+        'special_request' =>$ListValidation['special_request']??null,
+        'currancy_id'=>$ListValidation['currancy_id'],
+        'amount'=>$ListValidation['amount'],
         ]);
     }
 
@@ -358,10 +364,8 @@ class BookingEngine extends Controller
     //         if ($remainingQuantity < $request->quantity) {
     //             return response()->json(['message' => 'No rooms available for the specified dates.'], 400);
     //         }
-
-
-
-
 }
+
+    public function getAvailableTours(){}
 
 }
