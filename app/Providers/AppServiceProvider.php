@@ -5,7 +5,19 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 
 use App\Providers\gates\BookingPaymentGate;
+use App\Providers\gates\ExpensesCategoryGate;
 use App\Providers\gates\ExpensesGate;
+use App\Providers\gates\GeneralLedgerGate;
+use App\Providers\gates\OE_ownerGate;
+use App\Providers\gates\OE_transactionGate;
+use App\Providers\gates\RevenueGate;
+use App\Providers\gates\RevenueCategoryGate;
+use App\Providers\gates\AdminGate;
+use App\Providers\gates\FinancialGate;
+use App\Providers\gates\PaymentReceivableGate;
+use App\Providers\gates\PositionGate;
+use App\Providers\gates\SupplierPaymentGate;
+use App\Providers\gates\WalletGate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,11 +37,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     { 
-        // , , general_ledger, OE, payment_receivable, revenue, 
-        // supplier_payment, financial, wallet, admin, admin_position, manuel_booking, 
         // booking_engine, bookings, customer, department, inventory_room, inventory_tour, 
         // invoice, lead, request, setting_currency, setting_group, setting_tax, supplier, HRM
         BookingPaymentGate::defineGates();
+        ExpensesCategoryGate::defineGates();
         ExpensesGate::defineGates();
+        GeneralLedgerGate::defineGates();
+        OE_ownerGate::defineGates();
+        OE_transactionGate::defineGates();
+        RevenueGate::defineGates();
+        RevenueCategoryGate::defineGates();
+        AdminGate::defineGates();
+        FinancialGate::defineGates();
+        PaymentReceivableGate::defineGates();
+        PositionGate::defineGates();
+        SupplierPaymentGate::defineGates();
+        WalletGate::defineGates();
     }
 }

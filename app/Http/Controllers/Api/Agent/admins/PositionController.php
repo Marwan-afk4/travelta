@@ -49,10 +49,14 @@ class PositionController extends Controller
             'expenses',
             'expenses_category',
             'general_ledger',
-            'OE',
+            'OE_owner',
+            'OE_transaction',
             'payment_receivable',
             'revenue',
-            'supplier_payment',
+            'revenue_category',
+            'supplier_payment_paid',
+            'supplier_payment_payable',
+            'supplier_payment_due',
             'financial',
             'wallet',
             'admin',
@@ -77,6 +81,8 @@ class PositionController extends Controller
         ];
         $actions = [
             'view',
+            'transfer', // financial
+            'charge', // wallet
             'add',
             'update',
             'delete',

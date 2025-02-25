@@ -102,15 +102,15 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('/make_payment', 'makePayment');
     });
 ///////marwan start
-    Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom']);
+    Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom'])->middleware('can:view_booking_engine');
 
-    Route::post('/agent/avalibleRooms', [BookingEngine::class, 'getAvailableRooms']);
+    Route::post('/agent/avalibleRooms', [BookingEngine::class, 'getAvailableRooms'])->middleware('can:view_booking_engine');
 
-    Route::get('/gethotels', [BookingEngine::class, 'getHotels']);
+    Route::get('/gethotels', [BookingEngine::class, 'getHotels'])->middleware('can:view_booking_engine');
 
-    Route::get('/getcities', [BookingEngine::class, 'getCities']);
+    Route::get('/getcities', [BookingEngine::class, 'getCities'])->middleware('can:view_booking_engine');
 
-    Route::get('/getcountries', [BookingEngine::class, 'getCountries']);
+    Route::get('/getcountries', [BookingEngine::class, 'getCountries'])->middleware('can:view_booking_engine');
 ///////marwan end
     Route::prefix('supplier')->group(function(){
         Route::controller(SupplierController::class)->group(function(){
@@ -130,23 +130,23 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('admin')->group(function(){
         Route::controller(AdminController::class)->group(function(){
-            Route::get('/', 'view');
-            Route::put('/status/{id}', 'status');
-            Route::get('/item/{id}', 'admin');
-            Route::post('/add', 'create');
-            Route::post('/update/{id}', 'modify');
-            Route::delete('/delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_admin');
+            Route::put('/status/{id}', 'status')->middleware('can:update_admin');
+            Route::get('/item/{id}', 'admin')->middleware('can:view_admin');
+            Route::post('/add', 'create')->middleware('can:add_admin');
+            Route::post('/update/{id}', 'modify')->middleware('can:update_admin');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:delete_admin');
         });
     });
 
     Route::prefix('admin/position')->group(function(){
         Route::controller(PositionController::class)->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'position');
-            Route::post('/add', 'create');
-            Route::post('/update/{id}', 'modify');
-            Route::delete('/delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_admin_position');
+            Route::get('/lists', 'lists')->middleware('can:view_admin_position');
+            Route::get('/item/{id}', 'position')->middleware('can:view_admin_position');
+            Route::post('/add', 'create')->middleware('can:add_admin_position');
+            Route::post('/update/{id}', 'modify')->middleware('can:update_admin_position');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:delete_admin_position');
         });
     });
 
@@ -192,48 +192,48 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/invoice/{id}', 'invoice')->middleware('can:view_booking_payment'); 
         });
         Route::controller(SupplierPaymentController::class)->group(function(){
-            Route::get('/paid_to_suppliers', 'paid_to_suppliers');
-            Route::post('/paid_to_suppliers_filter', 'paid_to_suppliers_filter');
+            Route::get('/paid_to_suppliers', 'paid_to_suppliers')->middleware('can:view_supplier_payment_paid');
+            Route::post('/paid_to_suppliers_filter', 'paid_to_suppliers_filter')->middleware('can:view_supplier_payment_paid');
             
-            Route::get('/payable_to_suppliers', 'payable_to_suppliers');
-            Route::post('/payable_to_suppliers_filter', 'payable_to_suppliers_filter');
+            Route::get('/payable_to_suppliers', 'payable_to_suppliers')->middleware('can:supplier_payment_payable');
+            Route::post('/payable_to_suppliers_filter', 'payable_to_suppliers_filter')->middleware('can:supplier_payment_payable');
             
-            Route::get('/due_to_suppliers', 'due_to_suppliers');
-            Route::post('/due_to_suppliers_filter', 'due_to_suppliers_filter');
+            Route::get('/due_to_suppliers', 'due_to_suppliers')->middleware('can:view_supplier_payment_due');
+            Route::post('/due_to_suppliers_filter', 'due_to_suppliers_filter')->middleware('can:view_supplier_payment_due');
 
-            Route::get('/transactions', 'transactions');
-            Route::post('/transactions_payment', 'add_payment');
+            Route::get('/transactions', 'transactions')->middleware('can:add_supplier_payment_payable');
+            Route::post('/transactions_payment', 'add_payment')->middleware('can:add_supplier_payment_payable');
         });
         Route::controller(OwnerController::class)->prefix('owner')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'owner');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_OE_owner');
+            Route::get('/lists', 'lists')->middleware('can:view_OE_owner');
+            Route::get('/item/{id}', 'owner')->middleware('can:view_OE_owner');
+            Route::post('add', 'create')->middleware('can:add_OE_owner');
+            Route::put('update/{id}', 'modify')->middleware('can:update_OE_owner');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_OE_owner');
         });
         Route::controller(OwnerTransactionController::class)->prefix('owner')
         ->group(function(){
-            Route::get('/transactions_list', 'transactions_list');
-            Route::post('/transaction', 'transaction');
+            Route::get('/transactions_list', 'transactions_list')->middleware('can:view_OE_transaction');
+            Route::post('/transaction', 'transaction')->middleware('can:add_OE_transaction');
         });
         Route::controller(GeneralLedgerController::class)->prefix('ledger')
         ->group(function(){
-            Route::get('/', 'view');
+            Route::get('/', 'view')->middleware('can:view_general_ledger');
         });
         Route::controller(PaymentReceivableController::class)->prefix('payment_receivable')
         ->group(function(){
-            Route::get('/', 'view'); 
-            Route::post('/filter', 'filter'); 
+            Route::get('/', 'view')->middleware('can:view_payment_receivable');
+            Route::post('/filter', 'filter')->middleware('can:view_payment_receivable');
         });
         Route::controller(ExpensesCategoryController::class)->prefix('expenses/category')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/item/{id}', 'category');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_expenses_category');
+            Route::get('/item/{id}', 'category')->middleware('can:view_expenses_category');
+            Route::post('add', 'create')->middleware('can:add_expenses_category');
+            Route::put('update/{id}', 'modify')->middleware('can:update_expenses_category');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_expenses_category');
         });
         Route::controller(ExpensesController::class)->prefix('expenses')
         ->group(function(){
@@ -247,21 +247,21 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(CategoryRevenueController::class)->prefix('revenue/category')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/item/{id}', 'category');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_revenue_category');
+            Route::get('/item/{id}', 'category')->middleware('can:view_revenue_category');
+            Route::post('add', 'create')->middleware('can:add_revenue_category');
+            Route::put('update/{id}', 'modify')->middleware('can:update_revenue_category');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_revenue_category');
         });
         Route::controller(RevenueController::class)->prefix('revenue')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'category');
-            Route::post('/filter', 'filter');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_revenue');
+            Route::get('/lists', 'lists')->middleware('can:view_revenue');
+            Route::get('/item/{id}', 'category')->middleware('can:view_revenue');
+            Route::post('/filter', 'filter')->middleware('can:view_revenue');
+            Route::post('add', 'create')->middleware('can:add_revenue');
+            Route::put('update/{id}', 'modify')->middleware('can:update_revenue');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_revenue');
         });
     });
 
@@ -286,24 +286,25 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::controller(FinancialController::class)->prefix('financial')->group(function(){
-        Route::get('/', 'view');
-        Route::get('item/{id}', 'financial');
-        Route::post('transfer', 'transfer');
-        Route::put('status/{id}', 'status');
-        Route::post('add', 'create');
-        Route::post('update/{id}', 'modify');
-        Route::delete('delete/{id}', 'delete');
+        Route::get('/', 'view')->middleware('can:view_financial');
+        Route::get('item/{id}', 'financial')->middleware('can:view_financial');
+        Route::post('transfer', 'transfer')->middleware('can:transfer_financial');
+        Route::put('status/{id}', 'status')->middleware('can:update_financial');
+        Route::post('add', 'create')->middleware('can:add_financial');
+        Route::post('update/{id}', 'modify')->middleware('can:update_financial');
+        Route::delete('delete/{id}', 'delete')->middleware('can:delete_financial');
     });
 
     Route::controller(WalletController::class)->prefix('wallet')->group(function(){
-        Route::get('/', 'view');
-        Route::get('/item/{id}', 'wallet');
-        Route::post('add', 'add');
-        Route::post('charge', 'charge');
-        Route::delete('delete/{id}', 'delete');
+        Route::get('/', 'view')->middleware('can:view_wallet');
+        Route::get('/item/{id}', 'wallet')->middleware('can:view_wallet');
+        Route::post('add', 'add')->middleware('can:add_wallet');
+        Route::post('charge', 'charge')->middleware('can:charge_wallet');
+        Route::delete('delete/{id}', 'delete')->middleware('can:delete_wallet');
     });
-
-    Route::controller(ManualBookingController::class)->prefix('manual_booking')->group(function(){
+    
+    Route::controller(ManualBookingController::class)->middleware('can:view_manuel_booking')
+    ->prefix('manual_booking')->group(function(){
         Route::post('/', 'booking');
         Route::get('/mobile_lists', 'mobile_lists');
         Route::get('/items', 'manuel_bookings');
