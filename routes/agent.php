@@ -116,7 +116,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     /////////////////////// Tours ///////////////////////
 
-    Route::get('/agent/tours', [BookingEngine::class, 'getAvailableTours'])->middleware('can:view_booking_engine');
+    Route::post('/agent/tours', [BookingEngine::class, 'getAvailableTours'])->middleware('can:view_booking_engine');
 
 
 ///////marwan end
