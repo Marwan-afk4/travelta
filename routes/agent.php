@@ -333,7 +333,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){
-        Route::get('/', 'view');
+        Route::get('/', 'view')->middleware('can:view_department');
     });
 
     Route::prefix('customer')->group(function(){

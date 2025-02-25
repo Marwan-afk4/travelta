@@ -79,34 +79,34 @@ class PositionController extends Controller
                 'view', 'add',
             ],
             'supplier_payment_due' => [
-
+                'view', 'add',
             ],
             'financial' => [
-
+                'view', 'transfer', 'add','update','delete',
             ],
             'wallet' => [
-
+                'view', 'charge', 'add','update','delete',
             ],
             'admin' => [
-
+                'view', 'add','update','delete',
             ],
             'admin_position' => [
-
+                'view', 'add','update','delete',
             ],
             'manuel_booking' => [
-
+                'view',
             ],
             'booking_engine' => [
-
+                'view',
             ],
             'bookings' => [
-
+                'view', 'status'
             ],
             'customer' => [
-
+                'view',
             ],
             'department' => [
-
+                'view',
             ],
             'inventory_room' => [
 
@@ -146,10 +146,7 @@ class PositionController extends Controller
             ],
         ];
         $actions = [
-            'view',
-            'transfer', // financial
-            'charge', // wallet
-            'status', // booking
+            'view',  
             'add',
             'update',
             'delete',

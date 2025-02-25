@@ -7,7 +7,7 @@ use App\Models\HrmEmployee;
 use App\Models\AdminAgent;
 use App\Models\Agent;
 
-class RevenueCategoryGate
+class SupplierPaymentGate
 {
     public static function defineGates()
     {
