@@ -43,6 +43,7 @@ use App\Models\FinantiolAcounting;
 use App\Models\Agent;
 use App\Models\AffilateAgent;
 use App\Models\AgentPayable;
+use App\Models\HrmEmployee;
 use App\trait\image;
 
 class ManualBookingController extends Controller
@@ -59,7 +60,8 @@ class ManualBookingController extends Controller
     private PaymentsCart $payments_cart, private ManuelDataCart $manuel_data_cart,
     private Customer $customers, private FinantiolAcounting $financial_accounting,
     private BookingPayment $booking_payment, private Agent $agent,
-    private AffilateAgent $affilate_agent, private AgentPayable $agent_payable){}
+    private AffilateAgent $affilate_agent, private AgentPayable $agent_payable,
+    private HrmEmployee $employees){}
     
     protected $hotelRequest = [
         'check_in',
@@ -144,6 +146,12 @@ class ManualBookingController extends Controller
         else{
             $agent_id = $request->user()->id;
         }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
         $cities = $this->cities
         ->get();
         $contries = $this->contries
@@ -151,6 +159,12 @@ class ManualBookingController extends Controller
         $services = $this->services
         ->get();
         $financial_accounting = $this->financial_accounting
+        ->get();
+        $employees = $this->employees
+        ->select('id', 'name')
+        ->where($role, $agent_id)
+        ->where('status', 1)
+        ->where('agent', 1)
         ->get();
         $adult_title = [
             'MR',
@@ -174,7 +188,8 @@ class ManualBookingController extends Controller
             'services' => $services,
             'currencies' => $currencies,
             'adult_title' => $adult_title,
-            'financial_accounting' => $financial_accounting
+            'financial_accounting' => $financial_accounting,
+            'employees' => $employees
         ]);
     }
 
@@ -229,6 +244,12 @@ class ManualBookingController extends Controller
         ->select('id', 'agent')
         ->where($role, $agent_id)
         ->get();
+        $employees = $this->employees
+        ->select('id', 'name')
+        ->where($role, $agent_id)
+        ->where('status', 1)
+        ->where('agent', 1)
+        ->get();
 
         return response()->json([
             'cities' => $cities,
@@ -240,6 +261,7 @@ class ManualBookingController extends Controller
             'taxes' => $taxes,
             'customers' => $customers,
             'suppliers' => $suppliers,
+            'employees' => $employees,
         ]);
     }
 
@@ -571,6 +593,7 @@ class ManualBookingController extends Controller
         $arr = [
             "from_supplier"=> $this->supplier_agent->where('id', $manuel_data_cart->from_supplier_id)->first()->name ?? null,
             "from_service"=>  $service,
+            'agent_sales_id' => $manuel_data_cart->agent_sales_id ?? null,
             "mark_up_type"=> $manuel_data_cart->mark_up_type,
             "mark_up"=> $manuel_data_cart->mark_up,
             "price"=> $manuel_data_cart->price,
@@ -704,6 +727,7 @@ class ManualBookingController extends Controller
                 'id' => $item->id,
                 "from_supplier"=> $this->supplier_agent->where('id', $manuel_item->from_supplier_id)->first()->name ?? null,
                 "from_service"=>  $service,
+                'agent_sales_id' => $manuel_data_cart->agent_sales_id ?? null,
                 "mark_up_type"=> $manuel_item->mark_up_type,
                 "mark_up"=> $manuel_item->mark_up,
                 'special_request' => $manuel_item->special_request ?? null,
@@ -806,6 +830,7 @@ class ManualBookingController extends Controller
         ->create([
             'from_supplier_id' => $manuelRequest['from_supplier_id'] ?? null,
             'from_service_id' => $manuelRequest['from_service_id'] ?? null,
+           // 'agent_sales_id' => $manuel_data_cart?->agent_sales_id ?? null,
             'special_request' => $manuelRequest['special_request'] ?? null,
             'mark_up_type' => $manuelRequest['mark_up_type'] ?? null,
             'mark_up' => $manuelRequest['mark_up'] ?? null,

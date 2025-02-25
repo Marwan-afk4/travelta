@@ -45,34 +45,108 @@ class PositionController extends Controller
     public function lists(){
         // /agent/admin/position/lists
         $modules = [
-            'booking_payment',
-            'expenses',
-            'general_ledger',
-            'OE',
-            'payment_receivable',
-            'revenue',
-            'supplier_payment',
-            'financial',
-            'wallet',
-            'admin',
-            'admin_position',
-            'manuel_booking',
-            'booking_engine',
-            'bookings',
-            'customer',
-            'department',
-            'inventory_room',
-            'inventory_tour',
-            'invoice',
-            'lead',
-            'request',
-            'setting_currency',
-            'setting_group',
-            'setting_tax',
-            'supplier',
+            'booking_payment' => [
+                'view', 'add',
+            ],
+            'expenses' => [
+                'view', 'add','update','delete',
+            ],
+            'expenses_category' => [
+                'view', 'add','update','delete',
+            ],
+            'general_ledger' => [
+                'view',
+            ],
+            'OE_owner' => [
+                'view', 'add','update','delete',
+            ],
+            'OE_transaction' => [
+                'view', 'add',
+            ],
+            'payment_receivable' => [
+                'view',
+            ],
+            'revenue' => [
+                'view', 'add','update','delete',
+            ],
+            'revenue_category' => [
+                'view', 'add','update','delete',
+            ],
+            'supplier_payment_paid' => [
+                'view',
+            ],
+            'supplier_payment_payable' => [
+                'view', 'add',
+            ],
+            'supplier_payment_due' => [
+                'view', 'add',
+            ],
+            'financial' => [
+                'view', 'transfer', 'add','update','delete',
+            ],
+            'wallet' => [
+                'view', 'charge', 'add','update','delete',
+            ],
+            'admin' => [
+                'view', 'add','update','delete',
+            ],
+            'admin_position' => [
+                'view', 'add','update','delete',
+            ],
+            'manuel_booking' => [
+                'view',
+            ],
+            'booking_engine' => [
+                'view',
+            ],
+            'bookings' => [
+                'view', 'status'
+            ],
+            'customer' => [
+                'view',
+            ],
+            'department' => [
+                'view',
+            ],
+            'inventory_room' => [
+                'view', 'add','update','delete', 'duplicated', 'availability', 'gallary', 'pricing'
+            ],
+            'inventory_tour' => [
+                'view', 'add','update','delete', 'gallary',
+            ],
+            'invoice' => [
+
+            ],
+            'lead' => [
+                'view', 'add','update','delete',
+            ],
+            'request' => [
+                'view', 'add','priority','delete',
+            ],
+            'setting_currency' => [
+
+            ],
+            'setting_group' => [
+
+            ],
+            'setting_tax' => [
+
+            ],
+            'supplier' => [
+
+            ],
+            'HRM_department' => [
+
+            ],
+            'HRM_agent' => [
+
+            ],
+            'HRM_employee' => [
+
+            ],
         ];
         $actions = [
-            'view',
+            'view',  
             'add',
             'update',
             'delete',

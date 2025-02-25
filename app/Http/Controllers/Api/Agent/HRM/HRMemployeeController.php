@@ -199,16 +199,10 @@ class HRMemployeeController extends Controller
         $employee = $this->employee
         ->where($role, $agent_id)
         ->where('id', $id)
-        ->first();
-        $this->deleteImage($employee->image);
-        if (empty($employee->password)) {
-            $employee->delete();
-        } 
-        else {
-            $employee->update([
-                'status' => 0
-            ]);
-        }
+        ->first(); 
+        $employee->update([
+            'status' => 0
+        ]); 
 
         return response()->json([
             'success' => 'You delete data success',

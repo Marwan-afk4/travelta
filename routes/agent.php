@@ -80,16 +80,16 @@ Route::controller(AgentAuthController::class)->group(function(){
 Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('leads')->group(function(){
         Route::controller(LeadController::class)->group(function(){
-            Route::get('/', 'view');
-            Route::get('leads_search', 'leads_search');
-            Route::put('update/{id}', 'modify');
-            Route::post('add_lead', 'add_lead');
-            Route::post('add', 'create');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_lead');
+            Route::get('leads_search', 'leads_search')->middleware('can:add_lead');
+            Route::put('update/{id}', 'modify')->middleware('can:update_lead');
+            Route::post('add_lead', 'add_lead')->middleware('can:add_lead');
+            Route::post('add', 'create')->middleware('can:add_lead');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_lead');
         });
 
         Route::controller(LeadProfileController::class)->group(function(){
-            Route::get('/profile/{id}', 'profile');
+            Route::get('/profile/{id}', 'profile')->middleware('can:update_lead');
         });
     });
     //marwan
@@ -102,15 +102,15 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('/make_payment', 'makePayment');
     });
 ///////marwan start
-    Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom']);
+    Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom'])->middleware('can:view_booking_engine');
 
-    Route::post('/agent/avalibleRooms', [BookingEngine::class, 'getAvailableRooms']);
+    Route::post('/agent/avalibleRooms', [BookingEngine::class, 'getAvailableRooms'])->middleware('can:view_booking_engine');
 
-    Route::get('/gethotels', [BookingEngine::class, 'getHotels']);
+    Route::get('/gethotels', [BookingEngine::class, 'getHotels'])->middleware('can:view_booking_engine');
 
-    Route::get('/getcities', [BookingEngine::class, 'getCities']);
+    Route::get('/getcities', [BookingEngine::class, 'getCities'])->middleware('can:view_booking_engine');
 
-    Route::get('/getcountries', [BookingEngine::class, 'getCountries']);
+    Route::get('/getcountries', [BookingEngine::class, 'getCountries'])->middleware('can:view_booking_engine');
 ///////marwan end
     Route::prefix('supplier')->group(function(){
         Route::controller(SupplierController::class)->group(function(){
@@ -130,22 +130,30 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('admin')->group(function(){
         Route::controller(AdminController::class)->group(function(){
-            Route::get('/', 'view');
-            Route::put('/status/{id}', 'status');
-            Route::get('/item/{id}', 'admin');
-            Route::post('/add', 'create');
-            Route::put('/update/{id}', 'modify');
-            Route::delete('/delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_admin');
+            Route::put('/status/{id}', 'status')->middleware('can:update_admin');
+            Route::get('/item/{id}', 'admin')->middleware('can:view_admin');
+            Route::post('/add', 'create')->middleware('can:add_admin');
+            Route::post('/update/{id}', 'modify')->middleware('can:update_admin');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:delete_admin');
         });
     });
 
     Route::prefix('admin/position')->group(function(){
         Route::controller(PositionController::class)->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'position');
-            Route::post('/add', 'create');
-            Route::put('/update/{id}', 'modify');
+            Route::get('/', 'view')->middleware('can:view_admin_position');
+            Route::get('/lists', 'lists')->middleware('can:view_admin_position');
+            Route::get('/item/{id}', 'position')->middleware('can:view_admin_position');
+            Route::post('/add', 'create')->middleware('can:add_admin_position');
+            Route::post('/update/{id}', 'modify')->middleware('can:update_admin_position');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:delete_admin_position');
+        });
+    });
+
+    Route::prefix('hrm/agent')->group(function(){
+        Route::controller(HRMagentController::class)->group(function(){
+            Route::get('/', 'view'); 
+            Route::post('/add/{id}', 'add'); 
             Route::delete('/delete/{id}', 'delete');
         });
     });
@@ -164,6 +172,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('hrm/department')->group(function(){
         Route::controller(HRMdepartmentController::class)->group(function(){
             Route::get('/', 'view');
+            Route::get('/item/{id}', 'department');
             Route::put('/status/{id}', 'status');
             Route::post('/add', 'create');
             Route::put('/update/{id}', 'modify');
@@ -179,123 +188,124 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     
     Route::prefix('accounting')->group(function(){
         Route::controller(BookingPaymentController::class)->prefix('booking')->group(function(){
-            Route::post('/search', 'search');
-            Route::post('/payment', 'add_payment');
-            Route::get('/invoice/{id}', 'invoice'); 
+            Route::post('/search', 'search')->middleware('can:view_booking_payment');
+            Route::post('/payment', 'add_payment')->middleware('can:add_booking_payment');
+            Route::get('/invoice/{id}', 'invoice')->middleware('can:view_booking_payment'); 
         });
         Route::controller(SupplierPaymentController::class)->group(function(){
-            Route::get('/paid_to_suppliers', 'paid_to_suppliers');
-            Route::post('/paid_to_suppliers_filter', 'paid_to_suppliers_filter');
+            Route::get('/paid_to_suppliers', 'paid_to_suppliers')->middleware('can:view_supplier_payment_paid');
+            Route::post('/paid_to_suppliers_filter', 'paid_to_suppliers_filter')->middleware('can:view_supplier_payment_paid');
             
-            Route::get('/payable_to_suppliers', 'payable_to_suppliers');
-            Route::post('/payable_to_suppliers_filter', 'payable_to_suppliers_filter');
+            Route::get('/payable_to_suppliers', 'payable_to_suppliers')->middleware('can:supplier_payment_payable');
+            Route::post('/payable_to_suppliers_filter', 'payable_to_suppliers_filter')->middleware('can:supplier_payment_payable');
             
-            Route::get('/due_to_suppliers', 'due_to_suppliers');
-            Route::post('/due_to_suppliers_filter', 'due_to_suppliers_filter');
+            Route::get('/due_to_suppliers', 'due_to_suppliers')->middleware('can:view_supplier_payment_due');
+            Route::post('/due_to_suppliers_filter', 'due_to_suppliers_filter')->middleware('can:view_supplier_payment_due');
 
-            Route::get('/transactions', 'transactions');
-            Route::post('/transactions_payment', 'add_payment');
+            Route::get('/transactions', 'transactions')->middleware('can:add_supplier_payment_payable');
+            Route::post('/transactions_payment', 'add_payment')->middleware('can:add_supplier_payment_payable');
         });
         Route::controller(OwnerController::class)->prefix('owner')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'owner');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_OE_owner');
+            Route::get('/lists', 'lists')->middleware('can:view_OE_owner');
+            Route::get('/item/{id}', 'owner')->middleware('can:view_OE_owner');
+            Route::post('add', 'create')->middleware('can:add_OE_owner');
+            Route::put('update/{id}', 'modify')->middleware('can:update_OE_owner');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_OE_owner');
         });
         Route::controller(OwnerTransactionController::class)->prefix('owner')
         ->group(function(){
-            Route::get('/transactions_list', 'transactions_list');
-            Route::post('/transaction', 'transaction');
+            Route::get('/transactions_list', 'transactions_list')->middleware('can:view_OE_transaction');
+            Route::post('/transaction', 'transaction')->middleware('can:add_OE_transaction');
         });
         Route::controller(GeneralLedgerController::class)->prefix('ledger')
         ->group(function(){
-            Route::get('/', 'view');
+            Route::get('/', 'view')->middleware('can:view_general_ledger');
         });
         Route::controller(PaymentReceivableController::class)->prefix('payment_receivable')
         ->group(function(){
-            Route::get('/', 'view'); 
-            Route::post('/filter', 'filter'); 
+            Route::get('/', 'view')->middleware('can:view_payment_receivable');
+            Route::post('/filter', 'filter')->middleware('can:view_payment_receivable');
         });
         Route::controller(ExpensesCategoryController::class)->prefix('expenses/category')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/item/{id}', 'category');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_expenses_category');
+            Route::get('/item/{id}', 'category')->middleware('can:view_expenses_category');
+            Route::post('add', 'create')->middleware('can:add_expenses_category');
+            Route::put('update/{id}', 'modify')->middleware('can:update_expenses_category');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_expenses_category');
         });
         Route::controller(ExpensesController::class)->prefix('expenses')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'category');
-            Route::post('/filter', 'filter');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_expenses');
+            Route::get('/lists', 'lists')->middleware('can:view_expenses');
+            Route::get('/item/{id}', 'category')->middleware('can:view_expenses');
+            Route::post('/filter', 'filter')->middleware('can:view_expenses');
+            Route::post('add', 'create')->middleware('can:add_expenses');
+            Route::put('update/{id}', 'modify')->middleware('can:update_expenses');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_expenses');
         });
         Route::controller(CategoryRevenueController::class)->prefix('revenue/category')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/item/{id}', 'category');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_revenue_category');
+            Route::get('/item/{id}', 'category')->middleware('can:view_revenue_category');
+            Route::post('add', 'create')->middleware('can:add_revenue_category');
+            Route::put('update/{id}', 'modify')->middleware('can:update_revenue_category');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_revenue_category');
         });
         Route::controller(RevenueController::class)->prefix('revenue')
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'category');
-            Route::post('/filter', 'filter');
-            Route::post('add', 'create');
-            Route::put('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::get('/', 'view')->middleware('can:view_revenue');
+            Route::get('/lists', 'lists')->middleware('can:view_revenue');
+            Route::get('/item/{id}', 'category')->middleware('can:view_revenue');
+            Route::post('/filter', 'filter')->middleware('can:view_revenue');
+            Route::post('add', 'create')->middleware('can:add_revenue');
+            Route::put('update/{id}', 'modify')->middleware('can:update_revenue');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_revenue');
         });
     });
 
     Route::prefix('request')->group(function(){
         Route::controller(RequestListsController::class)->group(function(){
-            Route::get('/lists', 'lists');
-            Route::get('/', 'view');
-            Route::get('/stages_data', 'stages');
-            Route::get('/item/{id}', 'request_item');
+            Route::get('/lists', 'lists')->middleware('can:view_request');
+            Route::get('/', 'view')->middleware('can:view_request');
+            Route::get('/stages_data', 'stages')->middleware('can:view_request');
+            Route::get('/item/{id}', 'request_item')->middleware('can:view_request');
         });
         Route::controller(CreateRequestController::class)->group(function(){
-            Route::post('/add_hotel', 'add_hotel');
-            Route::post('/add_bus', 'add_bus');
-            Route::post('/add_visa', 'add_visa');
-            Route::post('/add_flight', 'add_flight');
-            Route::post('/add_tour', 'add_tour');
-            Route::put('/priority/{id}', 'priority');
-            Route::put('/stages/{id}', 'stages');
-            Route::put('/notes/{id}', 'notes');
-            Route::delete('/delete/{id}', 'delete');
+            Route::post('/add_hotel', 'add_hotel')->middleware('can:add_request');
+            Route::post('/add_bus', 'add_bus')->middleware('can:add_request');
+            Route::post('/add_visa', 'add_visa')->middleware('can:add_request');
+            Route::post('/add_flight', 'add_flight')->middleware('can:add_request');
+            Route::post('/add_tour', 'add_tour')->middleware('can:add_request');
+            Route::put('/priority/{id}', 'priority')->middleware('can:view_request');
+            Route::put('/stages/{id}', 'stages')->middleware('can:view_request');
+            Route::put('/notes/{id}', 'notes')->middleware('can:view_request');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:delete_request');
         });
     });
 
     Route::controller(FinancialController::class)->prefix('financial')->group(function(){
-        Route::get('/', 'view');
-        Route::get('item/{id}', 'financial');
-        Route::post('transfer', 'transfer');
-        Route::put('status/{id}', 'status');
-        Route::post('add', 'create');
-        Route::post('update/{id}', 'modify');
-        Route::delete('delete/{id}', 'delete');
+        Route::get('/', 'view')->middleware('can:view_financial');
+        Route::get('item/{id}', 'financial')->middleware('can:view_financial');
+        Route::post('transfer', 'transfer')->middleware('can:transfer_financial');
+        Route::put('status/{id}', 'status')->middleware('can:update_financial');
+        Route::post('add', 'create')->middleware('can:add_financial');
+        Route::post('update/{id}', 'modify')->middleware('can:update_financial');
+        Route::delete('delete/{id}', 'delete')->middleware('can:delete_financial');
     });
 
     Route::controller(WalletController::class)->prefix('wallet')->group(function(){
-        Route::get('/', 'view');
-        Route::get('/item/{id}', 'wallet');
-        Route::post('add', 'add');
-        Route::post('charge', 'charge');
-        Route::delete('delete/{id}', 'delete');
+        Route::get('/', 'view')->middleware('can:view_wallet');
+        Route::get('/item/{id}', 'wallet')->middleware('can:view_wallet');
+        Route::post('add', 'add')->middleware('can:add_wallet');
+        Route::post('charge', 'charge')->middleware('can:charge_wallet');
+        Route::delete('delete/{id}', 'delete')->middleware('can:delete_wallet');
     });
-
-    Route::controller(ManualBookingController::class)->prefix('manual_booking')->group(function(){
+    
+    Route::controller(ManualBookingController::class)->middleware('can:view_manuel_booking')
+    ->prefix('manual_booking')->group(function(){
         Route::post('/', 'booking');
         Route::get('/mobile_lists', 'mobile_lists');
         Route::get('/items', 'manuel_bookings');
@@ -310,92 +320,92 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::prefix('booking')->group(function(){
         Route::controller(BookingController::class)->group(function(){
-            Route::get('/', 'booking');
-            Route::get('/details/{id}', 'details');
-            Route::get('/engine_details/{id}', 'engine_details');
-            Route::put('/special_request/{id}', 'special_request');
-            Route::put('/engine_special_request/{id}', 'engine_special_request');
+            Route::get('/', 'booking')->middleware('can:view_bookings');
+            Route::get('/details/{id}', 'details')->middleware('can:view_bookings');
+            Route::get('/engine_details/{id}', 'engine_details')->middleware('can:view_bookings');
+            Route::put('/special_request/{id}', 'special_request')->middleware('can:view_bookings');
+            Route::put('/engine_special_request/{id}', 'engine_special_request')->middleware('can:view_bookings');
         });
         Route::controller(BookingStatusController::class)->group(function(){
-            Route::put('/confirmed/{id}', 'confirmed');
-            Route::put('/vouchered/{id}', 'vouchered');
-            Route::put('/canceled/{id}', 'canceled');
+            Route::put('/confirmed/{id}', 'confirmed')->middleware('can:status_bookings');
+            Route::put('/vouchered/{id}', 'vouchered')->middleware('can:status_bookings');
+            Route::put('/canceled/{id}', 'canceled')->middleware('can:status_bookings');
         });
     });
 
     Route::controller(DepartmentController::class)->prefix('department')->group(function(){
-        Route::get('/', 'view');
+        Route::get('/', 'view')->middleware('can:view_department');
     });
 
     Route::prefix('customer')->group(function(){
         Route::controller(CustomerController::class)->group(function(){
-            Route::get('/', 'view');
+            Route::get('/', 'view')->middleware('can:view_customer');
         });
         Route::controller(CustomerProfileController::class)->group(function(){
-            Route::get('/profile/{id}', 'profile');
+            Route::get('/profile/{id}', 'profile')->middleware('can:view_customer');
         });
     });
 
     Route::prefix('/tour')->group(function(){
         Route::controller(TourController::class)->group(function(){
-            Route::get('/', 'view');
-            Route::get('/lists', 'lists');
-            Route::get('/item/{id}', 'tour');
-            Route::put('/status/{id}', 'status');
-            Route::put('/accepted/{id}', 'accepted');
+            Route::get('/', 'view')->middleware('can:view_inventory_tour');
+            Route::get('/lists', 'lists')->middleware('can:view_inventory_tour');
+            Route::get('/item/{id}', 'tour')->middleware('can:view_inventory_tour');
+            Route::put('/status/{id}', 'status')->middleware('can:update_inventory_tour');
+            Route::put('/accepted/{id}', 'accepted')->middleware('can:update_inventory_tour');
         });
         Route::controller(CreateTourController::class)->group(function(){
-            Route::post('/add', 'create'); 
-            Route::put('/update/{id}', 'modify'); 
-            Route::delete('/delete/{id}', 'delete'); 
+            Route::post('/add', 'create')->middleware('can:add_inventory_tour');
+            Route::put('/update/{id}', 'modify')->middleware('can:update_inventory_tour');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:delete_inventory_tour');
         });
         Route::controller(TourGalleryController::class)->group(function(){
-            Route::get('/gallery/{id}', 'gallery'); 
-            Route::post('/add_gallery', 'add_gallery'); 
-            Route::delete('/gallery/delete/{id}', 'delete'); 
+            Route::get('/gallery/{id}', 'gallery')->middleware('can:gallary_inventory_tour');
+            Route::post('/add_gallery', 'add_gallery')->middleware('can:gallary_inventory_tour');
+            Route::delete('/gallery/delete/{id}', 'delete')->middleware('can:gallary_inventory_tour');
         });
     });
 
     Route::prefix('/room')->group(function(){
         Route::controller(RoomPricingController::class)
         ->prefix('/pricing')->group(function(){
-            Route::get('/{id}', 'view');
-            Route::get('/item/{id}', 'pricing');
-            Route::put('/duplicate/{id}', 'duplicate');
-            Route::post('/add', 'create');
-            Route::post('/update/{id}', 'modify');
-            Route::delete('/delete/{id}', 'delete');
+            Route::get('/{id}', 'view')->middleware('can:pricing_inventory_room');
+            Route::get('/item/{id}', 'pricing')->middleware('can:pricing_inventory_room');
+            Route::put('/duplicate/{id}', 'duplicate')->middleware('can:pricing_inventory_room');
+            Route::post('/add', 'create')->middleware('can:pricing_inventory_room');
+            Route::post('/update/{id}', 'modify')->middleware('can:pricing_inventory_room');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:pricing_inventory_room');
         });
         Route::controller(RoomController::class)
         ->group(function(){
-            Route::get('/', 'view');
-            Route::get('/room_list', 'room_list');
-            Route::get('/lists', 'lists');
-            Route::post('/hotel_lists', 'hotel_lists');
-            Route::put('/duplicate_room/{id}', 'duplicate_room');
-            Route::get('/item/{id}', 'room');
-            Route::put('/status/{id}', 'status');
-            Route::put('/accepted/{id}', 'accepted');
+            Route::get('/', 'view')->middleware('can:view_inventory_room');
+            Route::get('/room_list', 'room_list')->middleware('can:view_inventory_room');
+            Route::get('/lists', 'lists')->middleware('can:view_inventory_room');
+            Route::post('/hotel_lists', 'hotel_lists')->middleware('can:view_inventory_room');
+            Route::put('/duplicate_room/{id}', 'duplicate_room')->middleware('can:duplicated_inventory_room');
+            Route::get('/item/{id}', 'room')->middleware('can:update_inventory_room');
+            Route::put('/status/{id}', 'status')->middleware('can:update_inventory_room');
+            Route::put('/accepted/{id}', 'accepted')->middleware('can:update_inventory_room');
         });
         Route::controller(RoomAvailabilityController::class)
         ->prefix('/availability')->group(function(){
-            Route::post('/', 'view');
-            Route::get('item/{id}', 'room_availability');
-            Route::post('add', 'create');
-            Route::post('update', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::post('/', 'view')->middleware('can:availability_inventory_room');
+            Route::get('item/{id}', 'room_availability')->middleware('can:availability_inventory_room');
+            Route::post('add', 'create')->middleware('can:availability_inventory_room');
+            Route::post('update', 'modify')->middleware('can:availability_inventory_room');
+            Route::delete('delete/{id}', 'delete')->middleware('can:availability_inventory_room');
         });
         Route::controller(CreateRoomController::class)
         ->group(function(){
-            Route::post('add', 'create');
-            Route::post('update/{id}', 'modify');
-            Route::delete('delete/{id}', 'delete');
+            Route::post('add', 'create')->middleware('can:add_inventory_room');
+            Route::post('update/{id}', 'modify')->middleware('can:update_inventory_room');
+            Route::delete('delete/{id}', 'delete')->middleware('can:delete_inventory_room');
         });
         Route::controller(RoomGalleryController::class)
         ->group(function(){
-            Route::get('/gallery/{id}', 'gallery');
-            Route::post('/add_gallery', 'add_gallery');
-            Route::delete('/delete_gallery/{id}', 'delete');
+            Route::get('/gallery/{id}', 'gallery')->middleware('can:gallary_inventory_room');
+            Route::post('/add_gallery', 'add_gallery')->middleware('can:gallary_inventory_room');
+            Route::delete('/delete_gallery/{id}', 'delete')->middleware('can:gallary_inventory_room');
         });
 
         Route::prefix('/settings')->group(function(){

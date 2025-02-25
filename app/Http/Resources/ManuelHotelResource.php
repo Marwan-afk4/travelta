@@ -29,7 +29,10 @@ class ManuelHotelResource extends JsonResource
             'check_in' => $this->hotel->check_in ?? null,
             'check_out' => $this->hotel->check_out ?? null,
             'no_nights' => $this->hotel->nights ?? null,
-            'room_type' => $this->hotel->room_type ?? null,
+            'room_quantity' => $this->hotel->room_quantity ?? null,
+            'room_type' => is_string($this->hotel->room_type) ?
+            json_decode($this->hotel->room_type) ?? $this->hotel->room_type
+            : $this->hotel->room_type ?? null,
             'no_adults' => $this->hotel->adults ?? null,
             'no_children' => $this->hotel->childreen ?? null,  
             'created_at' => $this->created_at ?? null,  
