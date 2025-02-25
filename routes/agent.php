@@ -112,11 +112,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::get('/getcountries', [BookingEngine::class, 'getCountries'])->middleware('can:view_booking_engine');
 
+    Route::get('/gettourtypes', [BookingEngine::class, 'getTourType'])->middleware('can:view_booking_engine');
+
     /////////////////////// Tours ///////////////////////
 
     Route::get('/agent/tours', [BookingEngine::class, 'getAvailableTours'])->middleware('can:view_booking_engine');
 
-    
+
 ///////marwan end
     Route::prefix('supplier')->group(function(){
         Route::controller(SupplierController::class)->group(function(){

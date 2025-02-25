@@ -15,6 +15,7 @@ use App\Models\HotelImage;
 use App\Models\Room;
 use App\Models\RoomAvailability;
 use App\Models\Tour;
+use App\Models\TourType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -440,5 +441,13 @@ class BookingEngine extends Controller
             'count' => $tours->count(),
             'tours' => $tours
         ], 200);
+    }
+
+    public function getTourtype(){
+        $tourtype = TourType::all();
+        $data = [
+            'tourtype' => $tourtype
+        ];
+        return response()->json($data);
     }
 }
