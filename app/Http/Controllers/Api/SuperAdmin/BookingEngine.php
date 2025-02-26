@@ -435,6 +435,11 @@ class BookingEngine extends Controller
             ->with('includes')
             ->with('excludes')
             ->with('cancelation_items')
+            ->with('tour_images')
+            ->with('tour_hotels')
+            ->with('tour_discounts')
+            ->with('tour_pricings')
+            ->with('tour_extras')
             ->get();
 
         return response()->json([
