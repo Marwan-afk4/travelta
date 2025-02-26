@@ -98,6 +98,8 @@ class ConfirmationTaskController extends Controller
 
     public function create(Request $request){
         // http://localhost/travelta/public/agent/booking/task/add
+        // Keys
+        // manuel_booking_id, booking_engine_id, notes, confirmation_number, notification
         $validation = Validator::make($request->all(), [
             'manuel_booking_id' => 'exists:manuel_bookings,id|nullable',
             'booking_engine_id' => 'exists:bookingengine_lists,id|nullable',
@@ -136,6 +138,8 @@ class ConfirmationTaskController extends Controller
 
     public function modify(Request $request, $id){
         // http://localhost/travelta/public/agent/booking/task/update/{id}
+        // Keys
+        // manuel_booking_id, booking_engine_id, notes, confirmation_number, notification
         $validation = Validator::make($request->all(), [
             'manuel_booking_id' => 'exists:manuel_bookings,id|nullable',
             'booking_engine_id' => 'exists:bookingengine_lists,id|nullable',
