@@ -31,6 +31,10 @@ class ManuelBooking extends Model
     ];
     protected $appends = ['to_client'];
 
+    public function tasks(){
+        return $this->hasMany(BookingTask::class, 'manuel_booking_id');
+    }
+
     public function affilate(){
         return $this->belongsTo(AffilateAgent::class, 'affilate_id');
     }

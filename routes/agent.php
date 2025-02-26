@@ -38,6 +38,7 @@ use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
 use App\Http\Controllers\Api\Agent\booking\BookingStatusController;
+use App\Http\Controllers\Api\Agent\booking\ConfirmationTaskController;
 
 use App\Http\Controllers\Api\Agent\HRM\HRMagentController;
 use App\Http\Controllers\Api\Agent\HRM\HRMdepartmentController;
@@ -339,6 +340,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::put('/confirmed/{id}', 'confirmed')->middleware('can:status_bookings');
             Route::put('/vouchered/{id}', 'vouchered')->middleware('can:status_bookings');
             Route::put('/canceled/{id}', 'canceled')->middleware('can:status_bookings');
+        });
+        Route::controller(ConfirmationTaskController::class)->prefix('task')->group(function(){
+            Route::get('/manuel/{id}', 'manuel_tasks')->middleware('can:view_bookings');
+            Route::get('/engine/{id}', 'engine_tasks')->middleware('can:view_bookings');
+            Route::get('/item/{id}', 'task')->middleware('can:view_bookings');
+            Route::post('/add', 'create')->middleware('can:view_bookings');
+            Route::put('/update/{id}', 'modify')->middleware('can:view_bookings');
+            Route::delete('/delete/{id}', 'delete')->middleware('can:view_bookings');
         });
     });
 

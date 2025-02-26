@@ -13,6 +13,7 @@ use App\Http\Resources\EngineHotelResource;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\BookingengineList;
+use App\Models\BookingTask;
 use App\Models\ManuelBooking;
 use App\Models\AffilateAgent;
 use App\Models\Service;
@@ -22,7 +23,8 @@ class BookingController extends Controller
 {
     public function __construct(private Service $services, 
     private ManuelBooking $manuel_booking, private AffilateAgent $affilate,
-    private Agent $agent, private BookingengineList $booking_engine){}
+    private Agent $agent, private BookingengineList $booking_engine,
+    private BookingTask $booking_task){}
 
     public function services(){
         $services = $this->services
@@ -236,7 +238,7 @@ class BookingController extends Controller
 
     public function details(Request $request, $id){
         // https://travelta.online/agent/booking/details/{id}
-        // invoice => /accounting/booking/invoice/{id} 
+        // invoice => /accounting/booking/invoice/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
             $agent = $this->affilate
@@ -292,6 +294,7 @@ class BookingController extends Controller
             $traveler['position'] = 'Customer';
         }
         $payments = $manuel_booking->payments;
+        $confirmation_tasks = $manuel_booking->tasks;
         $actions = [
             'confirmed' => $manuel_booking->operation_confirmed,
             'vouchered' => $manuel_booking->operation_vouchered,
@@ -307,6 +310,7 @@ class BookingController extends Controller
             'payments' => $payments,
             'actions' => $actions,
             'agent_data' => $agent_data,
+            'confirmation_tasks' => $confirmation_tasks,
         ]);
     }
 
@@ -388,6 +392,7 @@ class BookingController extends Controller
             $traveler['email'] = $data->email;
             $traveler['position'] = 'Customer';
         }
+        $confirmation_tasks = $booking_engine->tasks;
         //$payments = $booking_engine->payments;
         $actions = [
             'confirmed' => $booking_engine->operation_confirmed,
@@ -404,6 +409,7 @@ class BookingController extends Controller
           //  'payments' => $payments,
             'actions' => $actions,
             'agent_data' => $agent_data,
+            'confirmation_tasks' => $confirmation_tasks,
         ]);
     }
 

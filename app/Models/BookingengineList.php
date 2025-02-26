@@ -30,7 +30,10 @@ class BookingengineList extends Model
         'special_request',
     ];
     protected $appends = ['to_client'];
-
+ 
+    public function tasks(){
+        return $this->hasMany(BookingTask::class, 'booking_engine_id');
+    }
 
     public function operation_confirmed(){
         return $this->hasMany(OperationBookingConfirmed::class, 'booking_engine_id');
