@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('manuel_bookings', function (Blueprint $table) {
-            $table->string('voucher')->after('invoice')->nullable();
+            $table->string('voucher')->after('id')->nullable();
         });
     }
 
