@@ -143,16 +143,9 @@ class PositionController extends Controller
                 'view', 'add','update','delete',
             ],
         ];
-        $actions = [
-            'view',  
-            'add',
-            'update',
-            'delete',
-        ];
 
         return response()->json([
             'modules' => $modules,
-            'actions' => $actions,
         ]);
     }
 
