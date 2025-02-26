@@ -434,6 +434,7 @@ class BookingEngine extends Controller
             ->with('itinerary')
             ->with('includes')
             ->with('excludes')
+            ->with('cancelation_items')
             ->get();
 
         return response()->json([
