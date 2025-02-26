@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class ManuelBooking extends Model
 {
     protected $fillable = [
+        'invoice',
+        'voucher',
         'to_supplier_id',
         'to_customer_id',
         'from_supplier_id',
@@ -28,6 +30,10 @@ class ManuelBooking extends Model
         'special_request',
     ];
     protected $appends = ['to_client'];
+
+    public function tasks(){
+        return $this->hasMany(BookingTask::class, 'manuel_booking_id');
+    }
 
     public function affilate(){
         return $this->belongsTo(AffilateAgent::class, 'affilate_id');

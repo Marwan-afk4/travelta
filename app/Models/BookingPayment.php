@@ -9,6 +9,7 @@ class BookingPayment extends Model
     protected $fillable = [
         'manuel_booking_id',
         'date',
+        'invoice',
         'amount',
         'financial_id',
         'code',

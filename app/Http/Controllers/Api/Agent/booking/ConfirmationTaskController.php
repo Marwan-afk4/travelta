@@ -1,23 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Api\Agent\admins;
+namespace App\Http\Controllers\Api\Agent\booking;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\api\agent\admin\AdminRequest;
-use Illuminate\Validation\Rule;
 
-use App\Models\AdminAgentPosition;
-use App\Models\AdminAgent;
+use App\Models\BookingTask;
 
-class AdminController extends Controller
+class ConfirmationTaskController extends Controller
 {
-    public function __construct(private AdminAgentPosition $position, 
-    private AdminAgent $admins){}
+    public function __construct(private BookingTask $tasks){}
 
-    public function view(Request $request){
-        // /agent/admin
+    public function manuel_tasks(Request $request, $id){
+        // http://localhost/travelta/public/agent/booking/task/manuel/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -34,22 +30,18 @@ class AdminController extends Controller
             $role = 'agent_id';
         }
 
-        $admins = $this->admins
-        ->where($role, $agent_id)
-        ->with('position:id,name')
-        ->get();
-        $positions = $this->position
+        $tasks = $this->tasks
+        ->where('manuel_booking_id', $id)
         ->where($role, $agent_id)
         ->get();
 
         return response()->json([
-            'admins' => $admins,
-            'positions' => $positions,
+            'tasks' => $tasks,
         ]);
     }
-
-    public function admin(Request $request, $id){
-        // /agent/admin/item/{id}
+    
+    public function engine_tasks(Request $request, $id){
+        // http://localhost/travelta/public/agent/booking/task/engine/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -66,61 +58,54 @@ class AdminController extends Controller
             $role = 'agent_id';
         }
 
-        $admin = $this->admins
+        $tasks = $this->tasks
+        ->where('booking_engine_id', $id)
         ->where($role, $agent_id)
+        ->get();
+
+        return response()->json([
+            'tasks' => $tasks,
+        ]);
+    }
+
+    public function task(Request $request, $id){
+        // http://localhost/travelta/public/agent/booking/task/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+
+        $task = $this->tasks
         ->where('id', $id)
-        ->with('position:id,name')
+        ->where($role, $agent_id)
         ->first();
 
         return response()->json([
-            'admin' => $admin, 
+            'task' => $task,
         ]);
     }
 
-    public function status(Request $request, $id){ 
-        // /agent/admin/status/{id}
-        // Key
-        // status
-        $validation = Validator::make($request->all(), [
-            'status' => 'required|boolean',
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
-        }
-        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
-            $agent_id = $request->user()->affilate_id;
-        }
-        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
-            $agent_id = $request->user()->agent_id;
-        }
-        else{
-            $agent_id = $request->user()->id;
-        }
-        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
-            $role = 'affilate_id';
-        } 
-        else {
-            $role = 'agent_id';
-        }
-        $admins = $this->admins
-        ->where($role, $agent_id)
-        ->where('id', $id)
-        ->update([
-            'status' => $request->status
-        ]);
-
-        return response()->json([
-            'success' => $request->status ? 'active' : 'banned'
-        ]);
-    }
-
-    public function create(AdminRequest $request){ 
-        // /agent/admin/add
+    public function create(Request $request){
+        // http://localhost/travelta/public/agent/booking/task/add
         // Keys
-        // position_id, name, email, phone, password, status 
+        // manuel_booking_id, booking_engine_id, notes, confirmation_number, notification
         $validation = Validator::make($request->all(), [
-            'email' => 'unique:admin_agents,email', 
-            'phone' => 'unique:admin_agents,phone', 
+            'manuel_booking_id' => 'exists:manuel_bookings,id|nullable',
+            'booking_engine_id' => 'exists:bookingengine_lists,id|nullable',
+            'notes' => 'sometimes',
+            'confirmation_number' => 'required',
+            'notification' => 'date|required',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -141,23 +126,26 @@ class AdminController extends Controller
             $role = 'agent_id';
         }
 
-        $adminRequest = $request->validated();
-        $adminRequest[$role] = $agent_id;
-        $admins = $this->admins
-        ->create($adminRequest);
+        $taskRequest = $validation->validated();
+        $taskRequest[$role] = $agent_id;
+        $this->tasks
+        ->create($taskRequest);
 
         return response()->json([
             'success' => 'You add data success'
         ]);
     }
 
-    public function modify(AdminRequest $request, $id){ 
-        // /agent/admin/update/{id}
+    public function modify(Request $request, $id){
+        // http://localhost/travelta/public/agent/booking/task/update/{id}
         // Keys
-        // position_id, name, email, phone, password, status 
+        // manuel_booking_id, booking_engine_id, notes, confirmation_number, notification
         $validation = Validator::make($request->all(), [
-            'email' => [Rule::unique('admin_agents')->ignore($id)],
-            'phone' => [Rule::unique('admin_agents', 'phone')->ignore($id)],
+            'manuel_booking_id' => 'exists:manuel_bookings,id|nullable',
+            'booking_engine_id' => 'exists:bookingengine_lists,id|nullable',
+            'notes' => 'sometimes',
+            'confirmation_number' => 'required',
+            'notification' => 'date|required',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -178,20 +166,19 @@ class AdminController extends Controller
             $role = 'agent_id';
         }
 
-        $adminRequest = $request->validated();
-        $adminRequest['password'] = bcrypt($adminRequest['password']);
-        $admins = $this->admins
-        ->where($role, $agent_id)
+        $taskRequest = $validation->validated();
+        $this->tasks
         ->where('id', $id)
-        ->update($adminRequest);
+        ->where($role, $agent_id)
+        ->update($taskRequest);
 
         return response()->json([
             'success' => 'You update data success'
         ]);
     }
 
-    public function delete(Request $request, $id){ 
-        // /agent/admin/delete/{id}
+    public function delete(Request $request, $id){
+        // http://localhost/travelta/public/agent/booking/task/delete/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -207,9 +194,10 @@ class AdminController extends Controller
         else {
             $role = 'agent_id';
         }
-        $admins = $this->admins
-        ->where($role, $agent_id)
+
+        $this->tasks
         ->where('id', $id)
+        ->where($role, $agent_id)
         ->delete();
 
         return response()->json([

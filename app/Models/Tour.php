@@ -78,4 +78,25 @@ class Tour extends Model
     public function pick_up_city(){
         return $this->belongsTo(City::class, 'pick_up_city_id');
     }
+    // _________________________________
+
+    public function tour_images(){
+        return $this->hasMany(TourImage::class, 'tour_id');
+    }
+    
+    public function tour_hotels(){
+        return $this->hasMany(TourHotel::class, 'tour_id');
+    }
+    
+    public function tour_extras(){
+        return $this->hasMany(TourExtra::class, 'tour_id');
+    }
+    
+    public function tour_discounts(){
+        return $this->hasMany(TourDiscount::class, 'tour_id');
+    }
+    
+    public function tour_pricings(){
+        return $this->hasMany(TourPricing::class, 'tour_id');
+    }
 }

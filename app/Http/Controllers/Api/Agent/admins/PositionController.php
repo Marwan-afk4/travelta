@@ -109,52 +109,43 @@ class PositionController extends Controller
                 'view',
             ],
             'inventory_room' => [
-                'view', 'add','update','delete', 'duplicated', 'availability', 'gallary', 'pricing'
+                'view', 'add','update','delete', 'duplicated', 'availability', 'gallary', 'pricing',
+                'type', 'amenity', 'extra'
             ],
             'inventory_tour' => [
                 'view', 'add','update','delete', 'gallary',
-            ],
-            'invoice' => [
-
             ],
             'lead' => [
                 'view', 'add','update','delete',
             ],
             'request' => [
-                'view', 'add','priority','delete',
+                'view', 'add','priority','delete', 'stages', 'notes'
             ],
             'setting_currency' => [
-
+                'view', 'add','update','delete',
             ],
             'setting_group' => [
-
+                'view', 'add','update','delete',
             ],
             'setting_tax' => [
-
+                'view', 'add','update','delete',
             ],
             'supplier' => [
-
+                'view', 'add','update','delete',
             ],
             'HRM_department' => [
-
+                'view', 'add','update','delete',
             ],
             'HRM_agent' => [
-
+                'view', 'add','delete',
             ],
             'HRM_employee' => [
-
+                'view', 'add','update','delete',
             ],
-        ];
-        $actions = [
-            'view',  
-            'add',
-            'update',
-            'delete',
         ];
 
         return response()->json([
             'modules' => $modules,
-            'actions' => $actions,
         ]);
     }
 
