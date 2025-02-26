@@ -14,6 +14,7 @@ class AffilateAgent extends Model
     protected $fillable =[
         'f_name',
         'l_name',
+        'users',
         'email',
         'phone',
         'password',

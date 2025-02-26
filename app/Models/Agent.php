@@ -14,6 +14,7 @@ class Agent extends Model
 
     protected $fillable = [
         'plan_id',
+        'users',
         'name',
         'phone',
         'email',
