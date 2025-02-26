@@ -1203,4 +1203,40 @@ class ManualBookingController extends Controller
             ], 400);
         }
     }
+
+    public function pdf(Request $request){
+        // https://travelta.online/agent/manual_booking/pdf
+        // Keys
+        // invoice, voucher, manuel_id
+        $validation = Validator::make($request->all(), [
+            'manuel_id' => 'required|exists:manuel_bookings,id',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        
+        if ($request->invoice && !empty($request->invoice)) {
+            $pdf_path = $this->upload($request, 'invoice', 'agent/manuel/invoice');
+            $booking_payment = $this->booking_payment
+            ->where('manuel_booking_id', $request->manuel_id)
+            ->first();
+            if (!empty($booking_payment)) {
+                $booking_payment->update([
+                    'invoice' => $pdf_path,
+                ]);
+            }
+        }
+        if ($request->voucher && !empty($request->voucher)) {
+            $pdf_path = $this->upload($request, 'voucher', 'agent/manuel/voucher');
+            $this->manuel_booking
+            ->where('id', $request->manuel_id)
+            ->update([
+                'voucher' => $pdf_path,
+            ]);
+        }
+
+        return response()->json([
+            'success' => 'You upload pdf success'
+        ]);
+    }
 }

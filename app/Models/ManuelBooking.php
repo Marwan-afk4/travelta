@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class ManuelBooking extends Model
 {
     protected $fillable = [
+        'invoice',
+        'voucher',
         'to_supplier_id',
         'to_customer_id',
         'from_supplier_id',

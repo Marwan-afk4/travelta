@@ -324,6 +324,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::post('/service_supplier', 'from_supplier');
         Route::post('/taxes', 'from_taxes');
         Route::get('/lists', 'lists');
+        Route::post('/pdf', 'pdf');
     });
 
     Route::prefix('booking')->group(function(){
