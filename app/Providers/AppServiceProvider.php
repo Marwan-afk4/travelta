@@ -24,6 +24,15 @@ use App\Providers\gates\CustomerGate;
 use App\Providers\gates\RoomGate;
 use App\Providers\gates\TourGate;
 use App\Providers\gates\LeadGate;
+use App\Providers\gates\RequestGate;
+use App\Providers\gates\CurrencyGate;
+
+use App\Providers\gates\GroupGate;
+use App\Providers\gates\HRM_AgentGate;
+use App\Providers\gates\HRM_DepartmentGate;
+use App\Providers\gates\HRM_EmployeeGate;
+use App\Providers\gates\SupplierGate;
+use App\Providers\gates\TaxGate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // invoice, request, setting_currency, setting_group, setting_tax, supplier, HRM
+        // invoice
         BookingPaymentGate::defineGates();
         ExpensesCategoryGate::defineGates();
         ExpensesGate::defineGates();
@@ -63,6 +72,14 @@ class AppServiceProvider extends ServiceProvider
         RoomGate::defineGates();
         TourGate::defineGates();
         CustomerGate::defineGates();
+        RequestGate::defineGates();
         LeadGate::defineGates();
+        CurrencyGate::defineGates();
+        GroupGate::defineGates();
+        HRM_AgentGate::defineGates();
+        HRM_DepartmentGate::defineGates();
+        HRM_EmployeeGate::defineGates();
+        SupplierGate::defineGates();
+        TaxGate::defineGates();
     }
 }

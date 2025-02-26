@@ -60,6 +60,42 @@ class RoomGate
             }
             return false;
         });
+        Gate::define('type_inventory_room', function ($user) {
+            if ($user instanceof Agent) {
+                return true;
+            }
+            if ($user->user_positions && 
+            ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
+            $user->user_positions->perimitions->pluck('module')->contains('inventory_room') &&
+            $user->user_positions->perimitions->pluck('action')->contains('type') ) {
+                return true;
+            }
+            return false;
+        });
+        Gate::define('amenity_inventory_room', function ($user) {
+            if ($user instanceof Agent) {
+                return true;
+            }
+            if ($user->user_positions && 
+            ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
+            $user->user_positions->perimitions->pluck('module')->contains('inventory_room') &&
+            $user->user_positions->perimitions->pluck('action')->contains('amenity') ) {
+                return true;
+            }
+            return false;
+        });
+        Gate::define('extra_inventory_room', function ($user) {
+            if ($user instanceof Agent) {
+                return true;
+            }
+            if ($user->user_positions && 
+            ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
+            $user->user_positions->perimitions->pluck('module')->contains('inventory_room') &&
+            $user->user_positions->perimitions->pluck('action')->contains('extra') ) {
+                return true;
+            }
+            return false;
+        });
         Gate::define('update_inventory_room', function ($user) {
             if ($user instanceof Agent) {
                 return true;
