@@ -78,8 +78,7 @@ class Tour extends Model
     public function pick_up_city(){
         return $this->belongsTo(City::class, 'pick_up_city_id');
     }
-    // _________________________________
-
+    //__________________________________________________________
     public function tour_images(){
         return $this->hasMany(TourImage::class, 'tour_id');
     }

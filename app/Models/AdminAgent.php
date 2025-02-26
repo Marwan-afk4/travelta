@@ -16,6 +16,7 @@ class AdminAgent extends Model
         'affilate_id',
         'agent_id',
         'position_id',
+        'role',
         'name',
         'email',
         'phone',

@@ -10,11 +10,14 @@ use Illuminate\Validation\Rule;
 
 use App\Models\AdminAgentPosition;
 use App\Models\AdminAgent;
+use App\Models\Agent;
+use App\Models\AffilateAgent;
 
 class AdminController extends Controller
 {
     public function __construct(private AdminAgentPosition $position, 
-    private AdminAgent $admins){}
+    private AdminAgent $admins, private Agent $agents,
+    private AffilateAgent $affilate){}
 
     public function view(Request $request){
         // /agent/admin
@@ -142,6 +145,7 @@ class AdminController extends Controller
         }
 
         $adminRequest = $request->validated();
+        $adminRequest['role'] = $request->user()->role;
         $adminRequest[$role] = $agent_id;
         $admins = $this->admins
         ->create($adminRequest);
