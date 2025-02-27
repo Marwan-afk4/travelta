@@ -36,6 +36,18 @@ class HRM_AgentGate
             }
             return false;
         });
+        Gate::define('update_HRM_agent', function ($user) {
+            if ($user instanceof Agent) {
+                return true;
+            }
+            if ($user->user_positions && 
+            ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
+            $user->user_positions->perimitions->pluck('module')->contains('HRM_agent') &&
+            $user->user_positions->perimitions->pluck('action')->contains('update') ) {
+                return true;
+            }
+            return false;
+        });
         Gate::define('delete_HRM_agent', function ($user) {
             if ($user instanceof Agent) {
                 return true;

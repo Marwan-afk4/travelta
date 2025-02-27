@@ -95,12 +95,12 @@ class HRMagentController extends Controller
         ]);
     }
 
-    public function modify(Request $request){
+    public function modify(Request $request, $id){
         // /agent/hrm/agent/update/{id}
         // Keys
         // user_name, password
-        $validation = Validator::make($request->all(), [
-            'user_name' => 'required',
+        $validation = Validator::make($request->all(), [ 
+            'user_name' => [Rule::unique('hrm_employees')->ignore($id), 'required'],
             'password' => 'required',
         ]);
         if($validation->fails()){
@@ -126,14 +126,14 @@ class HRMagentController extends Controller
         ->where($role, $agent_id)
         ->where('status', 1)
         ->where('agent', 1)
-        ->where('id', $request->employee_id)
+        ->where('id', $id)
         ->update([
             'user_name' => $request->user_name,
             'password' => bcrypt($request->password),
         ]);
 
         return response()->json([
-            'success' => 'You add data success'
+            'success' => 'You update data success'
         ]);
     }
 

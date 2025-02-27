@@ -137,7 +137,7 @@ class PositionController extends Controller
                 'view', 'add','update','delete',
             ],
             'HRM_agent' => [
-                'view', 'add','delete',
+                'view', 'add', 'update', 'delete',
             ],
             'HRM_employee' => [
                 'view', 'add','update','delete',

@@ -164,6 +164,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view')->middleware('can:view_HRM_agent');
             Route::post('/update/{id}', 'modify')->middleware('can:add_HRM_agent');
             Route::post('/add', 'add')->middleware('can:add_HRM_agent');
+            Route::post('/update/{id}', 'modify')->middleware('can:update_HRM_agent');
             Route::delete('/delete/{id}', 'delete')->middleware('can:delete_HRM_agent');
         });
     });
