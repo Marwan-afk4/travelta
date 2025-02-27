@@ -36,6 +36,11 @@ class HRMemployeeController extends Controller
         else{
             $role = 'agent_id';
         }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ], 400);
+        }
 
         $employees = $this->employee
         ->with('department:id,name')
@@ -70,6 +75,11 @@ class HRMemployeeController extends Controller
         }
         else{
             $role = 'agent_id';
+        }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ], 400);
         }
 
         $employee = $this->employee
@@ -109,6 +119,12 @@ class HRMemployeeController extends Controller
         else{
             $role = 'agent_id';
         }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ], 400);
+        }
+
         $employeeRequest = $request->validated();
         $employeeRequest[$role] = $agent_id;
         $role = $this->role
@@ -161,6 +177,11 @@ class HRMemployeeController extends Controller
         else{
             $role = 'agent_id';
         }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ], 400);
+        }
 
         $employee = $this->employee
         ->where($role, $agent_id)
@@ -195,6 +216,11 @@ class HRMemployeeController extends Controller
         }
         else{
             $role = 'agent_id';
+        }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ], 400);
         }
 
         $employee = $this->employee

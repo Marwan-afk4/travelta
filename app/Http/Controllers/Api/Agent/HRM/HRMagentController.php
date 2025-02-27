@@ -35,6 +35,11 @@ class HRMagentController extends Controller
         else{
             $role = 'agent_id';
         }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ]);
+        }
 
         $agents = $this->agents
         ->with('department:id,name')
@@ -73,6 +78,11 @@ class HRMagentController extends Controller
         }
         else{
             $role = 'agent_id';
+        }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ]);
         }
 
         $agent = $this->agents
@@ -119,6 +129,11 @@ class HRMagentController extends Controller
             $agent = $this->admin_agents
             ->where('id', $agent_id)
             ->first();
+        }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ]);
         }
 
         if ($agent->users >= $agent->plan->user_limit) {
@@ -169,6 +184,12 @@ class HRMagentController extends Controller
         else{
             $role = 'agent_id';
         }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ]);
+        }
+
         $agent_update = [
             'user_name' => $request->user_name,
         ];
@@ -209,6 +230,11 @@ class HRMagentController extends Controller
             $agent = $this->admin_agents
             ->where('id', $agent_id)
             ->first();
+        }
+        if ($request->user()?->plan?->module_type != 'hrm') {
+            return response()->json([
+                'errors' => 'Your plan does not support hrm'
+            ]);
         }
         
         $agent->users --;
