@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Agent\HRM;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule; 
 
 use App\Models\HrmEmployee;
 use App\Models\HrmDepartment; 
