@@ -11,6 +11,7 @@ use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -108,7 +109,8 @@ class PaymentController extends Controller
         } elseif ($authuser->role === 'freelancer' || $authuser->role === 'affiliate') {
             $affiliateAgentId = $authuser->id;
         }
-
+        $end_date = $plan->period_in_days;
+        $end_date = date('Y-m-d')->addDays($end_date);
 
         $payment = ManualPayment::create([
             'payment_method_id' => $request->payment_method_id,
@@ -118,8 +120,8 @@ class PaymentController extends Controller
             'receipt' => $request->receipt,
             'status' => 'pending',
             'amount' => $plan->price_after_discount,
-            'start_date' => null,
-            'end_date' => null
+            'start_date' => date('Y-m-d'),
+            'end_date' => $end_date
         ]);
 
         return response()->json([
