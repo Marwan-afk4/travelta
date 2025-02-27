@@ -150,6 +150,7 @@ class AdminController extends Controller
             ->first();
         }
 
+        
         $adminRequest = $request->validated();
         $adminRequest['role'] = $request->user()->role;
         $adminRequest[$role] = $agent_id;
