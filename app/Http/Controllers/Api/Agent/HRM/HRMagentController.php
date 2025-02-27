@@ -57,7 +57,7 @@ class HRMagentController extends Controller
         // Keys
         // user_name, password, employee_id
         $validation = Validator::make($request->all(), [
-            'user_name' => 'required',
+            'user_name' => 'required|unique:hrm_employees,user_name',
             'password' => 'required',
             'employee_id' => 'required',
         ]);
@@ -88,6 +88,48 @@ class HRMagentController extends Controller
             'user_name' => $request->user_name,
             'password' => bcrypt($request->password),
             'agent' => 1,
+        ]);
+
+        return response()->json([
+            'success' => 'You add data success'
+        ]);
+    }
+
+    public function modify(Request $request){
+        // /agent/hrm/agent/update/{id}
+        // Keys
+        // user_name, password
+        $validation = Validator::make($request->all(), [
+            'user_name' => 'required',
+            'password' => 'required',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
+ 
+        $this->agents
+        ->where($role, $agent_id)
+        ->where('status', 1)
+        ->where('agent', 1)
+        ->where('id', $request->employee_id)
+        ->update([
+            'user_name' => $request->user_name,
+            'password' => bcrypt($request->password),
         ]);
 
         return response()->json([

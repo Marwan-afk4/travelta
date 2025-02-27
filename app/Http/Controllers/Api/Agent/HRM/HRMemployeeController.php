@@ -54,7 +54,7 @@ class HRMemployeeController extends Controller
         ]);
     }
 
-    public function employee(Request $request){
+    public function employee(Request $request, $id){
         // /agent/hrm/employee/item/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -75,6 +75,7 @@ class HRMemployeeController extends Controller
         $employee = $this->employee
         ->with('department:id,name')
         ->where($role, $agent_id)
+        ->where('id', $id)
         ->first(); 
 
         return response()->json([
