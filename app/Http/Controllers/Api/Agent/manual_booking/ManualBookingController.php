@@ -830,7 +830,7 @@ class ManualBookingController extends Controller
         ->create([
             'from_supplier_id' => $manuelRequest['from_supplier_id'] ?? null,
             'from_service_id' => $manuelRequest['from_service_id'] ?? null,
-            'agent_sales_id' => $manuel_data_cart?->agent_sales_id ?? null,
+            'agent_sales_id' => $manuelRequest['agent_sales_id'] ?? null,
             'special_request' => $manuelRequest['special_request'] ?? null,
             'mark_up_type' => $manuelRequest['mark_up_type'] ?? null,
             'mark_up' => $manuelRequest['mark_up'] ?? null,
