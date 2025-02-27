@@ -34,6 +34,7 @@ class HRMagentController extends Controller
         }
 
         $agents = $this->agents
+        ->with('department:id,name')
         ->where($role, $agent_id)
         ->where('agent', 1)
         ->where('status', 1)
