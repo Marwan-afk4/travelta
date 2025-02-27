@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\HrmEmployee;
-use App\Models\HrmDepartment;
+use App\Models\HrmDepartment; 
 
 class HRMagentController extends Controller
 {
@@ -40,20 +40,26 @@ class HRMagentController extends Controller
         $departments = $this->department
         ->where($role, $agent_id)
         ->get();
+        $employees = $this->agents
+        ->where($role, $agent_id)
+        ->where('agent', 0)
+        ->get();
 
         return response()->json([
             'agents' => $agents,
             'departments' => $departments,
+            'employees' => $employees,
         ]);
     }
 
-    public function add(Request $request, $id){
-        // /agent/hrm/agent/add/{id}
+    public function add(Request $request){
+        // /agent/hrm/agent/add
         // Keys
-        // user_name, password
+        // user_name, password, employee_id
         $validation = Validator::make($request->all(), [
             'user_name' => 'required',
             'password' => 'required',
+            'employee_id' => 'required',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -77,7 +83,7 @@ class HRMagentController extends Controller
         $this->agents
         ->where($role, $agent_id)
         ->where('status', 1)
-        ->where('id', $id)
+        ->where('id', $request->employee_id)
         ->update([
             'user_name' => $request->user_name,
             'password' => bcrypt($request->password),

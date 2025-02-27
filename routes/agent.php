@@ -162,7 +162,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('hrm/agent')->group(function(){
         Route::controller(HRMagentController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_HRM_agent');
-            Route::post('/add/{id}', 'add')->middleware('can:add_HRM_agent');
+            Route::post('/add', 'add')->middleware('can:add_HRM_agent');
             Route::delete('/delete/{id}', 'delete')->middleware('can:delete_HRM_agent');
         });
     });
