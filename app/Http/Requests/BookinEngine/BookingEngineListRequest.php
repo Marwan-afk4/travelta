@@ -24,6 +24,7 @@ class BookingEngineListRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'room_id' => ['required', 'exists:rooms,id'],
             'from_supplier_id' => ['required', 'exists:agents,id'],
             'country_id' => ['required', 'exists:countries,id'],
             'city_id' => ['required', 'exists:cities,id'],
@@ -36,9 +37,9 @@ class BookingEngineListRequest extends FormRequest
             'no_of_adults' => ['required','integer','min:1'],
             'no_of_children' => ['required','integer','min:0'],
             'no_of_nights'=> ['required','integer','min:1'],
-            'payment_status' => ['required','in:later,full,partial,half'],
+            'payment_status' => ['nullable','in:later,full,partial,half'],
             'status' => ['nullable','in:inprogress,done,faild'],
-            'currancy_id' => ['required', 'exists:currencies,id'],
+            'currency_id' => ['required', 'exists:currancies,id'],
             'special_request' => ['nullable'],
             'amount'=>['required','numeric'],
         ];
