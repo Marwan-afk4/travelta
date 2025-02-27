@@ -139,11 +139,24 @@ class AdminController extends Controller
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $role = 'affilate_id';
+            $agent = $this->affilate
+            ->where('id', $agent_id)
+            ->first();
         } 
         else {
             $role = 'agent_id';
+            $agent = $this->agents
+            ->where('id', $agent_id)
+            ->first();
         }
 
+        if ($agent->users >= $agent->plan->user_limit) {
+            return response()->json([
+                'errors' => 'it has exceeded the maximum number of admins'
+            ], 400);
+        }
+        $agent->users += 1;
+        $agent->save();
         $adminRequest = $request->validated();
         $adminRequest['role'] = $request->user()->role;
         $adminRequest[$role] = $agent_id;
@@ -207,10 +220,19 @@ class AdminController extends Controller
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $role = 'affilate_id';
+            $agent = $this->affilate
+            ->where('id', $agent_id)
+            ->first();
         } 
         else {
             $role = 'agent_id';
+            $agent = $this->agents
+            ->where('id', $agent_id)
+            ->first();
         }
+
+        $agent->users -= 1;
+        $agent->save();
         $admins = $this->admins
         ->where($role, $agent_id)
         ->where('id', $id)

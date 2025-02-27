@@ -77,6 +77,16 @@ Route::controller(AgentAuthController::class)->group(function(){
     Route::post('login', 'login');
 });
 
+    //marwan
+    Route::controller(PlanController::class)->prefix('plan')->group(function(){
+        Route::get('/', 'plans')->middleware(['auth:sanctum']);
+    });
+    //marwan
+    Route::controller(PaymentController::class)->prefix('payment')->group(function(){
+        Route::get('/payment_methods', 'getPaymentMethods')->middleware(['auth:sanctum']);
+        Route::post('/make_payment', 'makePayment')->middleware(['auth:sanctum']);
+    });
+///////marwan start
 
 Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('leads')->group(function(){
@@ -93,16 +103,6 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/profile/{id}', 'profile')->middleware('can:update_lead');
         });
     });
-    //marwan
-    Route::controller(PlanController::class)->prefix('plan')->group(function(){
-        Route::get('/', 'plans');
-    });
-    //marwan
-    Route::controller(PaymentController::class)->prefix('payment')->group(function(){
-        Route::get('/payment_methods', 'getPaymentMethods');
-        Route::post('/make_payment', 'makePayment');
-    });
-///////marwan start
     Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom'])->middleware('can:view_booking_engine');
 
     Route::post('/agent/avalibleRooms', [BookingEngine::class, 'getAvailableRooms'])->middleware('can:view_booking_engine');
@@ -162,7 +162,9 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('hrm/agent')->group(function(){
         Route::controller(HRMagentController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_HRM_agent');
-            Route::post('/add/{id}', 'add')->middleware('can:add_HRM_agent');
+            Route::get('/item/{id}', 'agent')->middleware('can:view_HRM_agent'); 
+            Route::post('/add', 'add')->middleware('can:add_HRM_agent');
+            Route::post('/update/{id}', 'modify')->middleware('can:update_HRM_agent');
             Route::delete('/delete/{id}', 'delete')->middleware('can:delete_HRM_agent');
         });
     });
@@ -184,7 +186,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/item/{id}', 'department')->middleware('can:view_HRM_department');
             Route::put('/status/{id}', 'status')->middleware('can:update_HRM_department');
             Route::post('/add', 'create')->middleware('can:add_HRM_department');
-            Route::put('/update/{id}', 'modify')->middleware('can:update_HRM_department');
+            Route::post('/update/{id}', 'modify')->middleware('can:update_HRM_department');
             Route::delete('/delete/{id}', 'delete')->middleware('can:delete_HRM_department');
         });
     });

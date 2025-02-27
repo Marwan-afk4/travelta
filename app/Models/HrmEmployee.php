@@ -27,6 +27,7 @@ class HrmEmployee extends Model
         'email',
         'status',
     ];
+    protected $appends = ['image_link'];
 
     protected $hidden = [
         'password',
@@ -37,6 +38,12 @@ class HrmEmployee extends Model
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function getImageLinkAttribute(){
+        if (isset($this->attributes['image'])) {
+            return url('storage/' . $this->attributes['image']);
+        }
     }
 
     public function user_positions(){
