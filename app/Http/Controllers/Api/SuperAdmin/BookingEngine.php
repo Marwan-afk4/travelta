@@ -300,6 +300,7 @@ class BookingEngine extends Controller
         $userRole = 0;
         if ($user->role == 'agent' || $user->role == 'supplier') {
             $bookingList = BookingengineList::create([
+                'room_id' => $ListValidation['room_id'],
                 'agent_id' => $user->id,
                 'from_supplier_id' => $ListValidation['from_supplier_id'] ?? null,
                 'country_id' => $ListValidation['country_id'],
@@ -314,13 +315,15 @@ class BookingEngine extends Controller
                 'no_of_children' => $ListValidation['no_of_children'],
                 'no_of_nights' => $ListValidation['no_of_nights'],
                 'payment_status' => $ListValidation['payment_status'] ?? 'full',
-                'status' => $ListValidation['status'] ?? 'done',
+                'status' => $ListValidation['status'] ?? 'confirmed',
                 'special_request' => $ListValidation['special_request'] ?? null,
-                'currancy_id' => $ListValidation['currancy_id'],
+                'currency_id' => $ListValidation['currency_id'],
                 'amount' => $ListValidation['amount'],
+                'code' => 'E' . rand(10000, 99999) . strtolower(Str::random(1))
             ]);
         } elseif ($user->role == 'affilate' || $user->role == 'freelancer') {
             $bookingList = BookingengineList::create([
+                'room_id' => $ListValidation['room_id'],
                 'supplier_id' => $user->id,
                 'from_supplier_id' => $ListValidation['from_supplier_id'] ?? null,
                 'country_id' => $ListValidation['country_id'],
@@ -335,10 +338,11 @@ class BookingEngine extends Controller
                 'no_of_children' => $ListValidation['no_of_children'],
                 'no_of_nights' => $ListValidation['no_of_nights'],
                 'payment_status' => $ListValidation['payment_status'] ?? 'full',
-                'status' => $ListValidation['status'] ?? 'done',
+                'status' => $ListValidation['status'] ?? 'confirmed',
                 'special_request' => $ListValidation['special_request'] ?? null,
-                'currancy_id' => $ListValidation['currancy_id'],
+                'currency_id' => $ListValidation['currency_id'],
                 'amount' => $ListValidation['amount'],
+                'code' => 'E' . rand(10000, 99999) . strtolower(Str::random(1))
             ]);
         }
 
@@ -455,5 +459,9 @@ class BookingEngine extends Controller
             'tourtype' => $tourtype
         ];
         return response()->json($data);
+    }
+
+    public function bookTour(Request $request){
+
     }
 }

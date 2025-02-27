@@ -28,9 +28,10 @@ class BookingengineList extends Model
         'code',
         'status',
         'special_request',
+        'currancy_id'
     ];
     protected $appends = ['to_client'];
- 
+
     public function tasks(){
         return $this->hasMany(BookingTask::class, 'booking_engine_id');
     }
@@ -49,20 +50,20 @@ class BookingengineList extends Model
 
     public function agent(){
         return $this->belongsTo(Agent::class,'agent_id');
-    } 
+    }
 
 
     public function currency(){
         return $this->belongsTo(CurrencyAgent::class, 'currency_id');
     }
-    
+
     public function affilate(){
         return $this->belongsTo(AffilateAgent::class,'affilate_id');
-    } 
+    }
 
     public function from_supplier(){
         return $this->belongsTo(Agent::class,'from_supplier_id');
-    } 
+    }
     public function getToClientAttribute(){
         if (!empty($this->attributes['to_agent_id'])) {
             return $this->belongsTo(Agent::class, 'to_agent_id')->first();
