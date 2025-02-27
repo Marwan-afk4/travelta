@@ -77,6 +77,16 @@ Route::controller(AgentAuthController::class)->group(function(){
     Route::post('login', 'login');
 });
 
+    //marwan
+    Route::controller(PlanController::class)->prefix('plan')->group(function(){
+        Route::get('/', 'plans');
+    });
+    //marwan
+    Route::controller(PaymentController::class)->prefix('payment')->group(function(){
+        Route::get('/payment_methods', 'getPaymentMethods');
+        Route::post('/make_payment', 'makePayment');
+    });
+///////marwan start
 
 Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('leads')->group(function(){
@@ -93,16 +103,6 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/profile/{id}', 'profile')->middleware('can:update_lead');
         });
     });
-    //marwan
-    Route::controller(PlanController::class)->prefix('plan')->group(function(){
-        Route::get('/', 'plans');
-    })->withoutMiddleware(['IsAgent','auth:sanctum']);
-    //marwan
-    Route::controller(PaymentController::class)->prefix('payment')->group(function(){
-        Route::get('/payment_methods', 'getPaymentMethods');
-        Route::post('/make_payment', 'makePayment');
-    })->withoutMiddleware(['IsAgent','auth:sanctum']);
-///////marwan start
     Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom'])->middleware('can:view_booking_engine');
 
     Route::post('/agent/avalibleRooms', [BookingEngine::class, 'getAvailableRooms'])->middleware('can:view_booking_engine');
