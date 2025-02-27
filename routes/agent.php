@@ -80,7 +80,7 @@ Route::controller(AgentAuthController::class)->group(function(){
     //marwan
     Route::controller(PlanController::class)->prefix('plan')->group(function(){
         Route::get('/', 'plans');
-    });
+    })->middleware(['auth:sanctum']);
     //marwan
     Route::controller(PaymentController::class)->prefix('payment')->group(function(){
         Route::get('/payment_methods', 'getPaymentMethods');
