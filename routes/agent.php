@@ -79,13 +79,13 @@ Route::controller(AgentAuthController::class)->group(function(){
 
     //marwan
     Route::controller(PlanController::class)->prefix('plan')->group(function(){
-        Route::get('/', 'plans');
-    })->middleware(['auth:sanctum']);
+        Route::get('/', 'plans')->middleware(['auth:sanctum']);
+    });
     //marwan
     Route::controller(PaymentController::class)->prefix('payment')->group(function(){
-        Route::get('/payment_methods', 'getPaymentMethods');
-        Route::post('/make_payment', 'makePayment');
-    })->middleware(['auth:sanctum']);
+        Route::get('/payment_methods', 'getPaymentMethods')->middleware(['auth:sanctum']);
+        Route::post('/make_payment', 'makePayment')->middleware(['auth:sanctum']);
+    });
 ///////marwan start
 
 Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
