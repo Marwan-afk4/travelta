@@ -139,9 +139,15 @@ class AdminController extends Controller
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $role = 'affilate_id';
+            $agent = $this->affilate
+            ->where('id', $agent_id)
+            ->first();
         } 
         else {
             $role = 'agent_id';
+            $agent = $this->agents
+            ->where('id', $agent_id)
+            ->first();
         }
 
         $adminRequest = $request->validated();

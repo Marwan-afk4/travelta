@@ -54,6 +54,36 @@ class HRMagentController extends Controller
         ]);
     }
 
+    public function agent(Request $request, $id){
+        // /agent/hrm/agent/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
+
+        $agent = $this->agents
+        ->select('id', 'user_name')
+        ->where($role, $agent_id)
+        ->where('agent', 1)
+        ->where('status', 1)
+        ->first();
+
+        return response()->json([
+            'agent' => $agent,
+        ]);
+    }
+
     public function add(Request $request){
         // /agent/hrm/agent/add
         // Keys
