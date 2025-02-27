@@ -8,12 +8,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule; 
 
 use App\Models\HrmEmployee;
-use App\Models\HrmDepartment; 
+use App\Models\HrmDepartment;
+use App\Models\Agent;
+use App\Models\AffilateAgent;
 
 class HRMagentController extends Controller
 {
     public function __construct(private HrmEmployee $agents, 
-    private HrmDepartment $department){}
+    private HrmDepartment $department, private Agent $admin_agents,
+    private AffilateAgent $affilate){}
 
     public function view(Request $request){
         // /agent/hrm/agent
@@ -107,10 +110,24 @@ class HRMagentController extends Controller
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $role = 'affilate_id';
-        }
-        else{
+            $agent = $this->affilate
+            ->where('id', $agent_id)
+            ->first();
+        } 
+        else {
             $role = 'agent_id';
+            $agent = $this->admin_agents
+            ->where('id', $agent_id)
+            ->first();
         }
+
+        if ($agent->users >= $agent->plan->user_limit) {
+            return response()->json([
+                'errors' => 'it has exceeded the maximum number of admins'
+            ], 400);
+        }
+        $agent->users ++;
+        $agent->save();
  
         $this->agents
         ->where($role, $agent_id)
@@ -183,11 +200,19 @@ class HRMagentController extends Controller
         }
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $role = 'affilate_id';
-        }
-        else{
+            $agent = $this->affilate
+            ->where('id', $agent_id)
+            ->first();
+        } 
+        else {
             $role = 'agent_id';
+            $agent = $this->admin_agents
+            ->where('id', $agent_id)
+            ->first();
         }
- 
+        
+        $agent->users --;
+        $agent->save();
         $this->agents
         ->where($role, $agent_id) 
         ->where('id', $id)
