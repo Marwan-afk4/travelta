@@ -81,14 +81,14 @@ Route::controller(AgentAuthController::class)->group(function(){
     Route::controller(PlanController::class)->prefix('plan')->group(function(){
         Route::get('/', 'plans');
     });
+
+Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     //marwan
     Route::controller(PaymentController::class)->prefix('payment')->group(function(){
         Route::get('/payment_methods', 'getPaymentMethods');
         Route::post('/make_payment', 'makePayment');
     });
 ///////marwan start
-
-Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('leads')->group(function(){
         Route::controller(LeadController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_lead');
