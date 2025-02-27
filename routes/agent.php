@@ -96,12 +96,12 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     //marwan
     Route::controller(PlanController::class)->prefix('plan')->group(function(){
         Route::get('/', 'plans');
-    });
+    })->withoutMiddleware(['IsAgent','auth:sanctum']);
     //marwan
     Route::controller(PaymentController::class)->prefix('payment')->group(function(){
         Route::get('/payment_methods', 'getPaymentMethods');
         Route::post('/make_payment', 'makePayment');
-    });
+    })->withoutMiddleware(['IsAgent','auth:sanctum']);
 ///////marwan start
     Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom'])->middleware('can:view_booking_engine');
 
