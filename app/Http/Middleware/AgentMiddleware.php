@@ -28,7 +28,7 @@ class AgentMiddleware
         else {
             $allow_time = $allow_time->value;
             $allow_time = json_decode($allow_time);
-            $allow_time = $allow_time->days;
+            $allow_time = intval($allow_time->days);
         }
         $end_date = Carbon::parse(Auth::user()->end_date);
         $end_date = $end_date->addDays($allow_time);
