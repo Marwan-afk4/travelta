@@ -29,7 +29,7 @@ class SginUpAgentRequest extends FormRequest
                 'phone' => ['required', 'unique:agents'],
                 'email' => ['required', 'unique:agents', 'email'],
                 'address' => ['required'],
-                'password' => ['required'],
+                'password' => ['required', 'min:7'],
                 'role' => ['required', 'in:agent,supplier'],
                 'country_id' => ['required', 'exists:countries,id'],
                 'city_id' => ['required', 'exists:cities,id'],
