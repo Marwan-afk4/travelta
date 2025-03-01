@@ -110,7 +110,7 @@ class PaymentController extends Controller
             $affiliateAgentId = $authuser->id;
         }
         $end_date = $plan->period_in_days;
-        $end_date = date('Y-m-d')->addDays($end_date);
+        $end_date = now()->addDays($end_date);
 
         $payment = ManualPayment::create([
             'payment_method_id' => $request->payment_method_id,
