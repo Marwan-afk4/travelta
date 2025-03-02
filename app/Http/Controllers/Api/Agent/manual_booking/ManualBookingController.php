@@ -360,6 +360,21 @@ class ManualBookingController extends Controller
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
         }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
         $taxes = $this->taxes
         ->where($role, $agent_id)
         ->where('country_id', $request->country_id)
