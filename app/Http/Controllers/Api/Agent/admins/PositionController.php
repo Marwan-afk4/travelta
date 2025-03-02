@@ -167,14 +167,118 @@ class PositionController extends Controller
             $role = 'agent_id';
         }
 
+        $modules = [
+            'booking_payment' => [
+                'view', 'add',
+            ],
+            'expenses' => [
+                'view', 'add','update','delete',
+            ],
+            'expenses_category' => [
+                'view', 'add','update','delete',
+            ],
+            'general_ledger' => [
+                'view',
+            ],
+            'OE_owner' => [
+                'view', 'add','update','delete',
+            ],
+            'OE_transaction' => [
+                'view', 'add',
+            ],
+            'payment_receivable' => [
+                'view',
+            ],
+            'revenue' => [
+                'view', 'add','update','delete',
+            ],
+            'revenue_category' => [
+                'view', 'add','update','delete',
+            ],
+            'supplier_payment_paid' => [
+                'view',
+            ],
+            'supplier_payment_payable' => [
+                'view', 'add',
+            ],
+            'supplier_payment_due' => [
+                'view', 'add',
+            ],
+            'financial' => [
+                'view', 'transfer', 'add','update','delete',
+            ],
+            'wallet' => [
+                'view', 'charge', 'add','update','delete',
+            ],
+            'admin' => [
+                'view', 'add','update','delete',
+            ],
+            'admin_position' => [
+                'view', 'add','update','delete',
+            ],
+            'manuel_booking' => [
+                'view',
+            ],
+            'booking_engine' => [
+                'view',
+            ],
+            'bookings' => [
+                'view', 'status'
+            ],
+            'customer' => [
+                'view',
+            ],
+            'department' => [
+                'view',
+            ],
+            'inventory_room' => [
+                'view', 'add','update','delete', 'duplicated', 'availability', 'gallary', 'pricing',
+                'type', 'amenity', 'extra'
+            ],
+            'inventory_tour' => [
+                'view', 'add','update','delete', 'gallary',
+            ],
+            'lead' => [
+                'view', 'add','update','delete',
+            ],
+            'request' => [
+                'view', 'add','priority','delete', 'stages', 'notes'
+            ],
+            'setting_currency' => [
+                'view', 'add','update','delete',
+            ],
+            'setting_group' => [
+                'view', 'add','update','delete',
+            ],
+            'setting_tax' => [
+                'view', 'add','update','delete',
+            ],
+            'supplier' => [
+                'view', 'add','update','delete',
+            ],
+            'HRM_department' => [
+                'view', 'add','update','delete',
+            ],
+            'HRM_agent' => [
+                'view', 'add', 'update', 'delete',
+            ],
+            'HRM_employee' => [
+                'view', 'add','update','delete',
+            ],
+        ];
         $position = $this->position
         ->with('perimitions')
         ->where($role, $agent_id)
         ->where('id', $id)
         ->first();
+        $modules = [];
+        foreach ($position->perimitions as $item) {
+            $modules[$item->module][] = $item->action;
+        }
 
         return response()->json([
-            'position' => $position
+            'position' => $position,
+            'module' => $modules,
         ]);
     }
 

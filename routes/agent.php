@@ -74,6 +74,7 @@ Route::controller(AgentAuthController::class)->group(function(){
     Route::get('signupLists', 'lists');
     Route::post('signupAffilate', 'signup_affilate');
     Route::post('signupAgent', 'signup_agent');
+    Route::post('code', 'code');
     Route::post('login', 'login');
 });
 

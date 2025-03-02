@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\api\auth\agent\LoginRequest;
 use App\Http\Requests\api\auth\agent\SginUpAffilateRequest;
 use App\Http\Requests\api\auth\agent\SginUpAgentRequest;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SignupCodeMail;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\Agent;
 use App\Models\LegalPaper;
@@ -58,6 +61,24 @@ class AgentAuthController extends Controller
             'cities' => $cities,
             'countries' => $countries,
             'services' => $services,
+        ]);
+    }
+        
+    public function code(Request $request){ 
+        // https://travelta.online/agent/code
+        $validator = Validator::make($request->all(), [ 
+            'email' => 'required|email|unique:users,id',
+        ]);
+        if ($validator->fails()) { // if Validate Make Error Return Message Error
+            return response()->json([
+                'error' => $validator->errors(),
+            ],400);
+        }
+        $code = rand(10000, 99999);
+        Mail::to($request->email)->send(new SignupCodeMail($code));
+
+        return response()->json([
+            'code' => $code
         ]);
     }
 

@@ -123,8 +123,9 @@ class ManualBookingController extends Controller
         'to_customer_id',
         'from_supplier_id',
         'from_service_id',
+        'agent_sales_id',
         'cost' ,
-        'price' ,
+        'price',
         'currency_id',
         'tax_type',
         'total_price' ,
@@ -159,6 +160,7 @@ class ManualBookingController extends Controller
         $services = $this->services
         ->get();
         $financial_accounting = $this->financial_accounting
+        ->where($role, $agent_id)
         ->get();
         $employees = $this->employees
         ->select('id', 'name')
@@ -209,6 +211,7 @@ class ManualBookingController extends Controller
         $contries = $this->contries
         ->get();
         $financial_accounting = $this->financial_accounting
+        ->where($role, $agent_id)
         ->get();
         $adult_title = [
             'MR',
@@ -234,6 +237,7 @@ class ManualBookingController extends Controller
         })
         ->get();
         $taxes = $this->taxes
+        ->where($role, $agent_id)
         ->get();
         $customers = $this->customer_data
         ->where($role, $agent_id)
@@ -358,7 +362,23 @@ class ManualBookingController extends Controller
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
         }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
         $taxes = $this->taxes
+        ->where($role, $agent_id)
         ->where('country_id', $request->country_id)
         ->get();
 
@@ -830,7 +850,7 @@ class ManualBookingController extends Controller
         ->create([
             'from_supplier_id' => $manuelRequest['from_supplier_id'] ?? null,
             'from_service_id' => $manuelRequest['from_service_id'] ?? null,
-            'agent_sales_id' => $manuel_data_cart?->agent_sales_id ?? null,
+            'agent_sales_id' => $manuelRequest['agent_sales_id'] ?? null,
             'special_request' => $manuelRequest['special_request'] ?? null,
             'mark_up_type' => $manuelRequest['mark_up_type'] ?? null,
             'mark_up' => $manuelRequest['mark_up'] ?? null,
