@@ -109,6 +109,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::get('/gethotels', [BookingEngine::class, 'getHotels'])->middleware('can:view_booking_engine');
 
+    Route::get('/getCustomers', [BookingEngine::class, 'getCustomers'])->middleware('can:view_booking_engine');
+
+    Route::get('/getagents',[BookingEngine::class, 'getAgents'])->middleware('can:view_booking_engine');
+
     Route::get('/getcities', [BookingEngine::class, 'getCities'])->middleware('can:view_booking_engine');
 
     Route::get('/getcountries', [BookingEngine::class, 'getCountries'])->middleware('can:view_booking_engine');
@@ -162,7 +166,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('hrm/agent')->group(function(){
         Route::controller(HRMagentController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_HRM_agent');
-            Route::get('/item/{id}', 'agent')->middleware('can:view_HRM_agent'); 
+            Route::get('/item/{id}', 'agent')->middleware('can:view_HRM_agent');
             Route::post('/add', 'add')->middleware('can:add_HRM_agent');
             Route::post('/update/{id}', 'modify')->middleware('can:update_HRM_agent');
             Route::delete('/delete/{id}', 'delete')->middleware('can:delete_HRM_agent');
