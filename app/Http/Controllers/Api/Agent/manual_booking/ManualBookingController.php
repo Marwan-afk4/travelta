@@ -123,6 +123,7 @@ class ManualBookingController extends Controller
         'to_customer_id',
         'from_supplier_id',
         'from_service_id',
+        'agent_sales_id',
         'cost' ,
         'price' ,
         'currency_id',
