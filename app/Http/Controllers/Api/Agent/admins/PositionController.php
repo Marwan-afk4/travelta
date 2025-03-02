@@ -271,11 +271,14 @@ class PositionController extends Controller
         ->where($role, $agent_id)
         ->where('id', $id)
         ->first();
+        $modules = [];
+        foreach ($position->perimitions as $item) {
+            $modules[$item->module][] = $item->action;
+        }
 
         return response()->json([
             'position' => $position,
-            'module' => $position?->perimitions?->module,
-            'action' => $modules[$position?->perimitions?->module],
+            'module' => $modules,
         ]);
     }
 
