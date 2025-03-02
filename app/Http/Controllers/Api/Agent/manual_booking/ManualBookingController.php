@@ -160,6 +160,7 @@ class ManualBookingController extends Controller
         $services = $this->services
         ->get();
         $financial_accounting = $this->financial_accounting
+        ->where($role, $agent_id)
         ->get();
         $employees = $this->employees
         ->select('id', 'name')
@@ -210,6 +211,7 @@ class ManualBookingController extends Controller
         $contries = $this->contries
         ->get();
         $financial_accounting = $this->financial_accounting
+        ->where($role, $agent_id)
         ->get();
         $adult_title = [
             'MR',
