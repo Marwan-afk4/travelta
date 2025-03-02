@@ -125,7 +125,7 @@ class ManualBookingController extends Controller
         'from_service_id',
         'agent_sales_id',
         'cost' ,
-        'price' ,
+        'price',
         'currency_id',
         'tax_type',
         'total_price' ,
@@ -235,6 +235,7 @@ class ManualBookingController extends Controller
         })
         ->get();
         $taxes = $this->taxes
+        ->where($role, $agent_id)
         ->get();
         $customers = $this->customer_data
         ->where($role, $agent_id)
@@ -360,6 +361,7 @@ class ManualBookingController extends Controller
             return response()->json(['errors'=>$validation->errors()], 401);
         }
         $taxes = $this->taxes
+        ->where($role, $agent_id)
         ->where('country_id', $request->country_id)
         ->get();
 
