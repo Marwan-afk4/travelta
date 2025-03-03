@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookinEngine\BookingEngineListRequest;
+use App\Models\Agent;
 use App\Models\Booking;
 use App\Models\BookingEngine as ModelsBookingEngine;
 use App\Models\BookingengineList;
+use App\Models\BookTourengine;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\Customer;
 use App\Models\CustomerBookingengine;
 use App\Models\Hotel;
 use App\Models\HotelImage;
@@ -262,7 +265,19 @@ class BookingEngine extends Controller
     }
 
 
+    public function getCustomers(){
+        $customers = Customer::all();
+        return response()->json([
+            'customers' => $customers,
+        ]);
+    }
 
+    public function getAgents(){
+        $agents = Agent::all();
+        return response()->json([
+            'agents' => $agents,
+        ]);
+    }
 
 
 
@@ -393,6 +408,7 @@ class BookingEngine extends Controller
             'destination_country' => 'nullable|integer|exists:countries,id',
             'destination_city' => 'nullable|integer|exists:cities,id',
             'tour_type_id' => 'nullable|integer|exists:tour_types,id',
+            'status' => 'nullable|in:pending,confirmed,canceled,vouchered',
         ]);
 
         if ($validation->fails()) {
@@ -462,6 +478,43 @@ class BookingEngine extends Controller
     }
 
     public function bookTour(Request $request){
+        $validation = Validator::make($request->all(), [
+            'tour_id' => 'required|exists:tours,id',
+            'no_of_people' => 'required|integer|min:1',
+            'special_request' => 'nullable|string',
+            'currency_id' => 'nullable|exists:currency_agents,id',
+            'total_price' => 'required|integer|min:1',
+            'customer_id' => 'nullable|exists:customers,id',
+            'agents_id' => 'nullable|exists:agents,id',
+        ]);
 
+        if ($validation->fails()) {
+            return response()->json(['errors' => $validation->errors()], 400);
+        }
+        $customer = $request->customer_id;
+        $agents = $request->agents_id;
+        $tour = $request->tour_id;
+
+        $tour = Tour::find($request->tour_id);
+
+        if($customer){
+            $createBooking = BookTourengine::create([
+                'tour_id' => $request->tour_id,
+                'no_of_people' => $request->no_of_people,
+                'special_request' => $request->special_request??null,
+                'currency_id' => $request->currency_id,
+                'total_price' => $request->total_price,
+                'to_name'=>$customer->name,
+                'to_email'=>$customer->email,
+                'to_phone'=>$customer->phone,
+                'to_role'=>'Customer',
+                'from_supplier_id'=> $tour->agent_id,
+                'code' => 'TE' . rand(10000, 99999) . strtolower(Str::random(1)),
+                'status' => $request->status,
+                'payment_status'=>'full',
+                'to_hotel_id'=>$tour->tour_hotels->id,
+                'country_id'=>$tour->tourd
+            ]);
+        }
     }
 }
