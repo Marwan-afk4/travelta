@@ -27,8 +27,8 @@ class CartBookingRequest extends FormRequest
             'cart_id' => 'required|exists:manuel_data_carts,id',
             'total_cart' => ['required', 'numeric'],
             'payment_type' => ['required', 'in:full,partial,later'],
-            'payment_methods' => ['sometimes', 'required_if:payment_type,full,partial'],
-            'payments' => ['sometimes', 'required_if:payment_type,partial,later'],
+            'payment_methods' => ['required_if:payment_type,full,partial'],
+            'payments' => ['required_if:payment_type,partial,later'],
         ];
     }
 
