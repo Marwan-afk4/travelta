@@ -54,7 +54,7 @@ class SupplierController extends Controller
         return response()->json([
             'supplier_agent' => $supplier_agent,
             'services' => $services
-        ]); 
+        ]);
     }
 
     public function supplier(Request $request, $id){
@@ -179,6 +179,20 @@ class SupplierController extends Controller
             $services = is_string($request->services) ? json_decode($request->services) :
             $request->services;
             $supplier_agent->services()->sync($services); 
+        }
+        $this->supplier_balance
+        ->where('supplier_id', $supplier_agent->id)
+        ->delete();
+        if ($request->balances) {
+            $balances = $request->balances;
+            foreach ($balances as $item) {
+                $this->supplier_balance
+                ->create([
+                    'currency_id' => $item['currency_id'],
+                    'balance' => $item['balance'],
+                    'supplier_id' => $supplier_agent->id
+                ]);
+            }
         }
         
         return response()->json([

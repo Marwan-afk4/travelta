@@ -18,6 +18,7 @@ use App\Http\Resources\ManuelTourResource;
 use App\Http\Resources\ManuelVisaResource;
 
 use App\Models\CustomerData;
+use App\Models\SupplierBalance;
 use App\Models\SupplierAgent;
 use App\Models\Service;
 use App\Models\City;
@@ -61,7 +62,7 @@ class ManualBookingController extends Controller
     private Customer $customers, private FinantiolAcounting $financial_accounting,
     private BookingPayment $booking_payment, private Agent $agent,
     private AffilateAgent $affilate_agent, private AgentPayable $agent_payable,
-    private HrmEmployee $employees){}
+    private HrmEmployee $employees, private SupplierBalance $supplier_balance){}
     
     protected $hotelRequest = [
         'check_in',
@@ -1212,22 +1213,45 @@ class ManualBookingController extends Controller
             $this->manuel_data_cart
            ->where('id', $request->cart_id)
            ->delete();
-        //    if (isset($manuelRequest['to_supplier_id']) && is_numeric($manuelRequest['to_supplier_id'])) {
-        //        $supplier_agent = $this->supplier_agent
-        //        ->where('id', $manuelRequest['to_supplier_id'])
-        //        ->first();
-        //        $supplier_agent->update([
-        //            'balance' => $supplier_agent->balance - $manuelRequest['total_price']
-        //        ]);
-        //    }
-        //    if (isset($manuelRequest['from_supplier_id']) && is_numeric($manuelRequest['from_supplier_id'])) {
-        //        $supplier_agent = $this->supplier_agent
-        //        ->where('id', $manuelRequest['from_supplier_id'])
-        //        ->first();
-        //        $supplier_agent->update([
-        //            'balance' => $supplier_agent->balance + $manuelRequest['cost']
-        //        ]);
-        //    }
+           if (isset($manuelRequest['to_supplier_id']) && is_numeric($manuelRequest['to_supplier_id'])) {
+           
+               $supplier_balance = $this->supplier_balance
+               ->where('supplier_id', $manuelRequest['to_supplier_id'])
+               ->where('currency_id', $manuelRequest['currency_id'] ?? null)
+               ->first();
+               if (empty($supplier_balance)) {
+                    $this->supplier_balance
+                    ->create([
+                        'supplier_id' => $manuelRequest['to_supplier_id'],
+                        'balance' => -$manuelRequest['total_price'],
+                        'currency_id' => $manuelRequest['currency_id'] ?? null,
+                    ]); 
+               }
+               else{
+                    $supplier_balance->update([
+                        'balance' => $supplier_balance->balance - $manuelRequest['total_price']
+                    ]);
+               }
+           }
+           if (isset($manuelRequest['from_supplier_id']) && is_numeric($manuelRequest['from_supplier_id'])) {
+                $supplier_balance = $this->supplier_balance
+                ->where('supplier_id', $manuelRequest['to_supplier_id'])
+                ->where('currency_id', $manuelRequest['currency_id'] ?? null)
+                ->first();
+                if (empty($supplier_balance)) {
+                    $this->supplier_balance
+                    ->create([
+                        'supplier_id' => $manuelRequest['to_supplier_id'],
+                        'balance' => $manuelRequest['cost'],
+                        'currency_id' => $manuelRequest['currency_id'] ?? null,
+                    ]); 
+                }
+                else{
+                    $supplier_balance->update([
+                        'balance' => $supplier_balance->balance + $manuelRequest['cost']
+                    ]);
+                }
+           }
             return response()->json([ 
                 'hotel' => $hotel[0] ?? null,
                 'bus' => $bus[0] ?? null,
