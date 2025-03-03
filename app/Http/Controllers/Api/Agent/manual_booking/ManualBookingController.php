@@ -1212,22 +1212,22 @@ class ManualBookingController extends Controller
             $this->manuel_data_cart
            ->where('id', $request->cart_id)
            ->delete();
-           if (isset($manuelRequest['to_supplier_id']) && is_numeric($manuelRequest['to_supplier_id'])) {
-               $supplier_agent = $this->supplier_agent
-               ->where('id', $manuelRequest['to_supplier_id'])
-               ->first();
-               $supplier_agent->update([
-                   'balance' => $supplier_agent->balance - $manuelRequest['total_price']
-               ]);
-           }
-           if (isset($manuelRequest['from_supplier_id']) && is_numeric($manuelRequest['from_supplier_id'])) {
-               $supplier_agent = $this->supplier_agent
-               ->where('id', $manuelRequest['from_supplier_id'])
-               ->first();
-               $supplier_agent->update([
-                   'balance' => $supplier_agent->balance + $manuelRequest['cost']
-               ]);
-           }
+        //    if (isset($manuelRequest['to_supplier_id']) && is_numeric($manuelRequest['to_supplier_id'])) {
+        //        $supplier_agent = $this->supplier_agent
+        //        ->where('id', $manuelRequest['to_supplier_id'])
+        //        ->first();
+        //        $supplier_agent->update([
+        //            'balance' => $supplier_agent->balance - $manuelRequest['total_price']
+        //        ]);
+        //    }
+        //    if (isset($manuelRequest['from_supplier_id']) && is_numeric($manuelRequest['from_supplier_id'])) {
+        //        $supplier_agent = $this->supplier_agent
+        //        ->where('id', $manuelRequest['from_supplier_id'])
+        //        ->first();
+        //        $supplier_agent->update([
+        //            'balance' => $supplier_agent->balance + $manuelRequest['cost']
+        //        ]);
+        //    }
             return response()->json([ 
                 'hotel' => $hotel[0] ?? null,
                 'bus' => $bus[0] ?? null,
