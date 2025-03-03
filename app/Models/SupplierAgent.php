@@ -16,6 +16,7 @@ class SupplierAgent extends Model
         'affilate_id',
         'agent_id',
         'emergency_phone',
+        'balance',
     ];
     protected $appends = ['name'];
 
