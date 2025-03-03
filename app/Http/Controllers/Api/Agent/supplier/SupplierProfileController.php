@@ -61,7 +61,7 @@ class SupplierProfileController extends Controller
         ->get();
         $balances = $this->balances
         ->where('supplier_id', $id)
-        ->with('currency')
+        ->with('currency:id,name')
         ->get();
 
         return response()->json([
