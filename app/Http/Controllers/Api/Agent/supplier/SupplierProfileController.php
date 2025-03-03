@@ -62,7 +62,6 @@ class SupplierProfileController extends Controller
             'supplier_info' => $supplier_info, 
             'manuel_booking' => $manuel_booking,
             'legal_papers' => $legal_papers,
-            'balance' => $supplier_info->balance,
         ]);
     }
 
