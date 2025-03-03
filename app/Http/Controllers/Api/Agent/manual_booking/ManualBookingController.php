@@ -1235,13 +1235,13 @@ class ManualBookingController extends Controller
            }
            if (isset($manuelRequest['from_supplier_id']) && is_numeric($manuelRequest['from_supplier_id'])) {
                 $supplier_balance = $this->supplier_balance
-                ->where('supplier_id', $manuelRequest['to_supplier_id'])
+                ->where('supplier_id', $manuelRequest['from_supplier_id'])
                 ->where('currency_id', $manuelRequest['currency_id'] ?? null)
                 ->first();
                 if (empty($supplier_balance)) {
                     $this->supplier_balance
                     ->create([
-                        'supplier_id' => $manuelRequest['to_supplier_id'],
+                        'supplier_id' => $manuelRequest['from_supplier_id'],
                         'balance' => $manuelRequest['cost'],
                         'currency_id' => $manuelRequest['currency_id'] ?? null,
                     ]); 
