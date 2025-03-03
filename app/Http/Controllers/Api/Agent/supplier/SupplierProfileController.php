@@ -91,7 +91,7 @@ class SupplierProfileController extends Controller
         })  
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
-                  ->orWhere('to_supplier_id', $id);
+            ->orWhere('to_supplier_id', $id);
         })
         ->get()
         ->map(function ($data) use($id) {
