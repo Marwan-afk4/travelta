@@ -3,8 +3,10 @@
 namespace App\Providers\gates;
 use Illuminate\Support\Facades\Gate;
 
+
 use App\Models\HrmEmployee;
 use App\Models\AdminAgent;
+use App\Models\AffilateAgent;
 use App\Models\Agent;
 
 class WalletGate
@@ -13,7 +15,7 @@ class WalletGate
     {
         // if roles have booking payment module
         Gate::define('view_wallet', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -25,7 +27,7 @@ class WalletGate
             return false;
         });
         Gate::define('charge_wallet', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -37,7 +39,7 @@ class WalletGate
             return false;
         });
         Gate::define('add_wallet', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -49,7 +51,7 @@ class WalletGate
             return false;
         });
         Gate::define('update_wallet', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -61,7 +63,7 @@ class WalletGate
             return false;
         });
         Gate::define('delete_wallet', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 

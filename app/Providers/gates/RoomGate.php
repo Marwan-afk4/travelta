@@ -3,8 +3,10 @@
 namespace App\Providers\gates;
 use Illuminate\Support\Facades\Gate;
 
+
 use App\Models\HrmEmployee;
 use App\Models\AdminAgent;
+use App\Models\AffilateAgent;
 use App\Models\Agent;
 
 class RoomGate
@@ -13,7 +15,7 @@ class RoomGate
     {
         // if roles have booking payment module
         Gate::define('view_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -25,7 +27,7 @@ class RoomGate
             return false;
         });
         Gate::define('duplicated_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -37,7 +39,7 @@ class RoomGate
             return false;
         });
         Gate::define('add_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -49,7 +51,7 @@ class RoomGate
             return false;
         });
         Gate::define('availability_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -61,7 +63,7 @@ class RoomGate
             return false;
         });
         Gate::define('type_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -73,7 +75,7 @@ class RoomGate
             return false;
         });
         Gate::define('amenity_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -85,7 +87,7 @@ class RoomGate
             return false;
         });
         Gate::define('extra_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -97,7 +99,7 @@ class RoomGate
             return false;
         });
         Gate::define('update_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -109,7 +111,7 @@ class RoomGate
             return false;
         });
         Gate::define('delete_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -121,7 +123,7 @@ class RoomGate
             return false;
         });
         Gate::define('gallary_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -133,7 +135,7 @@ class RoomGate
             return false;
         });
         Gate::define('pricing_inventory_room', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 

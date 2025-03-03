@@ -8,12 +8,13 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\api\agent\supplier\SupplierRequest;
 
 use App\Models\SupplierAgent;
+use App\Models\SupplierBalance;
 use App\Models\Service;
 
 class SupplierController extends Controller
 {
     public function __construct(private SupplierAgent $supplier_agent,
-    private Service $services){}
+    private Service $services, private SupplierBalance $supplier_balance){}
     protected $supplierRequest = [
         'agent',
         'admin_name',
@@ -91,6 +92,7 @@ class SupplierController extends Controller
         // supplier/add
         // Keys
         // agent,admin_name,admin_phone,admin_email,emails[],phones[],services[],
+        // balances[currency_id,balance]
         $supplierRequest = $request->only($this->supplierRequest);
         $supplierRequest['emails'] = is_string($request->emails) ?$request->emails:
         json_encode($request->emails);
@@ -118,6 +120,17 @@ class SupplierController extends Controller
             $request->services;
             foreach ($services as $item) {
                 $supplier_agent->services()->attach($item);
+            }
+        }
+        if ($request->balances) {
+            $balances = $request->balances;
+            foreach ($balances as $item) {
+                $this->supplier_balance
+                ->create([
+                    'currency_id' => $item['currency_id'],
+                    'balance' => $item['balance'],
+                    'supplier_id' => $supplier_agent->id
+                ]);
             }
         }
         
