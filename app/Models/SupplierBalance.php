@@ -11,4 +11,8 @@ class SupplierBalance extends Model
         'currency_id',
         'balance',
     ];
+
+    public function currency(){
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
 }
