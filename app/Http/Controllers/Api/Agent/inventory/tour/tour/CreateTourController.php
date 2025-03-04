@@ -39,6 +39,7 @@ class CreateTourController extends Controller
         'tour_type',
         'status',
         'days',
+        'price',
         'nights',
         'tour_type_id',
         'featured',

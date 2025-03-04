@@ -218,22 +218,26 @@ class LeadController extends Controller
         else{
             $agent_id = $request->user()->id;
         }
-        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
+        // image, watts, source_id, agent_sales_id, service_id,
+        // nationality_id, country_id, city_id, status
+        $customer_arr = [
+            'customer_id' => $customer->id,
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'email' => $request->email ?? null,
+            'gender' => $request->gender ?? null,
+        ];
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $customer_arr['affilate_id'] = $agent_id;
             $this->customer_data
             ->create([
-                'customer_id' => $customer->id,
-                'affilate_id' => $agent_id,
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'email' => $request->email ?? null,
-                'gender' => $request->gender ?? null,
             ]);
         } 
-        else {
+        else { 
+            $customer_arr['agent_id'] = $agent_id;
             $this->customer_data
             ->create([
-                'customer_id' => $customer->id,
-                'agent_id' => $agent_id,
+                'customer_id' => $customer->id, 
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'email' => $request->email ?? null,
