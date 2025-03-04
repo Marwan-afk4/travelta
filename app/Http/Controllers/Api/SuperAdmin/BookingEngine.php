@@ -450,7 +450,6 @@ class BookingEngine extends Controller
                     $q->whereYear('date', $year)->whereMonth('date', $month);
                 },
                 'destinations',
-                'tour_type'
             ])
             ->with('itinerary')
             ->with('includes')
@@ -460,6 +459,7 @@ class BookingEngine extends Controller
             ->with('tour_hotels')
             ->with('tour_discounts')
             ->with('tour_pricings')
+            ->with('tour_pricing_items')
             ->with('tour_extras')
             ->get();
 
