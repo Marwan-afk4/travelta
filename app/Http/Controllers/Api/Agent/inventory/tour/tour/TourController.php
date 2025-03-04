@@ -34,12 +34,12 @@ class TourController extends Controller
         'pick_up_city', 'tour_images', 'tour_hotels', 'tour_extras', 'tour_discounts',
         'tour_pricings'])
         ->get();
-        
+
         return response()->json([
             'tour_types' => $tour_types,
             'countries' => $countries,
             'cities' => $cities,
-            'tour' => $tour
+            'tour' => $tour,
         ]);
     }
 

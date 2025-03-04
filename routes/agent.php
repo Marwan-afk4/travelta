@@ -383,7 +383,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(CreateTourController::class)->group(function(){
             Route::post('/add', 'create')->middleware('can:add_inventory_tour');
-            Route::put('/update/{id}', 'modify')->middleware('can:update_inventory_tour');
+            Route::post('/update/{id}', 'modify')->middleware('can:update_inventory_tour');
             Route::delete('/delete/{id}', 'delete')->middleware('can:delete_inventory_tour');
         });
         Route::controller(TourGalleryController::class)->group(function(){

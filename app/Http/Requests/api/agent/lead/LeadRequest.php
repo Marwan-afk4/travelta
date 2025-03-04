@@ -28,6 +28,16 @@ class LeadRequest extends FormRequest
             'phone' => ['required', 'unique:customers,phone'],
             'email' => ['required', 'email', 'unique:customers,email'],
             'gender' => ['required', 'in:male,female'],
+            
+            'image' => [],
+            'watts' => [],
+            'source_id' => ['required', 'exists:customer_sources,id'],
+            'agent_sales_id' => ['required', 'exists:hrm_employees,id'],
+            'service_id' => ['required', 'exists:services,id'],
+            'nationality_id' => ['required', 'exists:nationalities,id'],
+            'country_id' => ['required', 'exists:countries,id'],
+            'city_id' => ['required', 'exists:cities,id'],
+            'status' => ['required', 'boolean'],
         ];
     }
 

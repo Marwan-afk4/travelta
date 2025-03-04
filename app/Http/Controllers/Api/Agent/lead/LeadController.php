@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Agent\lead;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\trait\image;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\api\agent\lead\LeadRequest;
 
@@ -14,13 +15,14 @@ class LeadController extends Controller
 {
     public function __construct(private Customer $customer, 
     private CustomerData $customer_data){}
+    use image;
     protected $leadRequest = [
         'name',
         'phone',
         'email',
         'gender',
         'emergency_phone',
-        
+
         'watts',
         'source_id',
         'agent_sales_id',
@@ -50,7 +52,15 @@ class LeadController extends Controller
             ->with('customer')
             ->get()
             ->map(function ($item) {
-                $item->id = $item->customer->id; // Set customer_data.id to customers.id
+                if ($item->customer->role == 'customer') {
+                    $item->name = $item->customer->name;
+                    $item->phone = $item->customer->phone;
+                    $item->email = $item->customer->email;
+                    $item->gender = $item->customer->gender;
+                    $item->emergency_phone = $item->customer->emergency_phone;
+                    $item->watts = $item->customer->watts;
+                    $item->image = $item->customer->image;
+                }
                 $item->makeHidden('customer');
                 return $item;
             });
@@ -62,7 +72,15 @@ class LeadController extends Controller
             ->with('customer')
             ->get()
             ->map(function ($item) {
-                $item->id = $item->customer->id; // Set customer_data.id to customers.id
+                if ($item->customer->role == 'customer') {
+                    $item->name = $item->customer->name;
+                    $item->phone = $item->customer->phone;
+                    $item->email = $item->customer->email;
+                    $item->gender = $item->customer->gender;
+                    $item->emergency_phone = $item->customer->emergency_phone;
+                    $item->watts = $item->customer->watts;
+                    $item->image = $item->customer->image;
+                }
                 $item->makeHidden('customer');
                 return $item;
             });
@@ -75,7 +93,15 @@ class LeadController extends Controller
 
     public function leads_search(){
         // /leads/leads_search
-        $user_id = auth()->user()->id;
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $user_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $user_id = $request->user()->agent_id;
+        }
+        else{
+            $user_id = $request->user()->id;
+        } 
         $role = auth()->user()->role == 'freelancer' ||
         auth()->user()->role == 'affilate' ? 'affilate_id' :'agent_id';
         $leads = $this->customer
@@ -129,24 +155,35 @@ class LeadController extends Controller
         $customer = $this->customer
         ->where('id', $request->customer_id)
         ->first();
-        
-        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
-            $this->customer_data
-            ->create([
+        $leadRequest = [
                 'customer_id' => $request->customer_id,
-                'affilate_id' => $agent_id,
                 'name' => $customer->name,
                 'phone' => $customer->phone,
-            ]);
+                'email' => $customer->email,
+                'gender' => $customer->gender,
+                'watts' => $customer->watts,
+                'source_id' => $customer->source_id,
+                'agent_sales_id' => $customer->agent_sales_id,
+                'service_id' => $customer->service_id,
+                'nationality_id' => $customer->nationality_id,
+                'country_id' => $customer->country_id,
+                'city_id' => $customer->city_id,
+                'status' => $customer->status, 
+                'image' => $customer->image, 
+            ];
+        // if (!empty($request->image)) {
+        //     $image = $this->storeBase64Image($request->image, 'agent/lead/image');
+        //     $leadRequest['image'] = $image;
+        // }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $leadRequest['affilate_id'] = $agent_id;
+            $this->customer_data
+            ->create($leadRequest);
         } 
         else {
+            $leadRequest['agent_id'] = $agent_id;
             $this->customer_data
-            ->create([
-                'customer_id' => $request->customer_id,
-                'agent_id' => $agent_id,
-                'name' => $customer->name,
-                'phone' => $customer->phone,
-            ]);
+            ->create($leadRequest);
         }
 
         return response()->json([
