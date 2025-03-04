@@ -16,6 +16,15 @@ class CustomerData extends Model
         'phone',
         'email',
         'gender',
+        'watts',
+        'source_id',
+        'agent_sales_id',
+        'service_id',
+        'nationality_id',
+        'country_id',
+        'city_id',
+        'image',
+        'status',
     ];
 
     public function customer(){

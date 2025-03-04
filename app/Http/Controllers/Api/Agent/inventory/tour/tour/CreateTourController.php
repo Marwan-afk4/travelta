@@ -108,6 +108,9 @@ class CreateTourController extends Controller
             $agent_type = 'agent_id';
         }
         $tourRequest = $request->only($this->tourRequest);
+        if (!empty($request->image)) {
+            $image = $this->storeBase64Image($request->image, 'agent/inventory/tour/images');
+        }
         $tourRequest[$agent_type] = $agent_id;
         $tour = $this->tour
         ->create($tourRequest);

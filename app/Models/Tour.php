@@ -16,6 +16,7 @@ class Tour extends Model
         'tour_type',
         'status',
         'days',
+        'image',
         'nights',
         'tour_type_id',
         'featured',
@@ -42,7 +43,12 @@ class Tour extends Model
         'price',
         'currency_id',
     ];
+    protected $appends = ['image_link'];
  
+    public function getImageLinkAttribute(){
+        return url('storage/' . $this->attributes['image']);
+    }
+
     public function destinations(){
         return $this->hasMany(TourDestination::class, 'tour_id');
     }

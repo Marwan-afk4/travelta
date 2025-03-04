@@ -16,8 +16,7 @@ class TourGalleryController extends Controller
 
     public function gallery($id){
         // tour/gallery/{id}
-        $images = $this->tour_image 
-        ->where('status', true)
+        $images = $this->tour_image
         ->where('tour_id', $id)
         ->get();
 

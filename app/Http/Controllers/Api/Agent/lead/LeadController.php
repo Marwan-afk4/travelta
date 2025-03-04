@@ -20,6 +20,16 @@ class LeadController extends Controller
         'email',
         'gender',
         'emergency_phone',
+        
+        'watts',
+        'source_id',
+        'agent_sales_id',
+        'service_id',
+        'nationality_id',
+        'country_id',
+        'city_id',
+        'image',
+        'status',
     ];
 
     public function view(Request $request){
