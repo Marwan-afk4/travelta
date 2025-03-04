@@ -30,7 +30,6 @@ class LeadController extends Controller
         'nationality_id',
         'country_id',
         'city_id',
-        'image',
         'status',
     ];
 
@@ -195,11 +194,17 @@ class LeadController extends Controller
         // /leads/add
         // Keys
         // name, phone, email, gender
+        // image, watts, source_id, agent_sales_id, service_id,
+        // nationality_id, country_id, city_id, status
         $leadRequest = $request->only($this->leadRequest);
         $customer = $this->customer
         ->where('phone', $request->phone)
-        ->first();
+        ->first(); 
         if (empty($customer)) {
+            if (!empty($request->image)) {
+                $image = $this->storeBase64Image($request->image, 'agent/lead/image');
+                $leadRequest['image'] = $image;
+            }
             $customer = $this->customer
             ->create($leadRequest);
         }

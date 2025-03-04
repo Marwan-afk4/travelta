@@ -11,5 +11,6 @@ class TourPricingItems extends Model
         'currency_id',
         'price',
         'type',
+        'tour_id'
     ];
 }
