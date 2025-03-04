@@ -452,7 +452,19 @@ class BookingEngine extends Controller
                 },
                 'destinations.country:id,name',
                 'destinations.city:id,name',
+                'itinerary',
+                'includes',
+                'excludes',
+                'cancelation_items',
+                'tour_images',
+                'tour_hotels',
+                'tour_discounts',
+                'tour_pricings',
+                'tour_pricing_items',
+                'tour_extras',
+                'currency:id,name' // Add this line
             ])
+
             ->with('itinerary')
             ->with('includes')
             ->with('excludes')
