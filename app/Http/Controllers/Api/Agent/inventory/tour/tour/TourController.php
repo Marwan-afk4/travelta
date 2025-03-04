@@ -30,7 +30,7 @@ class TourController extends Controller
         ->with(['destinations' => function($query){
             $query->with('city', 'country');
         }, 'availability', 'cancelation_items',
-        'excludes', 'includes', 'itinerary', 'tour_type', 'pick_up_country',
+        'excludes', 'includes', 'itinerary', 'tour_types', 'pick_up_country',
         'pick_up_city'])
         ->get();
 
@@ -48,7 +48,7 @@ class TourController extends Controller
         ->with(['destinations' => function($query){
             $query->with('city', 'country');
         }, 'availability', 'cancelation_items',
-        'excludes', 'includes', 'itinerary', 'tour_type', 'pick_up_country',
+        'excludes', 'includes', 'itinerary', 'tour_types', 'pick_up_country',
         'pick_up_city', 'tour_images', 'tour_hotels', 'tour_extras', 'tour_discounts',
         'tour_pricings.tour_pricing_items'])
         ->where('id', $id)
