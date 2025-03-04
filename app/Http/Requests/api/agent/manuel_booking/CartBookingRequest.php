@@ -23,13 +23,22 @@ class CartBookingRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'cart_id' => 'required|exists:manuel_data_carts,id',
-            'total_cart' => ['required', 'numeric'],
-            'payment_type' => ['required', 'in:full,partial,later'],
-            'payment_methods' => ['required_if:payment_type,full,partial'],
-            'payments' => ['required_if:payment_type,partial,later'],
-        ];
+        if ($this->input('payment_type') == 'full' || $this->input('payment_type') == 'partial') {
+            return [
+                'cart_id' => 'required|exists:manuel_data_carts,id',
+                'total_cart' => ['required', 'numeric'],
+                'payment_type' => ['required', 'in:full,partial,later'],
+                'payment_methods' => ['required'],
+            ];
+        }
+        if ($this->input('payment_type') == 'partial' || $this->input('payment_type') == 'later') {
+            return [
+                'cart_id' => 'required|exists:manuel_data_carts,id',
+                'total_cart' => ['required', 'numeric'],
+                'payment_type' => ['required', 'in:full,partial,later'],
+                'payments' => ['required'],
+            ];
+        }
     }
 
     public function failedValidation(Validator $validator)
