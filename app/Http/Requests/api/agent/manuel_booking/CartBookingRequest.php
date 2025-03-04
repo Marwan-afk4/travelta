@@ -23,20 +23,33 @@ class CartBookingRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->input('payment_type') == 'full' || $this->input('payment_type') == 'partial') {
+        if ($this->input('payment_type') == 'full') {
+            return [
+                'cart_id' => 'required|exists:manuel_data_carts,id',
+                'total_cart' => ['required', 'numeric'],
+                'payment_type' => ['required', 'in:full,partial,later'],
+            ];
+        }
+        elseif ($this->input('payment_type') == 'partial' ) {
             return [
                 'cart_id' => 'required|exists:manuel_data_carts,id',
                 'total_cart' => ['required', 'numeric'],
                 'payment_type' => ['required', 'in:full,partial,later'],
                 'payment_methods' => ['required'],
+                'payments' => ['required'],
             ];
         }
-        if ($this->input('payment_type') == 'partial' || $this->input('payment_type') == 'later') {
+        elseif ($this->input('payment_type') == 'later') {
             return [
                 'cart_id' => 'required|exists:manuel_data_carts,id',
                 'total_cart' => ['required', 'numeric'],
                 'payment_type' => ['required', 'in:full,partial,later'],
                 'payments' => ['required'],
+            ];
+        }
+        else{
+            return [ 
+                'payment_type' => ['required', 'in:full,partial,later'], 
             ];
         }
     }
