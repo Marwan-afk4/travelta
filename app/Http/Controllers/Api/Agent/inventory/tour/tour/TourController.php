@@ -31,9 +31,10 @@ class TourController extends Controller
             $query->with('city', 'country');
         }, 'availability', 'cancelation_items',
         'excludes', 'includes', 'itinerary', 'tour_type', 'pick_up_country',
-        'pick_up_city'])
-        ->get();   
-    
+        'pick_up_city', 'tour_images', 'tour_hotels', 'tour_extras', 'tour_discounts',
+        'tour_pricings'])
+        ->get();
+        
         return response()->json([
             'tour_types' => $tour_types,
             'countries' => $countries,
