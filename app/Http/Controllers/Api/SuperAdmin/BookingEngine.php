@@ -18,6 +18,7 @@ use App\Models\HotelImage;
 use App\Models\Room;
 use App\Models\RoomAvailability;
 use App\Models\Tour;
+use App\Models\TourAvailability;
 use App\Models\TourType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -477,44 +478,64 @@ class BookingEngine extends Controller
         return response()->json($data);
     }
 
-    public function bookTour(Request $request){
-        $validation = Validator::make($request->all(), [
-            'tour_id' => 'required|exists:tours,id',
-            'no_of_people' => 'required|integer|min:1',
-            'special_request' => 'nullable|string',
-            'currency_id' => 'nullable|exists:currency_agents,id',
-            'total_price' => 'required|integer|min:1',
-            'customer_id' => 'nullable|exists:customers,id',
-            'agents_id' => 'nullable|exists:agents,id',
-        ]);
 
-        if ($validation->fails()) {
-            return response()->json(['errors' => $validation->errors()], 400);
-        }
-        $customer = $request->customer_id;
-        $agents = $request->agents_id;
-        $tour = $request->tour_id;
 
-        $tour = Tour::find($request->tour_id);
 
-        if($customer){
-            $createBooking = BookTourengine::create([
-                'tour_id' => $request->tour_id,
-                'no_of_people' => $request->no_of_people,
-                'special_request' => $request->special_request??null,
-                'currency_id' => $request->currency_id,
-                'total_price' => $request->total_price,
-                'to_name'=>$customer->name,
-                'to_email'=>$customer->email,
-                'to_phone'=>$customer->phone,
-                'to_role'=>'Customer',
-                'from_supplier_id'=> $tour->agent_id,
-                'code' => 'TE' . rand(10000, 99999) . strtolower(Str::random(1)),
-                'status' => $request->status,
-                'payment_status'=>'full',
-                'to_hotel_id'=>$tour->tour_hotels->id,
-                'country_id'=>$tour->tourd
-            ]);
-        }
+    public function bookTour(Request $request)
+{
+    $validation = Validator::make($request->all(), [
+        'tour_id' => 'required|exists:tours,id',
+        'no_of_people' => 'required|integer|min:1',
+        'special_request' => 'nullable|string',
+        'currency_id' => 'nullable|exists:currency_agents,id',
+        'total_price' => 'required|integer|min:1',
+        'customer_id' => 'nullable|exists:customers,id',
+        'agents_id' => 'nullable|exists:agents,id',
+        'status' => 'required|string',
+        'to_hotel_id' => 'nullable|exists:tour_hotels,id',
+    ]);
+
+    if ($validation->fails()) {
+        return response()->json(['errors' => $validation->errors()], 400);
     }
+
+    $tour = Tour::findOrFail($request->tour_id);
+    $customer = Customer::find($request->customer_id);
+    $agent = Agent::find($request->agents_id);
+
+    if (!$customer && !$agent) {
+        return response()->json(['error' => 'Either customer or agent must be provided.'], 400);
+    }
+
+    // Determine Recipient
+    $recipient = $customer ?? $agent;
+    $toRole = $customer ? 'Customer' : 'Agent';
+
+    $createBooking = BookTourengine::create([
+        'tour_id' => $tour->id,
+        'no_of_people' => $request->no_of_people,
+        'special_request' => $request->special_request ?? null,
+        'currency_id' => $request->currency_id,
+        'total_price' => $request->total_price,
+        'to_name' => $recipient->name,
+        'to_email' => $recipient->email,
+        'to_phone' => $recipient->phone,
+        'to_role' => $toRole,
+        'from_supplier_id' => $tour->agent_id,
+        'code' => 'TE' . rand(10000, 99999) . strtolower(Str::random(1)),
+        'status' => $request->status,
+        'payment_status' => 'full',
+        'to_hotel_id' => optional($tour->tour_hotels()->first())->id??null,
+        'country_id' => null,
+    ]);
+    $updateremaining = TourAvailability::where('tour_id', $tour->id);
+    $updateremaining->decrement('remaining', $request->no_of_people);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Tour booked successfully',
+        'tour' => $createBooking,
+    ], 200);
+}
+
 }
