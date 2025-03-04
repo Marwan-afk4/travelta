@@ -196,6 +196,7 @@ class BookingEngine extends Controller
                         'hotel_id' => $hotel->id,
                         'hotel_name' => $hotel->hotel_name,
                         'hotel_stars' => $hotel->stars,
+                        'hotel_description' => $hotel->description,
                         'hotel_logo' => $hotel->hotel_logo ? asset('storage/' . $hotel->hotel_logo) : null,
                         'hotel_facilities' => $hotel->facilities->unique('id')->map(function ($facility) {
                             return [
