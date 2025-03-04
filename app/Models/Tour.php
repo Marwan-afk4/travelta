@@ -104,4 +104,8 @@ class Tour extends Model
     public function tour_pricings(){
         return $this->hasMany(TourPricing::class, 'tour_id');
     }
+    
+    public function tour_pricing_items(){
+        return $this->hasMany(TourPricingItems::class, 'tour_id');
+    }
 }
