@@ -73,7 +73,7 @@ class Tour extends Model
         return $this->hasMany(TourItinerary::class, 'tour_id');
     }
 
-    public function tour_type(){
+    public function tour_types(){
         return $this->belongsTo(TourType::class, 'tour_id');
     }
 

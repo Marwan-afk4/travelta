@@ -241,6 +241,7 @@ class CreateTourController extends Controller
                                 'currency_id' => $element['currency_id'],
                                 'price' => $element['price'],
                                 'type' => $element['type'],
+                                'tour_pricing_items' => $pricing_data->id,
                             ]);
                         }
                     }
@@ -510,6 +511,7 @@ class CreateTourController extends Controller
                                 'currency_id' => $element['currency_id'],
                                 'price' => $element['price'],
                                 'type' => $element['type'],
+                                'tour_pricing_items' => $pricing_data->id,
                             ]);
                         }
                     }
