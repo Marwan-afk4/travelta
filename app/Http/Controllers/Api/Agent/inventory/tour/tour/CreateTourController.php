@@ -323,6 +323,11 @@ class CreateTourController extends Controller
         ->where('id', $id)
         ->where($agent_type, $agent_id)
         ->first();
+        if (!empty($request->image)) {
+            $image = $this->storeBase64Image($request->image, 'agent/inventory/tour/images');
+            $tourRequest['image'] = $image;
+            $this->deleteImage($tour->image);
+        }
         if (empty($tour)) {
             return response()->json([
                 'faild' => 'tour is not found'
