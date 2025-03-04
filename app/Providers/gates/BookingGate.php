@@ -3,8 +3,10 @@
 namespace App\Providers\gates;
 use Illuminate\Support\Facades\Gate;
 
+
 use App\Models\HrmEmployee;
 use App\Models\AdminAgent;
+use App\Models\AffilateAgent;
 use App\Models\Agent;
 
 class BookingGate
@@ -13,7 +15,7 @@ class BookingGate
     {
         // if roles have booking payment module
         Gate::define('view_manuel_booking', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -25,7 +27,7 @@ class BookingGate
             return false;
         });
         Gate::define('view_booking_engine', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -37,7 +39,7 @@ class BookingGate
             return false;
         });
         Gate::define('view_bookings', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 
@@ -49,7 +51,7 @@ class BookingGate
             return false;
         });
         Gate::define('status_bookings', function ($user) {
-            if ($user instanceof Agent) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
             }
             if ($user->user_positions && 

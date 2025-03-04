@@ -214,8 +214,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/paid_to_suppliers', 'paid_to_suppliers')->middleware('can:view_supplier_payment_paid');
             Route::post('/paid_to_suppliers_filter', 'paid_to_suppliers_filter')->middleware('can:view_supplier_payment_paid');
 
-            Route::get('/payable_to_suppliers', 'payable_to_suppliers')->middleware('can:supplier_payment_payable');
-            Route::post('/payable_to_suppliers_filter', 'payable_to_suppliers_filter')->middleware('can:supplier_payment_payable');
+            Route::get('/payable_to_suppliers', 'payable_to_suppliers')->middleware('can:view_supplier_payment_payable');
+            Route::post('/payable_to_suppliers_filter', 'payable_to_suppliers_filter')->middleware('can:view_supplier_payment_payable');
 
             Route::get('/due_to_suppliers', 'due_to_suppliers')->middleware('can:view_supplier_payment_due');
             Route::post('/due_to_suppliers_filter', 'due_to_suppliers_filter')->middleware('can:view_supplier_payment_due');

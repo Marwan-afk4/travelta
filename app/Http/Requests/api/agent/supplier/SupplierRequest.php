@@ -30,6 +30,8 @@ class SupplierRequest extends FormRequest
             'admin_email' => ['required', 'email'],
             'emails' => ['required'],
             'phones' => ['required'],
+            'balances.*.currency_id' => ['required', 'exists:currency_agents,id'],
+            'balances.*.balance' => ['required', 'numeric'],
         ];
     }
 

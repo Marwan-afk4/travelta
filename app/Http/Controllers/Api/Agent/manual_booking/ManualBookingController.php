@@ -18,6 +18,7 @@ use App\Http\Resources\ManuelTourResource;
 use App\Http\Resources\ManuelVisaResource;
 
 use App\Models\CustomerData;
+use App\Models\SupplierBalance;
 use App\Models\SupplierAgent;
 use App\Models\Service;
 use App\Models\City;
@@ -61,7 +62,7 @@ class ManualBookingController extends Controller
     private Customer $customers, private FinantiolAcounting $financial_accounting,
     private BookingPayment $booking_payment, private Agent $agent,
     private AffilateAgent $affilate_agent, private AgentPayable $agent_payable,
-    private HrmEmployee $employees){}
+    private HrmEmployee $employees, private SupplierBalance $supplier_balance){}
     
     protected $hotelRequest = [
         'check_in',
@@ -205,6 +206,12 @@ class ManualBookingController extends Controller
         }
         else{
             $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
         }
         $cities = $this->cities
         ->get();
@@ -787,7 +794,7 @@ class ManualBookingController extends Controller
             'success' => 'You delete data success'
         ]);
     }
-
+    
     public function booking(CartBookingRequest $request){
         // Hotel => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","check_in": "2024-05-05","check_out": "2024-07-07","nights": "3","hotel_name": "Hilton","room_type": "2","room_quantity": "10","adults": "25","childreen": "10"}
         // Bus => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","from": "Alex","to": "Sharm","departure": "2024-05-05 11:30:00","arrival": "2024-07-07 11:30:00","adults": "2","childreen": "10","adult_price": "250","child_price": "100","bus": "Travelta","bus_number": "12345","driver_phone": "01234566"}
@@ -1206,6 +1213,45 @@ class ManualBookingController extends Controller
             $this->manuel_data_cart
            ->where('id', $request->cart_id)
            ->delete();
+           if (isset($manuelRequest['to_supplier_id']) && is_numeric($manuelRequest['to_supplier_id'])) {
+           
+               $supplier_balance = $this->supplier_balance
+               ->where('supplier_id', $manuelRequest['to_supplier_id'])
+               ->where('currency_id', $manuelRequest['currency_id'] ?? null)
+               ->first();
+               if (empty($supplier_balance)) {
+                    $this->supplier_balance
+                    ->create([
+                        'supplier_id' => $manuelRequest['to_supplier_id'],
+                        'balance' => -$manuelRequest['total_price'],
+                        'currency_id' => $manuelRequest['currency_id'] ?? null,
+                    ]); 
+               }
+               else{
+                    $supplier_balance->update([
+                        'balance' => $supplier_balance->balance - $manuelRequest['total_price']
+                    ]);
+               }
+           }
+           if (isset($manuelRequest['from_supplier_id']) && is_numeric($manuelRequest['from_supplier_id'])) {
+                $supplier_balance = $this->supplier_balance
+                ->where('supplier_id', $manuelRequest['from_supplier_id'])
+                ->where('currency_id', $manuelRequest['currency_id'] ?? null)
+                ->first();
+                if (empty($supplier_balance)) {
+                    $this->supplier_balance
+                    ->create([
+                        'supplier_id' => $manuelRequest['from_supplier_id'],
+                        'balance' => $manuelRequest['cost'],
+                        'currency_id' => $manuelRequest['currency_id'] ?? null,
+                    ]); 
+                }
+                else{
+                    $supplier_balance->update([
+                        'balance' => $supplier_balance->balance + $manuelRequest['cost']
+                    ]);
+                }
+           }
             return response()->json([ 
                 'hotel' => $hotel[0] ?? null,
                 'bus' => $bus[0] ?? null,

@@ -19,7 +19,7 @@ return new class extends Migration
                 $table->foreignId(column: 'from_supplier_id')->nullable()->constrained('supplier_agents')->onUpdate('cascade')->onDelete('set null');
                 $table->foreignId(column: 'from_service_id')->nullable()->constrained('services')->onUpdate('cascade')->onDelete('set null');
                 $table->float('cost');
-                $table->enum('tax_type', ['include', 'exclude']);
+                $table->enum('tax_type', ['include', 'exclude'])->nullable();
                 $table->float('total_price');
                 $table->foreignId(column: 'currency_id')->nullable()->constrained('currency_agents')->onUpdate('cascade')->onDelete('set null');
                 $table->foreignId(column: 'country_id')->nullable()->constrained('countries')->onUpdate('cascade')->onDelete('set null');

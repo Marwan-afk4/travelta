@@ -32,7 +32,7 @@ class ManuelBookingRequest extends FormRequest
             'cost' => ['required', 'numeric'],
             'price' => ['required', 'numeric'],
             'currency_id' => ['required', 'exists:currency_agents,id'],
-            'tax_type' => ['required', 'in:include,exclude'],
+            //'tax_type' => ['required', 'in:include,exclude'],
             'total_price' => ['required', 'numeric'],
             'country_id' => ['required', 'exists:countries,id'],
             'city_id' => ['sometimes', 'exists:cities,id'],

@@ -16,6 +16,7 @@ use App\Models\ManuelBooking;
 use App\Models\LegalPaper;
 use App\Models\PaymentsCart;
 use App\Models\AgentPayment;
+use App\Models\SupplierBalance;
 
 class SupplierProfileController extends Controller
 {
@@ -23,7 +24,8 @@ class SupplierProfileController extends Controller
         private SupplierAgent $supplier,
         private ManuelBooking $manuel_booking, 
         private LegalPaper $legal_papers,
-        private AgentPayment $agent_payment, 
+        private AgentPayment $agent_payment,
+        private SupplierBalance $balances,
         private PaymentsCart $payment_cart){}
 
     public function profile(Request $request, $id){
@@ -57,11 +59,16 @@ class SupplierProfileController extends Controller
         $legal_papers = $this->legal_papers
         ->where('supplier_agent_id', $id)
         ->get();
+        $balances = $this->balances
+        ->where('supplier_id', $id)
+        ->with('currency:id,name')
+        ->get();
 
         return response()->json([
             'supplier_info' => $supplier_info, 
             'manuel_booking' => $manuel_booking,
             'legal_papers' => $legal_papers,
+            'balances' => $balances,
         ]);
     }
 
@@ -90,7 +97,7 @@ class SupplierProfileController extends Controller
         })  
         ->where(function ($query) use ($id) {
             $query->where('from_supplier_id', $id)
-                  ->orWhere('to_supplier_id', $id);
+            ->orWhere('to_supplier_id', $id);
         })
         ->get()
         ->map(function ($data) use($id) {
