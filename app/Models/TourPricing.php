@@ -12,4 +12,8 @@ class TourPricing extends Model
         'min_age',
         'max_age',
     ];
+    
+    public function tour_pricing_items(){
+        return $this->hasMany(TourPricingItems::class, 'tour_pricing_id');
+    }
 }

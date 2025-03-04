@@ -31,8 +31,7 @@ class TourController extends Controller
             $query->with('city', 'country');
         }, 'availability', 'cancelation_items',
         'excludes', 'includes', 'itinerary', 'tour_type', 'pick_up_country',
-        'pick_up_city', 'tour_images', 'tour_hotels', 'tour_extras', 'tour_discounts',
-        'tour_pricings'])
+        'pick_up_city'])
         ->get();
 
         return response()->json([
@@ -50,7 +49,8 @@ class TourController extends Controller
             $query->with('city', 'country');
         }, 'availability', 'cancelation_items',
         'excludes', 'includes', 'itinerary', 'tour_type', 'pick_up_country',
-        'pick_up_city'])
+        'pick_up_city', 'tour_images', 'tour_hotels', 'tour_extras', 'tour_discounts',
+        'tour_pricings.tour_pricing_items'])
         ->where('id', $id)
         ->first();
 
