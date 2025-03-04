@@ -450,7 +450,8 @@ class BookingEngine extends Controller
                 'availability' => function ($q) use ($year, $month) {
                     $q->whereYear('date', $year)->whereMonth('date', $month);
                 },
-                'destinations',
+                'destinations.country',
+                'destinations.city',
             ])
             ->with('itinerary')
             ->with('includes')
