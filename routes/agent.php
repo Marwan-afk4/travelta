@@ -124,6 +124,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::post('/agent/tours', [BookingEngine::class, 'getAvailableTours'])->middleware('can:view_booking_engine');
 
+    Route::post('/agent/bookTour', [BookingEngine::class, 'bookTour'])->middleware('can:view_booking_engine');
+
 
 ///////marwan end
     Route::prefix('supplier')->group(function(){
