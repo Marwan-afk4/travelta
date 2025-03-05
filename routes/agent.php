@@ -345,7 +345,9 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/details/{id}', 'details')->middleware('can:view_bookings');
             Route::get('/engine_details/{id}', 'engine_details')->middleware('can:view_bookings');
             Route::put('/special_request/{id}', 'special_request')->middleware('can:view_bookings');
+            Route::put('/request_status/{id}', 'special_request_status')->middleware('can:update_bookings');
             Route::put('/engine_special_request/{id}', 'engine_special_request')->middleware('can:view_bookings');
+            Route::put('/request_status_engine/{id}', 'special_request_status_engine')->middleware('can:update_bookings');
         });
         Route::controller(BookingStatusController::class)->group(function(){
             Route::put('/confirmed/{id}', 'confirmed')->middleware('can:status_bookings');

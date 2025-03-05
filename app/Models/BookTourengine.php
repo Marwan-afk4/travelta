@@ -24,6 +24,7 @@ class BookTourengine extends Model
         'status',
         'payment_status',
         'special_request',
+        'request_status',
     ];
 
     public function tour(){

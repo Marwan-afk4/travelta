@@ -223,7 +223,7 @@ class PositionController extends Controller
                 'view',
             ],
             'bookings' => [
-                'view', 'status'
+                'view', 'status', 'update'
             ],
             'customer' => [
                 'view',
