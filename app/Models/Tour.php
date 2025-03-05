@@ -29,7 +29,7 @@ class Tour extends Model
         'pick_up_country_id',
         'pick_up_city_id',
         'pick_up_map',
-        'destination_type', 
+        'destination_type',
         'tour_email',
         'tour_website',
         'tour_phone',
@@ -44,7 +44,7 @@ class Tour extends Model
         'currency_id',
     ];
     protected $appends = ['image_link'];
- 
+
     public function getImageLinkAttribute(){
         return url('storage/' . $this->attributes['image']);
     }
@@ -88,24 +88,30 @@ class Tour extends Model
     public function tour_images(){
         return $this->hasMany(TourImage::class, 'tour_id');
     }
-    
+
     public function tour_hotels(){
         return $this->hasMany(TourHotel::class, 'tour_id');
     }
-    
+
     public function tour_extras(){
         return $this->hasMany(TourExtra::class, 'tour_id');
     }
-    
+
     public function tour_discounts(){
         return $this->hasMany(TourDiscount::class, 'tour_id');
     }
-    
+
     public function tour_pricings(){
         return $this->hasMany(TourPricing::class, 'tour_id');
     }
-    
+
     public function tour_pricing_items(){
         return $this->hasMany(TourPricingItems::class, 'tour_id');
     }
+
+    public function currency()
+{
+    return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+}
+
 }
