@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\trait\image;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\api\agent\lead\LeadRequest;
+use Illuminate\Validation\Rule;
 
 use App\Models\Customer;
 use App\Models\CustomerData;
@@ -87,6 +88,41 @@ class LeadController extends Controller
         
         return response()->json([
             'leads' => $leads
+        ]);
+    }
+
+    public function status(Request $request, $id){
+        // /leads/status/{id}
+        $validation = Validator::make($request->all(), [
+            'status' => 'required|boolean',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id'; 
+        }
+        $this->customer_data
+        ->where('id', $id)
+        ->where($role, $agent_id)
+        ->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'success' => $request->status ? 'active': 'banned'
         ]);
     }
 
@@ -195,7 +231,14 @@ class LeadController extends Controller
         // Keys
         // name, phone, email, gender
         // image, watts, source_id, agent_sales_id, service_id,
-        // nationality_id, country_id, city_id, status
+        // nationality_id, country_id, city_id, status      
+        $validation = Validator::make($request->all(), [
+            'phone' => ['unique:customers,phone'],
+            'email' => ['unique:customers,email'],
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
         $leadRequest = $request->only($this->leadRequest);
         $customer = $this->customer
         ->where('phone', $request->phone)
@@ -218,31 +261,32 @@ class LeadController extends Controller
         else{
             $agent_id = $request->user()->id;
         }
-        // image, watts, source_id, agent_sales_id, service_id,
-        // nationality_id, country_id, city_id, status
+         
         $customer_arr = [
             'customer_id' => $customer->id,
             'name' => $request->name,
             'phone' => $request->phone,
             'email' => $request->email ?? null,
             'gender' => $request->gender ?? null,
+            'watts' => $request->watts ?? null,
+            'source_id' => $request->source_id ?? null,
+            'agent_sales_id' => $request->agent_sales_id ?? null,
+            'service_id' => $request->service_id ?? null,
+            'nationality_id' => $request->nationality_id ?? null,
+            'country_id' => $request->country_id ?? null,
+            'city_id' => $request->city_id ?? null,
+            'status' => $request->status ?? null,
+            'image' => $customer->image ?? null,
         ];
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $customer_arr['affilate_id'] = $agent_id;
             $this->customer_data
-            ->create([
-            ]);
+            ->create($customer_arr);
         } 
         else { 
             $customer_arr['agent_id'] = $agent_id;
             $this->customer_data
-            ->create([
-                'customer_id' => $customer->id, 
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'email' => $request->email ?? null,
-                'gender' => $request->gender ?? null,
-            ]);
+            ->create($customer_arr);
         }
         
         return response()->json([
@@ -250,19 +294,12 @@ class LeadController extends Controller
         ]);
     }
 
-    public function modify(Request $request, $id){ 
+    public function modify(LeadRequest $request, $id){ 
         // /leads/update/{id}
         // Keys
-        // name, phone, email, gender 
-        $validation = Validator::make($request->all(), [
-            'name' => 'required',
-            'gender' => 'required|in:male,female',
-            'phone' => 'required|unique:customers,phone,' . $id . ',id',
-            'email' => 'required|unique:customers,email,' . $id . ',id',
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
-        }
+        // name, phone, email, gender,
+        // image, watts, source_id, agent_sales_id, service_id,
+        // nationality_id, country_id, city_id, status
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
@@ -280,7 +317,7 @@ class LeadController extends Controller
         }
         $leadRequest = $request->only($this->leadRequest);
         $customer = $this->customer_data
-        ->where('customer_id', $id)
+        ->where('id', $id)
         ->where($role, $agent_id)
         ->first();
         if (empty($customer)) {
@@ -288,12 +325,27 @@ class LeadController extends Controller
                 'errors' => 'lead not found'
             ], 400);
         }
-        $customer_arr = [ 
+        $customer_arr = [
             'name' => $request->name,
             'phone' => $request->phone,
             'email' => $request->email ?? null,
-            'gender' => $request->gender ?? null, 
+            'gender' => $request->gender ?? null,
+            'watts' => $request->watts ?? null,
+            'source_id' => $request->source_id ?? null,
+            'agent_sales_id' => $request->agent_sales_id ?? null,
+            'service_id' => $request->service_id ?? null,
+            'nationality_id' => $request->nationality_id ?? null,
+            'country_id' => $request->country_id ?? null,
+            'city_id' => $request->city_id ?? null,
+            'status' => $request->status ?? null, 
         ];
+        if (!empty($request->image)) {
+            $image = $this->storeBase64Image($request->image, 'agent/lead/image');
+            $leadRequest['image'] = $image;
+            $customer_arr['image'] = $image;
+            $this->deleteImage($customer->image);
+            return 5464;
+        }
         if ($customer->phone != $request->phone) {
             $parent_customer = $this->customer
             ->create($leadRequest);
@@ -364,19 +416,20 @@ class LeadController extends Controller
         else{
             $agent_id = $request->user()->id;
         }
-
+ 
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
-            $this->customer_data
+            $customer = $this->customer_data
             ->where('customer_id', $id)
             ->where('affilate_id', $agent_id)
             ->delete();
         } 
         else {
-            $this->customer_data
+            $customer = $this->customer_data
             ->where('customer_id', $id)
             ->where('agent_id', $agent_id)
             ->delete();
         }
+        $this->deleteImage($customer->image);
 
         return response()->json([
             'success' => 'You delete data success'

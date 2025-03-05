@@ -14,6 +14,15 @@ class Customer extends Model
         'gender',
         'emergency_phone',
         'password',
+        'watts',
+        'source_id',
+        'agent_sales_id',
+        'service_id',
+        'nationality_id',
+        'country_id',
+        'city_id',
+        'image',
+        'status',
     ];
 
     public function manuel(){
