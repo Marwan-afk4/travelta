@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('agent_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->string('old_phone');
             $table->string('new_phone');
+            $table->boolean('status');
             $table->timestamps();
         });
     }
