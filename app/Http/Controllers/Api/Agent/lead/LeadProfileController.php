@@ -31,14 +31,18 @@ class LeadProfileController extends Controller
         else {
             $role = 'agent_id';
         }
-        $customer_info = $this->customer_data
-        ->select('name', 'phone', 'email', 'total_booking')
-        ->where('customer_id', $id)
+        $customer_info = $this->customer_data 
+        ->select('name', 'phone', 'email', 'gender', 'total_booking', 
+        'watts', 'source_id', 'agent_sales_id', 'service_id', 'nationality_id', 'country_id',
+        'city_id', 'image', 'created_at as date_added', 'customer_id')
+        ->with(['source:id,source', 'agent_sales:id,name', 'service:id,service_name', 
+        'nationality:id,name', 'country:id,name', 'city:id,name'])
+        ->where('id', $id)
         ->where($role, $agent_id)
         ->first();
         $requests = $this->request_booking
         ->where($role, $agent_id)
-        ->where('customer_id', $id)
+        ->where('customer_id', $customer_info->customer_id)
         ->with(['hotel', 'bus', 'flight', 'tour' => function($query){
             return $query->with('hotel', 'bus');
         }, 'visa', 'customer', 'admin_agent', 'currency', 'service'])

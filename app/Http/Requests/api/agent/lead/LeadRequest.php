@@ -25,12 +25,11 @@ class LeadRequest extends FormRequest
     {
         return [
             'name' => ['required'],
-            'phone' => ['required', 'unique:customers,phone'],
-            'email' => ['required', 'email', 'unique:customers,email'],
+            'phone' => ['required'],
+            'email' => ['required', 'email'],
             'gender' => ['required', 'in:male,female'],
-            
-            'image' => [],
-            'watts' => [],
+            'image' => ['sometimes'],
+            'watts' => ['sometimes'],
             'source_id' => ['required', 'exists:customer_sources,id'],
             'agent_sales_id' => ['required', 'exists:hrm_employees,id'],
             'service_id' => ['required', 'exists:services,id'],

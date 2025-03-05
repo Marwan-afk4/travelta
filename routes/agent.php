@@ -93,8 +93,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('leads')->group(function(){
         Route::controller(LeadController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_lead');
+            Route::get('/lists', 'lists');
             Route::get('leads_search', 'leads_search')->middleware('can:add_lead');
             Route::put('update/{id}', 'modify')->middleware('can:update_lead');
+            Route::put('status/{id}', 'status')->middleware('can:update_lead');
             Route::post('add_lead', 'add_lead')->middleware('can:add_lead');
             Route::post('add', 'create')->middleware('can:add_lead');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_lead');
@@ -367,9 +369,11 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('customer')->group(function(){
         Route::controller(CustomerController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_customer');
+            Route::put('/update/{id}', 'update')->middleware('can:update_customer');
         });
         Route::controller(CustomerProfileController::class)->group(function(){
             Route::get('/profile/{id}', 'profile')->middleware('can:view_customer');
+            Route::post('/upload_papers', 'upload_papers')->middleware('can:update_customer');
         });
     });
 

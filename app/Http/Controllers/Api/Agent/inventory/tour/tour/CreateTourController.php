@@ -39,7 +39,6 @@ class CreateTourController extends Controller
         'tour_type',
         'status',
         'days',
-        'price',
         'nights',
         'tour_type_id',
         'featured',
@@ -222,6 +221,16 @@ class CreateTourController extends Controller
                     ]);
                 }
              } 
+             // price, currency_id
+             if (!empty($request->price)) {
+                $this->pricing_item
+                ->create([    
+                    'tour_id' => $tour->id,
+                    'currency_id' => $request->currency_id,
+                    'price' => $request->price,
+                    'type' => "0", 
+                ]);
+             }
              if ($request->pricing) {
                 $pricing = $request->pricing;
                 foreach ($pricing as $item) {
@@ -237,11 +246,11 @@ class CreateTourController extends Controller
                         foreach ($pricing_item as $element) {
                             $this->pricing_item
                             ->create([        
+                                'tour_id' => $tour->id,
                                 'tour_pricing_id' => $pricing_data->id,
                                 'currency_id' => $element['currency_id'],
                                 'price' => $element['price'],
                                 'type' => $element['type'],
-                                'tour_pricing_items' => $pricing_data->id,
                             ]);
                         }
                     }
@@ -492,6 +501,18 @@ class CreateTourController extends Controller
              $this->pricing
              ->where('tour_id', $tour->id)
              ->delete();
+             $this->pricing_item
+             ->where('tour_id', $tour->id)
+             ->delete();
+             if (!empty($request->price)) {
+                $this->pricing_item
+                ->create([    
+                    'tour_id' => $tour->id,
+                    'currency_id' => $request->currency_id,
+                    'price' => $request->price,
+                    'type' => "0", 
+                ]);
+             }
              if ($request->pricing) {
                 $pricing = $request->pricing;
                 foreach ($pricing as $item) {
@@ -511,7 +532,7 @@ class CreateTourController extends Controller
                                 'currency_id' => $element['currency_id'],
                                 'price' => $element['price'],
                                 'type' => $element['type'],
-                                'tour_pricing_items' => $pricing_data->id,
+                                'tour_id' => $tour->id,
                             ]);
                         }
                     }

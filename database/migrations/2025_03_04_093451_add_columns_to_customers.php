@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::table('customers', function (Blueprint $table) {
             $table->string('watts')->nullable();
-            $table->foreignId('source_id')->nullable()->constrained('customer_sources')->onUpdate('cascade')->onDelete('set null');
-            $table->foreignId('agent_sales_id')->nullable()->constrained('hrm_employees')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('service_id')->nullable()->constrained('services')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('nationality_id')->nullable()->constrained('nationalities')->onUpdate('cascade')->onDelete('set null');
             $table->foreignId('country_id')->nullable()->constrained('countries')->onUpdate('cascade')->onDelete('set null');
