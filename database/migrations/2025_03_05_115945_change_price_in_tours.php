@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tours', function (Blueprint $table) {
+            $table->dropForeign(['tours_currency_id_foreign']);
             $table->dropColumn('price');
             $table->dropColumn('currency_id');
         });
