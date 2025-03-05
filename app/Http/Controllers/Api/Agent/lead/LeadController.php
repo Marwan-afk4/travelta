@@ -12,10 +12,20 @@ use Illuminate\Validation\Rule;
 use App\Models\Customer;
 use App\Models\CustomerData;
 
+use App\Models\CustomerSource;
+use App\Models\HrmEmployee;
+use App\Models\Service;
+use App\Models\Nationality;
+use App\Models\Country;
+use App\Models\City;
+
 class LeadController extends Controller
 {
     public function __construct(private Customer $customer, 
-    private CustomerData $customer_data){}
+    private CustomerData $customer_data, private CustomerSource $sources, 
+    private HrmEmployee $aget_sales, private Service $services
+    , private Nationality $nationalities, private Country $countries
+    , private City $cities){} 
     use image;
     protected $leadRequest = [
         'name',
@@ -86,6 +96,50 @@ class LeadController extends Controller
         
         return response()->json([
             'leads' => $leads
+        ]);
+    }
+
+    public function lists(Request $request){
+        // /agent/leads/lists
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id'; 
+        }
+
+        $sources = $this->sources
+        ->where('status', 1)
+        ->get();
+        $aget_sales = $this->aget_sales
+        ->where($role, $agent_id)
+        ->where('status', 1)
+        ->get();
+        $services = $this->services
+        ->get();
+        $nationalities = $this->nationalities
+        ->get();
+        $countries = $this->countries
+        ->get();
+        $cities = $this->cities
+        ->get();
+        
+        return response()->json([
+            'sources' => $sources,
+            'aget_sales' => $aget_sales,
+            'services' => $services,
+            'nationalities' => $nationalities,
+            'countries' => $countries,
+            'cities' => $cities,
         ]);
     }
 

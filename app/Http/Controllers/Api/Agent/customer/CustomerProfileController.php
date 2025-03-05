@@ -43,7 +43,7 @@ class CustomerProfileController extends Controller
         $customer_info = $this->customer
         ->select('name', 'phone', 'email', 'gender', 'emergency_phone', 
         'watts', 'service_id', 'nationality_id', 'country_id',
-        'city_id', 'image')
+        'city_id', 'image', 'created_at as date_added')
         ->with(['service:id,service_name', 
         'nationality:id,name', 'country:id,name', 'city:id,name'])
         ->where('id', $id)

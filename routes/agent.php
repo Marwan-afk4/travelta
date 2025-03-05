@@ -93,6 +93,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('leads')->group(function(){
         Route::controller(LeadController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_lead');
+            Route::get('/lists', 'lists');
             Route::get('leads_search', 'leads_search')->middleware('can:add_lead');
             Route::put('update/{id}', 'modify')->middleware('can:update_lead');
             Route::put('status/{id}', 'status')->middleware('can:update_lead');
