@@ -369,6 +369,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('customer')->group(function(){
         Route::controller(CustomerController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_customer');
+            Route::put('/update/{id}', 'update')->middleware('can:update_customer');
         });
         Route::controller(CustomerProfileController::class)->group(function(){
             Route::get('/profile/{id}', 'profile')->middleware('can:view_customer');
