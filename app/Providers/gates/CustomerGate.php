@@ -26,5 +26,18 @@ class CustomerGate
             }
             return false;
         });
+        // if roles have booking payment module
+        Gate::define('update_customer', function ($user) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
+                return true;
+            }
+            if ($user->user_positions && 
+            ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
+            $user->user_positions->perimitions->pluck('module')->contains('customer') &&
+            $user->user_positions->perimitions->pluck('action')->contains('update') ) {
+                return true;
+            }
+            return false;
+        });
     }
 }

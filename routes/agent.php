@@ -372,6 +372,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(CustomerProfileController::class)->group(function(){
             Route::get('/profile/{id}', 'profile')->middleware('can:view_customer');
+            Route::post('/upload_papers', 'upload_papers')->middleware('can:update_customer');
         });
     });
 

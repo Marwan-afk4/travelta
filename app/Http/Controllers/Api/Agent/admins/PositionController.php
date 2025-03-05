@@ -103,7 +103,7 @@ class PositionController extends Controller
                 'view', 'status'
             ],
             'customer' => [
-                'view',
+                'view', 'update',
             ],
             'department' => [
                 'view',
