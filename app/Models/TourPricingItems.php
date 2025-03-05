@@ -13,4 +13,9 @@ class TourPricingItems extends Model
         'type',
         'tour_id'
     ];
+
+    public function currency()
+    {
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
 }

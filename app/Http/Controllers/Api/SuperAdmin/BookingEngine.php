@@ -460,7 +460,7 @@ class BookingEngine extends Controller
                 'tour_hotels',
                 'tour_discounts',
                 'tour_pricings',
-                'tour_pricing_items',
+                'tour_pricing_items.currency:id,name',
                 'tour_extras',
                 'currency:id,name' // Add this line
             ])
