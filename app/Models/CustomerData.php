@@ -26,8 +26,38 @@ class CustomerData extends Model
         'image',
         'status',
     ];
+    protected $appends = ['image_link'];
+
+    public function getImageLinkAttribute(){
+        return url('storage/' . $this->attributes['image']);
+    }
 
     public function customer(){
         return $this->belongsTo(Customer::class);
+    }
+    
+
+    public function source(){
+        return $this->belongsTo(CustomerSource::class, 'source_id');
+    }
+
+    public function agent_sales(){
+        return $this->belongsTo(HrmEmployee::class, 'agent_sales_id');
+    }
+
+    public function service(){
+        return $this->belongsTo(Service::class, 'service_id');
+    }
+
+    public function nationality(){
+        return $this->belongsTo(Nationality::class, 'nationality_id');
+    }
+
+    public function country(){
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function city(){
+        return $this->belongsTo(City::class, 'city_id');
     }
 }

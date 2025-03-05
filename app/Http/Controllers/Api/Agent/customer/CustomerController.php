@@ -27,6 +27,9 @@ class CustomerController extends Controller
             $customers = $this->customer_data
             ->where('type', 'customer')
             ->where('affilate_id', $agent_id)
+            ->whereHas('customer', function($query){
+                $query->where('role', 'customer');
+            })
             ->with('customer')
             ->get();
         } 
@@ -34,6 +37,9 @@ class CustomerController extends Controller
             $customers = $this->customer_data
             ->where('type', 'customer')
             ->where('agent_id', $agent_id)
+            ->whereHas('customer', function($query){
+                $query->where('role', 'customer');
+            })
             ->with('customer')
             ->get();
         }

@@ -25,8 +25,6 @@ class LeadController extends Controller
         'emergency_phone',
 
         'watts',
-        'source_id',
-        'agent_sales_id',
         'service_id',
         'nationality_id',
         'country_id',
@@ -153,9 +151,11 @@ class LeadController extends Controller
     public function add_lead(Request $request){
         // /leads/add_lead
         // Keys
-        // customer_id
+        // customer_id, source_id, agent_sales_id
         $validation = Validator::make($request->all(), [
             'customer_id' => 'required|exists:customers,id',
+            'source_id' => 'required|exists:customer_sources,id',
+            'agent_sales_id' => 'required|exists:hrm_employees,id',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -197,8 +197,8 @@ class LeadController extends Controller
                 'email' => $customer->email,
                 'gender' => $customer->gender,
                 'watts' => $customer->watts,
-                'source_id' => $customer->source_id,
-                'agent_sales_id' => $customer->agent_sales_id,
+                'source_id' => $request->source_id,
+                'agent_sales_id' => $request->agent_sales_id,
                 'service_id' => $customer->service_id,
                 'nationality_id' => $customer->nationality_id,
                 'country_id' => $customer->country_id,
@@ -344,7 +344,6 @@ class LeadController extends Controller
             $leadRequest['image'] = $image;
             $customer_arr['image'] = $image;
             $this->deleteImage($customer->image);
-            return 5464;
         }
         if ($customer->phone != $request->phone) {
             $parent_customer = $this->customer

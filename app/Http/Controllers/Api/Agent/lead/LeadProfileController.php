@@ -31,8 +31,12 @@ class LeadProfileController extends Controller
         else {
             $role = 'agent_id';
         }
-        $customer_info = $this->customer_data
-        ->select('name', 'phone', 'email', 'total_booking')
+        $customer_info = $this->customer_data 
+        ->select('name', 'phone', 'email', 'gender', 'total_booking', 
+        'watts', 'source_id', 'agent_sales_id', 'service_id', 'nationality_id', 'country_id',
+        'city_id', 'image')
+        ->with(['source:id,source', 'agent_sales:id,name', 'service:id,service_name', 
+        'nationality:id,name', 'country:id,name', 'city:id,name'])
         ->where('customer_id', $id)
         ->where($role, $agent_id)
         ->first();

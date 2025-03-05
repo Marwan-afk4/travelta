@@ -15,8 +15,6 @@ class Customer extends Model
         'emergency_phone',
         'password',
         'watts',
-        'source_id',
-        'agent_sales_id',
         'service_id',
         'nationality_id',
         'country_id',
@@ -24,9 +22,30 @@ class Customer extends Model
         'image',
         'status',
     ];
+    protected $appends = ['image_link'];
+
+    public function getImageLinkAttribute(){
+        return url('storage/' . $this->attributes['image']);
+    }
 
     public function manuel(){
         return $this->hasMany(ManuelBooking::class, 'to_customer_id');
+    }
+
+    public function service(){
+        return $this->belongsTo(Service::class, 'service_id');
+    }
+
+    public function nationality(){
+        return $this->belongsTo(Nationality::class, 'nationality_id');
+    }
+
+    public function country(){
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function city(){
+        return $this->belongsTo(City::class, 'city_id');
     }
 
     public function agent_customer(){
