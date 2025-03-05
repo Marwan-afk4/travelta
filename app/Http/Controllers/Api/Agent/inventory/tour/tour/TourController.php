@@ -11,12 +11,13 @@ use App\Models\TourType;
 use App\Models\Country;
 use App\Models\City;
 use App\Models\Tour;
+use App\Models\TourPricingItems;
 
 class TourController extends Controller
 {
     public function __construct(private TourType $tour_types, 
     private Country $countries, private City $cities, private Tour $tour,
-    private CurrencyAgent $currencies){}
+    private CurrencyAgent $currencies, private TourPricingItems $pricing_item){}
 
     public function view(Request $request){
         // /agent/tour
@@ -53,6 +54,12 @@ class TourController extends Controller
         'tour_pricings.tour_pricing_items'])
         ->where('id', $id)
         ->first();
+        $pricing_item = $this->pricing_item
+        ->where('tour_id', $id)
+        ->where('type', '0')
+        ->first();
+        $tour->price = $pricing_item->price ?? null;
+        $tour->currency_id = $pricing_item->currency_id ?? null;
 
         return response()->json([
             'tour' => $tour,

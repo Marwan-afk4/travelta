@@ -54,8 +54,10 @@ class CustomerController extends Controller
 
     public function update(Request $request, $id){
         // customer/update/{id}
+        // Keys
+        // phone
         $validation = Validator::make($request->all(), [
-            'phone' => 'required',
+            'phone' => 'required|unique:customers,phone',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -75,12 +77,20 @@ class CustomerController extends Controller
         else {
             $role = 'agent_id';
         }
+
         $customers = $this->customer
         ->where('id', $id)
         ->first();
         $this->phone_request
         ->create([
+            'customer_id' => $id,
+            $role => $agent_id,
+            'old_phone' => $customers->phone,
+            'new_phone' => $request->phone,
+        ]);
 
+        return response()->json([
+            'success' => 'You send request success'
         ]);
     }
 }
