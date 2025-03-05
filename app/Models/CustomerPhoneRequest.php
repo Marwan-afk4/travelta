@@ -12,6 +12,7 @@ class CustomerPhoneRequest extends Model
         'agent_id',
         'old_phone',
         'new_phone',
+        'status',
     ];
 
     public function customer(){
