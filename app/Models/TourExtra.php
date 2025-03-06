@@ -13,4 +13,9 @@ class TourExtra extends Model
         'currency_id',
         'type',
     ];
+
+    public function currency()
+    {
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
 }

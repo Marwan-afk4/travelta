@@ -461,8 +461,8 @@ class BookingEngine extends Controller
                 'tour_discounts',
                 'tour_pricings',
                 'tour_pricing_items.currency:id,name',
-                'tour_extras',
-                'currency:id,name' // Add this line
+                'tour_extras.currency:id,name',
+                // 'currency:id,name' // Add this line
             ])
 
             ->with('itinerary')
