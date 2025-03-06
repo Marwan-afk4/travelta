@@ -39,7 +39,7 @@ class BookingEngineListRequest extends FormRequest
             'no_of_nights'=> ['required','integer','min:1'],
             'payment_status' => ['nullable','in:later,full,partial,half'],
             'status' => ['nullable','in:inprogress,done,faild'],
-            'currency_id' => ['required', 'exists:currancies,id'],
+            'currency_id' => ['required', 'exists:currency_agents,id'],
             'special_request' => ['nullable'],
             'amount'=>['required','numeric'],
         ];
