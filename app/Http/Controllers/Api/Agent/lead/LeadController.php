@@ -57,7 +57,7 @@ class LeadController extends Controller
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('affilate_id', $agent_id)
-            ->with('customer')
+            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 'city')
             ->get()
             ->map(function ($item) {
                 if ($item->customer->role == 'customer') {
@@ -77,7 +77,7 @@ class LeadController extends Controller
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('agent_id', $agent_id)
-            ->with('customer')
+            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 'city')
             ->get()
             ->map(function ($item) {
                 if ($item->customer->role == 'customer') {

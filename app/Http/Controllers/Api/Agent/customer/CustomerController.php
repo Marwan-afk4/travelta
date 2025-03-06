@@ -37,7 +37,7 @@ class CustomerController extends Controller
                 $query->with('country:id,name', 'city:id,name');
             }])
             ->get();
-        } 
+        }
         else {
             $customers = $this->customer_data
             ->where('type', 'customer')
