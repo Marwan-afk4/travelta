@@ -15,6 +15,7 @@ use App\Models\Customer;
 use App\Models\CustomerBookingengine;
 use App\Models\Hotel;
 use App\Models\HotelImage;
+use App\Models\Nationality;
 use App\Models\Room;
 use App\Models\RoomAvailability;
 use App\Models\Tour;
@@ -461,8 +462,8 @@ class BookingEngine extends Controller
                 'tour_discounts',
                 'tour_pricings',
                 'tour_pricing_items.currency:id,name',
-                'tour_extras',
-                'currency:id,name' // Add this line
+                'tour_extras.currency:id,name',
+                // 'currency:id,name' // Add this line
             ])
 
             ->with('itinerary')
@@ -551,5 +552,13 @@ class BookingEngine extends Controller
         'tour' => $createBooking,
     ], 200);
 }
+
+    public function getNationalities(){
+        $nationality = Nationality::all();
+        $data = [
+            'nationality' => $nationality
+        ];
+        return response()->json($data);
+    }
 
 }
