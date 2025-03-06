@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\ManuelBooking;
+use App\Models\PaymentsCart;
 use App\Models\OperationBookingConfirmed;
 use App\Models\OperationBookingVouchered;
 use App\Models\OperationBookingCanceled;
@@ -16,7 +17,8 @@ class BookingStatusController extends Controller
     public function __construct(private ManuelBooking $manuel_booking,
     private OperationBookingConfirmed $operation_confirmed, 
     private OperationBookingVouchered $operation_vouchered,
-    private OperationBookingCanceled $operation_canceled){}
+    private OperationBookingCanceled $operation_canceled,
+    private PaymentsCart $payments){}
     protected $voucheredRequest = [
         'totally_paid',
         'confirmation_num',
@@ -27,23 +29,7 @@ class BookingStatusController extends Controller
 
     public function confirmed(Request $request, $id){
         // agent/booking/confirmed/{id}
-        // Keys
-        // comfirmed, deposits[{deposit, date}]
-        $validation = Validator::make($request->all(), [
-            'comfirmed' => 'required|boolean',
-            'deposits' => 'required',
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
-        }
-        $deposits = is_string($request->deposits) ? $request->deposits
-        : json_encode($request->deposits);
-        $operation_confirmed = $this->operation_confirmed
-        ->create([
-            'comfirmed' => $request->comfirmed,
-            'deposits' => $deposits,
-            'manuel_booking_id' => $id,
-        ]);
+
         $this->manuel_booking
         ->where('id', $id)
         ->update([
@@ -61,13 +47,21 @@ class BookingStatusController extends Controller
         // totally_paid, confirmation_num, name, phone, email
         $validation = Validator::make($request->all(), [
             'totally_paid' => 'required|boolean',
-            'confirmation_num' => 'required',
             'name' => 'required',
             'phone' => 'required',
             'email' => 'required|email',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        $payments = $this->payments
+        ->where('manuel_booking_id', $id)
+        ->get();
+        $due_payment = $payments->sum('due_payment');
+        if ($due_payment > 0) {
+            return response()->json([
+                'errors' => 'All amount must be paid'
+            ], 400);
         }
         $voucheredRequest = $request->only($this->voucheredRequest);
         $voucheredRequest['manuel_booking_id'] = $id;

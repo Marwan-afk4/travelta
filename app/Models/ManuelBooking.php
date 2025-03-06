@@ -29,6 +29,7 @@ class ManuelBooking extends Model
         'agent_id',
         'status',
         'special_request',
+        'request_status'
     ];
     protected $appends = ['to_client'];
 

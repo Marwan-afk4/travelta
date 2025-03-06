@@ -90,7 +90,7 @@ class SupplierProfileController extends Controller
             $agent_type = 'agent_id';
         }
 
-        $hotel_current = $this->manuel_booking
+        $hotel_upcoming = $this->manuel_booking
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
             $query->where('check_in', '>', date('Y-m-d'));
@@ -108,7 +108,7 @@ class SupplierProfileController extends Controller
                 'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
-        $bus_current = $this->manuel_booking
+        $bus_upcoming = $this->manuel_booking
         ->where($agent_type, $agent_id)
         ->whereHas('bus', function($query){
             $query->where('departure', '>', date('Y-m-d'));
@@ -124,7 +124,7 @@ class SupplierProfileController extends Controller
                 'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
-        $visa_current = $this->manuel_booking
+        $visa_upcoming = $this->manuel_booking
         ->where($agent_type, $agent_id)
         ->whereHas('visa', function($query){
             $query->where('travel_date', '>', date('Y-m-d'));
@@ -141,7 +141,7 @@ class SupplierProfileController extends Controller
                 'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
-        $flight_current = $this->manuel_booking
+        $flight_upcoming = $this->manuel_booking
         ->where($agent_type, $agent_id)
         ->whereHas('flight', function($query){
             $query->where('departure', '>', date('Y-m-d'));
@@ -158,7 +158,7 @@ class SupplierProfileController extends Controller
                 'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
-        $tour_current = $this->manuel_booking
+        $tour_upcoming = $this->manuel_booking
         ->whereHas('tour.hotel')
         ->where($agent_type, $agent_id)
         ->whereDoesntHave('tour.hotel', function($query){
@@ -176,13 +176,110 @@ class SupplierProfileController extends Controller
                 'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
             ];
         });
+        $transactions_upcoming = collect()->merge($hotel_upcoming)->merge($bus_upcoming)
+        ->merge($visa_upcoming)->merge($flight_upcoming)->merge($tour_upcoming);
+        
+        // ________________________________________
+        
+
+        $hotel_current = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('hotel', function($query){
+            $query->whereDate('check_in', '<=', date('Y-m-d'))
+            ->whereDate('check_out', '>=', date('Y-m-d'));
+        })  
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+            ->orWhere('to_supplier_id', $id);
+        })
+        ->get()
+        ->map(function ($data) use($id) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
+            ];
+        });
+        $bus_current = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('bus', function($query){
+            $query->whereDate('departure', '<=', date('Y-m-d'))
+            ->whereDate('arrival', '>=', date('Y-m-d'));
+        }) 
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) use($id) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
+            ];
+        });
+        $visa_current = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('visa', function($query){
+            $query->whereDate('travel_date', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) use($id) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
+            ];
+        });
+        $flight_current = $this->manuel_booking
+        ->where($agent_type, $agent_id)
+        ->whereHas('flight', function($query){
+            $query->whereDate('departure', '<=', date('Y-m-d'))
+            ->whereDate('arrival', '>=', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) use($id) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
+            ];
+        });
+        $tour_current = $this->manuel_booking
+        ->whereHas('tour.hotel')
+        ->where($agent_type, $agent_id)
+        ->whereHas('tour.hotel', function($query){
+            $query->whereDate('check_in', '<=', date('Y-m-d'))
+            ->whereDate('check_out', '>=', date('Y-m-d'));
+        })
+        
+        ->where(function ($query) use ($id) {
+            $query->where('from_supplier_id', $id)
+                  ->orWhere('to_supplier_id', $id);
+        })->get()->map(function ($data) use($id) {
+            return [
+                'manuel_booking_id' => $data->id ?? null,
+                'amount' => $data->from_supplier_id == $id ? $data->cost : $data->total_price,
+                'date' => $data->created_at->format('Y-m-d') ?? null,
+                'type' => $data->from_supplier_id == $id ? 'credit': 'debt',
+            ];
+        });
         $transactions_current = collect()->merge($hotel_current)->merge($bus_current)
         ->merge($visa_current)->merge($flight_current)->merge($tour_current);
         
+        // ________________________________________
         $t_hotel_past = $this->manuel_booking
         ->where($agent_type, $agent_id)
         ->whereHas('hotel', function($query){
-            $query->whereDate('check_in', '<=', date('Y-m-d'));
+            $query->whereDate('check_in', '<', date('Y-m-d'));
         })
         
         ->where(function ($query) use ($id) {
@@ -199,7 +296,7 @@ class SupplierProfileController extends Controller
         $t_bus_past = $this->manuel_booking
         ->where($agent_type, $agent_id)
         ->whereHas('bus', function($query){
-            $query->whereDate('departure', '<=', date('Y-m-d'));
+            $query->whereDate('departure', '<', date('Y-m-d'));
         })
         
         ->where(function ($query) use ($id) {
@@ -216,7 +313,7 @@ class SupplierProfileController extends Controller
         $t_visa_past = $this->manuel_booking
         ->where($agent_type, $agent_id)
         ->whereHas('visa', function($query){
-            $query->whereDate('travel_date', '<=', date('Y-m-d'));
+            $query->whereDate('travel_date', '<', date('Y-m-d'));
         })
         
         ->where(function ($query) use ($id) {
@@ -233,7 +330,7 @@ class SupplierProfileController extends Controller
         $t_flight_past = $this->manuel_booking
         ->where($agent_type, $agent_id)
         ->whereHas('flight', function($query){
-            $query->whereDate('departure', '<=', date('Y-m-d'));
+            $query->whereDate('departure', '<', date('Y-m-d'));
         })
         
         ->where(function ($query) use ($id) {
@@ -299,6 +396,8 @@ class SupplierProfileController extends Controller
             'transactions_history_credit' => array_values($transactions_history->where('type', 'credit')->toArray()),
             'transactions_current_debt' => array_values($transactions_current->where('type', 'debt')->toArray()),
             'transactions_current_credit' => array_values($transactions_current->where('type', 'credit')->toArray()),
+            'transactions_upcoming_debt' => array_values($transactions_upcoming->where('type', 'debt')->toArray()),
+            'transactions_upcoming_credit' => array_values($transactions_upcoming->where('type', 'credit')->toArray()),
             'due' => $due
         ]);
     }

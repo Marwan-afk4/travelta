@@ -33,7 +33,9 @@ class CustomerController extends Controller
             ->whereHas('customer', function($query){
                 $query->where('role', 'customer');
             })
-            ->with('customer')
+            ->with(['customer' => function($query){
+                $query->with('country:id,name', 'city:id,name');
+            }])
             ->get();
         } 
         else {
@@ -43,7 +45,9 @@ class CustomerController extends Controller
             ->whereHas('customer', function($query){
                 $query->where('role', 'customer');
             })
-            ->with('customer')
+            ->with(['customer' => function($query){
+                $query->with('country:id,name', 'city:id,name');
+            }])
             ->get();
         }
 

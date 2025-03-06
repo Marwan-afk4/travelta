@@ -9,12 +9,14 @@ use App\Http\Requests\api\agent\supplier\SupplierRequest;
 
 use App\Models\SupplierAgent;
 use App\Models\SupplierBalance;
+use App\Models\SupplierAgentService;
 use App\Models\Service;
 
 class SupplierController extends Controller
 {
     public function __construct(private SupplierAgent $supplier_agent,
-    private Service $services, private SupplierBalance $supplier_balance){}
+    private Service $services, private SupplierBalance $supplier_balance,
+    private SupplierAgentService $supplier_service){}
     protected $supplierRequest = [
         'agent',
         'admin_name',
@@ -91,7 +93,7 @@ class SupplierController extends Controller
     public function create(SupplierRequest $request){
         // supplier/add
         // Keys
-        // agent,admin_name,admin_phone,admin_email,emails[],phones[],services[],
+        // agent,admin_name,admin_phone,admin_email,emails[],phones[],services[{id, description}],
         // balances[currency_id,balance]
         $supplierRequest = $request->only($this->supplierRequest);
         $supplierRequest['emails'] = is_string($request->emails) ?$request->emails:
@@ -119,7 +121,12 @@ class SupplierController extends Controller
             $services = is_string($request->services) ? json_decode($request->services) :
             $request->services;
             foreach ($services as $item) {
-                $supplier_agent->services()->attach($item);
+                $this->supplier_service
+                ->create([
+                    'supplier_agent_id' => $supplier_agent->id,
+                    'service_id' => $item->id ?? $item['id'],
+                    'description' => $item->description ?? $item['description'],
+                ]);
             }
         }
         if ($request->balances) {
@@ -178,7 +185,15 @@ class SupplierController extends Controller
         if ($request->services) {
             $services = is_string($request->services) ? json_decode($request->services) :
             $request->services;
-            $supplier_agent->services()->sync($services); 
+            $supplier_agent->services()->sync([]); 
+            foreach ($services as $item) {
+                $this->supplier_service
+                ->create([
+                    'supplier_agent_id' => $supplier_agent->id,
+                    'service_id' => $item->id ?? $item['id'],
+                    'description' => $item->description ?? $item['description'],
+                ]);
+            }
         }
         $this->supplier_balance
         ->where('supplier_id', $supplier_agent->id)

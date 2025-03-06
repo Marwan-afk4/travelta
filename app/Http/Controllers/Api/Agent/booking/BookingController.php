@@ -335,6 +335,48 @@ class BookingController extends Controller
         ]);
     } 
 
+    public function special_request_status(Request $request, $id){
+        // https://travelta.online/agent/booking/request_status/{id}
+        // Keys
+        // request_status
+        $validation = Validator::make($request->all(), [
+            'request_status' => 'required|in:pending,reject,approve',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        $this->manuel_booking
+        ->where('id', $id)
+        ->update([
+            'request_status' => $request->request_status
+        ]);
+
+        return response()->json([
+            'success' => $request->request_status
+        ]);
+    } 
+
+    public function special_request_status_engine(Request $request, $id){
+        // https://travelta.online/agent/booking/request_status_engine/{id}
+        // Keys
+        // request_status
+        $validation = Validator::make($request->all(), [
+            'request_status' => 'required|in:pending,reject,approve',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        $this->booking_engine
+        ->where('id', $id)
+        ->update([
+            'request_status' => $request->request_status
+        ]);
+
+        return response()->json([
+            'success' => $request->request_status
+        ]);
+    } 
+
     // Booking Engine
     public function engine_details(Request $request, $id){
         // https://travelta.online/agent/booking/engine_details/{id}

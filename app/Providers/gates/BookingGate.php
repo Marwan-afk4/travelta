@@ -50,6 +50,18 @@ class BookingGate
             }
             return false;
         });
+        Gate::define('update_bookings', function ($user) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
+                return true;
+            }
+            if ($user->user_positions && 
+            ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
+            $user->user_positions->perimitions->pluck('module')->contains('bookings') &&
+            $user->user_positions->perimitions->pluck('action')->contains('update') ) {
+                return true;
+            }
+            return false;
+        });
         Gate::define('status_bookings', function ($user) {
             if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;
