@@ -116,6 +116,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
     Route::get('/getagents',[BookingEngine::class, 'getAgents'])->middleware('can:view_booking_engine');
 
+    Route::get('/getNationalties', [BookingEngine::class, 'getNationalities'])->middleware('can:view_booking_engine');
+
     Route::get('/getcities', [BookingEngine::class, 'getCities'])->middleware('can:view_booking_engine');
 
     Route::get('/getcountries', [BookingEngine::class, 'getCountries'])->middleware('can:view_booking_engine');
