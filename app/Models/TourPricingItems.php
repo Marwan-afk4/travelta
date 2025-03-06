@@ -13,30 +13,35 @@ class TourPricingItems extends Model
         'type',
         'tour_id'
     ];
+
     protected $appends = ['price_after_tax'];
+
+    protected $hidden = ['tour']; // This will prevent "tour" from appearing in the response
 
     public function currency()
     {
         return $this->belongsTo(CurrencyAgent::class, 'currency_id');
-    }public function getPriceAfterTaxAttribute()
+    }
+
+    public function getPriceAfterTaxAttribute()
     {
         $tour = $this->tour;
         $price = $this->attributes['price'];
-    
+
         if (!$tour) {
-            return $price; 
+            return $price;
         }
-    
+
         $tax = $tour->tax;
         $tax_type = $tour->tax_type;
-    
+
         if ($tax_type == 'precentage') {
             return $price + ($price * $tax / 100);
         } else {
             return $price + $tax;
         }
     }
-    
+
     public function tour()
     {
         return $this->belongsTo(Tour::class, 'tour_id');
