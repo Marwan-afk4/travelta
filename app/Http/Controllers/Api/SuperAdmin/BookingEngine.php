@@ -248,6 +248,7 @@ class BookingEngine extends Controller
                                     'price' => $pricing->price,
                                     'currency_id' => $pricing->currency_id,
                                     'currency_name' => $pricing->currency->name,
+                                    'nationalities_id' => $pricing->nationality
                                 ];
                             });
                         })
