@@ -30,8 +30,8 @@ class BusRequest extends FormRequest
             'arrival' => ['required', 'date'],
             'adults' => ['required', 'numeric'],
             'childreen' => ['required', 'numeric'],
-            'adult_price' => ['required', 'float'],
-            'bus' => ['required', 'float'],
+            'adult_price' => ['required', 'numeric'],
+            'bus' => ['required'],
             'bus_number' => ['required'],
             'driver_phone' => ['required'],
         ];

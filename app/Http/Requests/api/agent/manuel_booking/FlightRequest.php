@@ -35,8 +35,8 @@ class FlightRequest extends FormRequest
             'infants' => ['required'],
             'airline' => ['required'],
             'ticket_number' => ['required'],
-            'adult_price' => ['required', 'float'],
-            'child_price' => ['required', 'float'],
+            'adult_price' => ['required', 'numeric'],
+            'child_price' => ['required', 'numeric'],
             'ref_pnr' => ['required'],
         ];
     }
