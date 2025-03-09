@@ -26,8 +26,8 @@ class TourRequest extends FormRequest
         return [
             "tour" => ['required'], 
             "type" => ['required', 'in:domestic,international'], 
-            "adult_price" => ['required', 'float'], 
-            "child_price" => ['required', 'float'], 
+            "adult_price" => ['required', 'numeric'], 
+            "child_price" => ['required', 'numeric'], 
             "adults" => ['required', 'numeric'], 
             "childreen" => ['required', 'numeric'], 
             "flight_date" => ['required', 'date'], 
