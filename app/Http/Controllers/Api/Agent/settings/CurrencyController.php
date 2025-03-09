@@ -48,7 +48,7 @@ class CurrencyController extends Controller
     public function create(CurrencyRequest $request){
         // /settings/currency/add
         // Keys
-        // currancy_id, name
+        // currancy_id, name, point
         $currencyRequest = $request->validated();
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -78,7 +78,7 @@ class CurrencyController extends Controller
     public function modify(CurrencyRequest $request, $id){
         // /settings/currency/update/{id}
         // Keys
-        // currancy_id, name
+        // currancy_id, name, point
         $currencyRequest = $request->validated();
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;

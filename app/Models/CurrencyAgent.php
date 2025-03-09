@@ -10,6 +10,7 @@ class CurrencyAgent extends Model
         'currancy_id',
         'affilate_id',
         'agent_id',
-        'name', 
+        'name',
+        'point',
     ];
 }
