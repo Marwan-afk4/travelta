@@ -35,7 +35,6 @@ class CustomerData extends Model
     public function customer(){
         return $this->belongsTo(Customer::class);
     }
-    
 
     public function source(){
         return $this->belongsTo(CustomerSource::class, 'source_id');

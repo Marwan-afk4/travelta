@@ -797,6 +797,10 @@ class ManualBookingController extends Controller
             'success' => 'You delete data success'
         ]);
     }
+
+    public function update_hotel(){
+
+    }
     
     public function booking(CartBookingRequest $request){
         // Hotel => "success": {"to_customer_id": "1", to_supplier_id": "1","from_supplier_id": "2","from_service_id": "1","cost": "100","price": "200","currency_id": "1","tax_type": "include", "taxes":"[1,2]","total_price": "400","country_id": "1","city_id": "1","mark_up": "100","mark_up_type": "value","to_customer_id": "4","check_in": "2024-05-05","check_out": "2024-07-07","nights": "3","hotel_name": "Hilton","room_type": "2","room_quantity": "10","adults": "25","childreen": "10"}
@@ -1114,6 +1118,7 @@ class ManualBookingController extends Controller
                         'code' => $code,
                         $role => $agent_id,
                         'supplier_id' => $manuel_booking->to_supplier_id ,
+                        'first_time' => 1,
                     ]);
 // ___________________________________________________________________________________ \
                     $cartRequest = [
@@ -1150,6 +1155,7 @@ class ManualBookingController extends Controller
                     'code' => $code,
                     $role => $agent_id,
                     'supplier_id' => $manuel_booking->to_supplier_id ,
+                    'first_time' => 1,
                 ]);
             }
             if ($request->payment_type == 'partial' || $request->payment_type == 'later') {

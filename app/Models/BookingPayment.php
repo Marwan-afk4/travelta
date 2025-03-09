@@ -13,6 +13,7 @@ class BookingPayment extends Model
         'amount',
         'financial_id',
         'code',
+        'first_time',
         'supplier_id',
         'agent_id',
         'affilate_id',

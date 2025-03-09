@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ManuelBookingRequest extends FormRequest
+class BookingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,12 +23,12 @@ class ManuelBookingRequest extends FormRequest
      */
     public function rules(): array
     {
+        // 	varchar(255)	utf8mb4_unicode_ci		Yes	NULL			Change Change	Drop Drop	
         return [
             'to_supplier_id' => ['exists:supplier_agents,id', 'nullable'],
             'to_customer_id' => ['exists:customers,id', 'nullable'],
             'agent_sales_id' => ['exists:hrm_employees,id', 'required'],
             'from_supplier_id' => ['required', 'exists:supplier_agents,id'],
-            'from_service_id' => ['required', 'exists:services,id'],
             'cost' => ['required', 'numeric'],
             'price' => ['required', 'numeric'],
             'currency_id' => ['required', 'exists:currency_agents,id'],
@@ -38,6 +38,8 @@ class ManuelBookingRequest extends FormRequest
             'city_id' => ['sometimes', 'exists:cities,id'],
             'mark_up' => ['required', 'numeric'],
             'mark_up_type' => ['required', 'in:value,precentage'],
+            'payment_type' => ['required', 'in:full,partial,later'],
+            'special_request' => ['nullable'],
         ];
     }
 

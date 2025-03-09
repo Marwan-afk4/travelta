@@ -37,6 +37,7 @@ use App\Http\Controllers\Api\Agent\accounting_methods\financial\FinancialControl
 use App\Http\Controllers\Api\Agent\manual_booking\ManualBookingController;
 
 use App\Http\Controllers\Api\Agent\booking\BookingController;
+use App\Http\Controllers\Api\Agent\booking\BookingUpdateController;
 use App\Http\Controllers\Api\Agent\booking\BookingStatusController;
 use App\Http\Controllers\Api\Agent\booking\ConfirmationTaskController;
 
@@ -326,19 +327,20 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::delete('delete/{id}', 'delete')->middleware('can:delete_wallet');
     });
 
-    Route::controller(ManualBookingController::class)->middleware('can:view_manuel_booking')
+    Route::controller(ManualBookingController::class)
     ->prefix('manual_booking')->group(function(){
-        Route::post('/', 'booking');
-        Route::get('/mobile_lists', 'mobile_lists');
-        Route::get('/items', 'manuel_bookings');
-        Route::delete('/cart/delete/{id}', 'delete_cart');
-        Route::get('/cart_data/{id}', 'cart_data');
-        Route::post('/cart', 'cart');
-        Route::get('/supplier_customer', 'to_b2_filter');
-        Route::post('/service_supplier', 'from_supplier');
-        Route::post('/taxes', 'from_taxes');
-        Route::get('/lists', 'lists');
-        Route::post('/pdf', 'pdf');
+        Route::post('/', 'booking')->middleware('can:view_manuel_booking');
+        Route::get('/mobile_lists', 'mobile_lists')->middleware('can:view_manuel_booking');
+        Route::get('/items', 'manuel_bookings')->middleware('can:view_manuel_booking');
+        Route::delete('/cart/delete/{id}', 'delete_cart')->middleware('can:view_manuel_booking');
+        Route::get('/cart_data/{id}', 'cart_data')->middleware('can:view_manuel_booking');
+        Route::post('/cart', 'cart')->middleware('can:view_manuel_booking');
+        Route::get('/supplier_customer', 'to_b2_filter')->middleware('can:view_manuel_booking');
+        Route::post('/service_supplier', 'from_supplier')->middleware('can:view_manuel_booking');
+        Route::post('/taxes', 'from_taxes')->middleware('can:view_manuel_booking');
+        Route::get('/lists', 'lists')->middleware('can:view_manuel_booking');
+        Route::post('/pdf', 'pdf')->middleware('can:view_manuel_booking');
+        
     });
 
     Route::prefix('booking')->group(function(){
@@ -350,6 +352,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::put('/request_status/{id}', 'special_request_status')->middleware('can:update_bookings');
             Route::put('/engine_special_request/{id}', 'engine_special_request')->middleware('can:view_bookings');
             Route::put('/request_status_engine/{id}', 'special_request_status_engine')->middleware('can:update_bookings');
+        });
+        Route::controller(BookingUpdateController::class)->group(function(){
+            Route::put('/update_hotel/{id}', 'update_hotel')->middleware('can:update_bookings');
+            Route::put('/update_flight/{id}', 'update_flight')->middleware('can:update_bookings');
+            Route::put('/update_bus/{id}', 'update_bus')->middleware('can:update_bookings');
+            Route::put('/update_visa/{id}', 'update_visa')->middleware('can:update_bookings');
+            Route::put('/update_tour/{id}', 'update_tour')->middleware('can:update_bookings');
         });
         Route::controller(BookingStatusController::class)->group(function(){
             Route::put('/confirmed/{id}', 'confirmed')->middleware('can:status_bookings');
