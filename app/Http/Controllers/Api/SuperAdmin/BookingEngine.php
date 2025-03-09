@@ -9,6 +9,8 @@ use App\Models\Booking;
 use App\Models\BookingEngine as ModelsBookingEngine;
 use App\Models\BookingengineList;
 use App\Models\BookTourengine;
+use App\Models\BookTourExtra;
+use App\Models\BookTourRoom;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Customer;
@@ -485,6 +487,13 @@ class BookingEngine extends Controller
         'agents_id' => 'nullable|exists:agents,id',
         'status' => 'required|string',
         'to_hotel_id' => 'nullable|exists:tour_hotels,id',
+        'single_room_count' => 'nullable|integer',
+        'double_room_count' => 'nullable|integer',
+        'triple_room_count' => 'nullable|integer',
+        'quad_room_count' => 'nullable|integer',
+        'extras' => 'nullable|array',
+        'extras.*.extra_id' => 'required|exists:tour_extras,id',
+        'extras.*.count' => 'required|integer|min:1',
     ]);
 
     if ($validation->fails()) {
@@ -522,6 +531,29 @@ class BookingEngine extends Controller
     ]);
     $updateremaining = TourAvailability::where('tour_id', $tour->id);
     $updateremaining->decrement('remaining', $request->no_of_people);
+
+    if ($request->has('extras')) {
+        foreach ($request->extras as $extra) {
+            BookTourExtra::create([
+                'book_tour_id' => $createBooking->id,
+                'extra_id' => $extra['extra_id'],
+                'count' => $extra['count'],
+            ]);
+        }
+    }
+
+    if ($request->hasAny(['single_room_count', 'double_room_count', 'triple_room_count', 'quad_room_count'])) {
+        BookTourRoom::create([
+            'book_tour_id' => $createBooking->id,
+            'to_hotel_id' => $request->to_hotel_id,
+            'single_room_count' => $request->single_room_count ?? 0,
+            'double_room_count' => $request->double_room_count ?? 0,
+            'triple_room_count' => $request->triple_room_count ?? 0,
+            'quad_room_count' => $request->quad_room_count ?? 0,
+        ]);
+    }
+
+
 
     return response()->json([
         'status' => 'success',

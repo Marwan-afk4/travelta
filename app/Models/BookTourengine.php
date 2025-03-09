@@ -46,4 +46,12 @@ class BookTourengine extends Model
     public function country(){
         return $this->belongsTo(Country::class);
     }
+
+    public function book_tour_extra(){
+        return $this->hasMany(BookTourExtra::class);
+    }
+
+    public function book_tour_room(){
+        return $this->hasMany(BookTourRoom::class);
+    }
 }
