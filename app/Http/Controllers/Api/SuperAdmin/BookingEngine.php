@@ -288,90 +288,66 @@ class BookingEngine extends Controller
 
 
     public function bookRoom(Request $request, BookingEngineListRequest $booklist_request)
-    {
-        $user = $request->user();
-        $validator = Validator::make($request->all(), [
-            'room_id'       => 'required|integer|exists:rooms,id',
-            'check_in'      => 'required|date|before:check_out',
-            'check_out'     => 'required|date|after:check_in',
-            'quantity'      => 'required|integer|min:1',
-        ]);
+{
+    $user = $request->user();
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 401);
-        }
-        $check_in = $request->check_in;
-        $check_out = $request->check_out;
-        $room_id = $request->room_id;
+    $validator = Validator::make($request->all(), [
+        'room_id'   => 'required|integer|exists:rooms,id',
+        'check_in'  => 'required|date|before:check_out',
+        'check_out' => 'required|date|after:check_in',
+        'quantity'  => 'required|integer|min:1',
+    ]);
 
-        $startdate = Carbon::parse($check_in);
-        $enddate = Carbon::parse($check_out);
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 400);
+    }
 
+    $validatedData = $booklist_request->validated();
+
+    try {
+        DB::beginTransaction();
+
+        // Create booking
         $booking = $this->booking_engine->create([
-            'room_id' => $room_id,
-            'check_in' => $check_in,
-            'check_out' => $check_out,
-            'quantity' => $request->quantity,
-
+            'room_id'   => $request->room_id,
+            'check_in'  => $request->check_in,
+            'check_out' => $request->check_out,
+            'quantity'  => $request->quantity,
         ]);
 
-        $ListValidation = $booklist_request->validated();
-        $userRole = 0;
-        if ($user->role == 'agent' || $user->role == 'supplier') {
-            $bookingList = BookingengineList::create([
-                'room_id' => $ListValidation['room_id'],
-                'agent_id' => $user->id,
-                'from_supplier_id' => $ListValidation['from_supplier_id'] ?? null,
-                'country_id' => $ListValidation['country_id'],
-                'city_id' => $ListValidation['city_id'],
-                'hotel_id' => $ListValidation['hotel_id'],
-                'to_agent_id' => $ListValidation['to_agent_id'] ?? null,
-                'to_customer_id' => $ListValidation['to_customer_id'] ?? null,
-                'check_in' => $ListValidation['check_in'],
-                'check_out' => $ListValidation['check_out'],
-                'room_type' => $ListValidation['room_type'],
-                'no_of_adults' => $ListValidation['no_of_adults'],
-                'no_of_children' => $ListValidation['no_of_children'],
-                'no_of_nights' => $ListValidation['no_of_nights'],
-                'payment_status' => $ListValidation['payment_status'] ?? 'full',
-                'status' => $ListValidation['status'] ?? 'confirmed',
-                'special_request' => $ListValidation['special_request'] ?? null,
-                'currency_id' => $ListValidation['currency_id'],
-                'amount' => $ListValidation['amount'],
-                'code' => 'E' . rand(10000, 99999) . strtolower(Str::random(1))
-            ]);
-        } elseif ($user->role == 'affilate' || $user->role == 'freelancer') {
-            $bookingList = BookingengineList::create([
-                'room_id' => $ListValidation['room_id'],
-                'supplier_id' => $user->id,
-                'from_supplier_id' => $ListValidation['from_supplier_id'] ?? null,
-                'country_id' => $ListValidation['country_id'],
-                'city_id' => $ListValidation['city_id'],
-                'hotel_id' => $ListValidation['hotel_id'],
-                'to_agent_id' => $ListValidation['to_agent_id'] ?? null,
-                'to_customer_id' => $ListValidation['to_customer_id'] ?? null,
-                'check_in' => $ListValidation['check_in'],
-                'check_out' => $ListValidation['check_out'],
-                'room_type' => $ListValidation['room_type'],
-                'no_of_adults' => $ListValidation['no_of_adults'],
-                'no_of_children' => $ListValidation['no_of_children'],
-                'no_of_nights' => $ListValidation['no_of_nights'],
-                'payment_status' => $ListValidation['payment_status'] ?? 'full',
-                'status' => $ListValidation['status'] ?? 'confirmed',
-                'special_request' => $ListValidation['special_request'] ?? null,
-                'currency_id' => $ListValidation['currency_id'],
-                'amount' => $ListValidation['amount'],
-                'code' => 'E' . rand(10000, 99999) . strtolower(Str::random(1))
-            ]);
+        // Determine user role type
+        $roleMappings = [
+            'agent'      => 'agent_id',
+            'supplier'   => 'agent_id',
+            'affilate'   => 'supplier_id',
+            'freelancer' => 'supplier_id',
+        ];
+
+        // Assign user role if applicable
+        $userRoleColumn = $roleMappings[$user->role] ?? null;
+        if ($userRoleColumn) {
+            $validatedData[$userRoleColumn] = $user->id;
         }
 
+        // Generate booking code
+        $validatedData['code'] = 'E' . rand(10000, 99999) . strtolower(Str::random(1));
 
+        // Create BookingengineList
+        $bookingList = BookingengineList::create($validatedData);
+
+        DB::commit();
 
         return response()->json([
-            'message' => 'the room has been booked successfully',
-            'booking_list' => 'booking_list has been created successfully',
+            'message' => 'Room booked successfully',
             'booking' => $booking,
-        ]);
+            'booking_list' => $bookingList
+        ], 201);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['error' => 'An error occurred while booking the room', 'details' => $e->getMessage()], 500);
+    }
+
 
         // $roomAvailability = $this->room_availability
         //         ->where('room_id', $room_id)
