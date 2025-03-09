@@ -51,6 +51,153 @@ class BookingUpdateController extends Controller
     private Agent $agent, private AffilateAgent $affilate_agent
     ){}
 
+    public function hotel(Request $request, $id){
+        // agent/booking/hotel/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
+
+        $manuel_booking = $this->manuel_booking
+        ->where('id', $id)
+        ->with('hotel', 'from_supplier', 'to_supplier', 'to_customer',
+        'service', 'agent_sales', 'currency', 'adults', 'children')
+        ->first();
+
+        return response()->json([
+            'manuel_booking' => $manuel_booking
+        ]);
+    }
+
+    public function flight(Request $request, $id){
+        // agent/booking/flight/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
+
+        $manuel_booking = $this->manuel_booking
+        ->where('id', $id)
+        ->with('flight', 'from_supplier', 'to_supplier', 'to_customer',
+        'service', 'agent_sales', 'currency', 'adults', 'children')
+        ->first();
+
+        return response()->json([
+            'manuel_booking' => $manuel_booking
+        ]);
+    }
+
+    public function bus(Request $request, $id){
+        // agent/booking/bus/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
+
+        $manuel_booking = $this->manuel_booking
+        ->where('id', $id)
+        ->with('bus', 'from_supplier', 'to_supplier', 'to_customer',
+        'service', 'agent_sales', 'currency', 'adults', 'children')
+        ->first();
+
+        return response()->json([
+            'manuel_booking' => $manuel_booking
+        ]);
+    }
+
+    public function visa(Request $request, $id){
+        // agent/booking/visa/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
+
+        $manuel_booking = $this->manuel_booking
+        ->where('id', $id)
+        ->with('visa', 'from_supplier', 'to_supplier', 'to_customer',
+        'service', 'agent_sales', 'currency', 'adults', 'children')
+        ->first();
+
+        return response()->json([
+            'manuel_booking' => $manuel_booking
+        ]);
+    }
+
+    public function tour(Request $request, $id){
+        // agent/booking/tour/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
+
+        $manuel_booking = $this->manuel_booking
+        ->where('id', $id)
+        ->with(['tour' => function($query){
+            $query->with('hotel', 'bus');
+        }, 'from_supplier', 'to_supplier', 'to_customer',
+        'service', 'agent_sales', 'currency', 'adults', 'children'])
+        ->first();
+
+        return response()->json([
+            'manuel_booking' => $manuel_booking
+        ]);
+    }
+
     public function update_hotel(BookingRequest $request, HotelRequest $hotel_request,
     CartEditBookingRequest $cart_request, $id){
         // agent/booking/update_hotel/{id}

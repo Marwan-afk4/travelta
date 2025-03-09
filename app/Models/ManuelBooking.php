@@ -90,6 +90,10 @@ class ManuelBooking extends Model
         return $this->belongsTo(City::class);
     }
 
+    public function agent_sales(){
+        return $this->belongsTo(HrmEmployee::class, 'agent_sales_id');
+    }
+
     public function from_supplier(){
         return $this->belongsTo(SupplierAgent::class, 'from_supplier_id');
     }

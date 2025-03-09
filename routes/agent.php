@@ -354,6 +354,12 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::put('/request_status_engine/{id}', 'special_request_status_engine')->middleware('can:update_bookings');
         });
         Route::controller(BookingUpdateController::class)->group(function(){
+            Route::get('/hotel/{id}', 'hotel')->middleware('can:update_bookings');
+            Route::get('/flight/{id}', 'flight')->middleware('can:update_bookings');
+            Route::get('/bus/{id}', 'bus')->middleware('can:update_bookings');
+            Route::get('/visa/{id}', 'visa')->middleware('can:update_bookings');
+            Route::get('/tour/{id}', 'tour')->middleware('can:update_bookings');
+            
             Route::put('/update_hotel/{id}', 'update_hotel')->middleware('can:update_bookings');
             Route::put('/update_flight/{id}', 'update_flight')->middleware('can:update_bookings');
             Route::put('/update_bus/{id}', 'update_bus')->middleware('can:update_bookings');
