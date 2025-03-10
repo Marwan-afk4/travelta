@@ -293,7 +293,12 @@ class BookingController extends Controller
             $traveler['email'] = $data->email;
             $traveler['position'] = 'Customer';
         }
+        $travelers = [
+            'adults' => $manuel_booking->adults,
+            'children' => $manuel_booking->children,
+        ];
         $payments = $manuel_booking->payments;
+        $total_remainder = $manuel_booking->payments_cart;
         $confirmation_tasks = $manuel_booking->tasks;
         $actions = [
             'confirmed' => $manuel_booking->operation_confirmed,
@@ -307,7 +312,10 @@ class BookingController extends Controller
         ];
         return response()->json([
             'traveler' => $traveler,
+            'travelers' => $travelers,
             'payments' => $payments,
+            'total_payment' => $payments->sum('amount'),
+            'total_remainder' => $total_remainder->sum('due_payment'),
             'actions' => $actions,
             'agent_data' => $agent_data,
             'confirmation_tasks' => $confirmation_tasks,
@@ -340,7 +348,7 @@ class BookingController extends Controller
         // Keys
         // request_status
         $validation = Validator::make($request->all(), [
-            'request_status' => 'required|in:pending,reject,approve',
+            'request_status' => 'required|in:pending,reject,approve,upon_availability',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -359,9 +367,9 @@ class BookingController extends Controller
     public function special_request_status_engine(Request $request, $id){
         // https://travelta.online/agent/booking/request_status_engine/{id}
         // Keys
-        // request_status
+        // request_status => pending,reject,approve,upon_availability
         $validation = Validator::make($request->all(), [
-            'request_status' => 'required|in:pending,reject,approve',
+            'request_status' => 'required|in:pending,reject,approve,upon_availability',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
