@@ -31,20 +31,20 @@ class Leads implements ToModel
         $customer = Customer::
         where('phone', $row['phone'])
         ->first();
-        $service = is_numeric($row['service_id']) ??
-        Service::where('service_name', 'like', "%{$row['service_id']}%")
+        $service = is_numeric($row['service']) ??
+        Service::where('service_name', 'like', "%{$row['service']}%")
         ->first()?->id ?? null;
-        $nationality = is_numeric($row['nationality_id']) ??
-        Nationality::where('name', 'like', "%{$row['nationality_id']}%")
+        $nationality = is_numeric($row['nationality']) ??
+        Nationality::where('name', 'like', "%{$row['nationality']}%")
         ->first()?->id ?? null;
-        $country = is_numeric($row['country_id']) ??
-        Country::where('name', 'like', "%{$row['country_id']}%")
+        $country = is_numeric($row['country']) ??
+        Country::where('name', 'like', "%{$row['country']}%")
         ->first()?->id ?? null;
-        $city = is_numeric($row['city_id']) ??
-        City::where('name', 'like', "%{$row['city_id']}%")
+        $city = is_numeric($row['city']) ??
+        City::where('name', 'like', "%{$row['city']}%")
         ->first()?->id ?? null;
-        $source = is_numeric($row['source_id']) ??
-        CustomerSource::where('name', 'like', "%{$row['source_id']}%")
+        $source = is_numeric($row['source']) ??
+        CustomerSource::where('name', 'like', "%{$row['source']}%")
         ->first()?->id ?? null;
         // service_id, nationality_id, country_id, city_id
         if (empty($customer)) {

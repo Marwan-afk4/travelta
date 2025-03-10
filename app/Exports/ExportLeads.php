@@ -14,15 +14,15 @@ class ExportLeads implements FromCollection
     {
         return collect([
             ['name', 'phone', 'email', 'watts', 'emergency_phone', 'gender',
-            'source_id', 'service_id', 'nationality_id', 'country_id',
-            'city_id', 'image'], 
+            'source', 'service', 'nationality', 'country',
+            'city', 'image'], 
         ]);
     }
 
     public function headings(): array
     {
         return ['name', 'phone', 'email', 'watts', 'emergency_phone', 'gender',
-            'source_id', 'service_id', 'nationality_id', 'country_id',
-            'city_id', 'image'];
+            'source', 'service', 'nationality', 'country',
+            'city', 'image'];
     }
 }
