@@ -490,8 +490,10 @@ class LeadController extends Controller
             ->where('agent_id', $agent_id)
             ->first();
         }
-        $this->deleteImage($customer->image);
-        $customer->delete();
+        if (!empty($customer)) {
+            $this->deleteImage($customer->image);
+            $customer->delete();
+        }
 
         return response()->json([
             'success' => 'You delete data success'
