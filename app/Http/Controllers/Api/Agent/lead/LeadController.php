@@ -57,7 +57,8 @@ class LeadController extends Controller
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('affilate_id', $agent_id)
-            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 'city')
+            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 
+            'city', 'request')
             ->get()
             ->map(function ($item) {
                 if ($item->customer->role == 'customer') {
@@ -69,7 +70,10 @@ class LeadController extends Controller
                     $item->watts = $item->customer->watts;
                     $item->image = $item->customer->image;
                 }
+                $item->stages = $item?->request?->stages ?? null;
+                $item->priority = $item?->request?->priority ?? null;
                 $item->makeHidden('customer');
+                $item->makeHidden('request');
                 return $item;
             });
         } 
@@ -77,7 +81,8 @@ class LeadController extends Controller
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('agent_id', $agent_id)
-            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 'city')
+            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 
+            'city', 'request')
             ->get()
             ->map(function ($item) {
                 if ($item->customer->role == 'customer') {
@@ -89,7 +94,10 @@ class LeadController extends Controller
                     $item->watts = $item->customer->watts;
                     $item->image = $item->customer->image;
                 }
+                $item->stages = $item?->request?->stages ?? null;
+                $item->priority = $item?->request?->priority ?? null;
                 $item->makeHidden('customer');
+                $item->makeHidden('request');
                 return $item;
             });
         }

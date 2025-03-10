@@ -651,6 +651,29 @@ class ManualBookingController extends Controller
         ]);
     }
 
+    public function update_cart_data(Request $request, $id){
+        // https://travelta.online/agent/manual_booking/update_cart_data/{id}
+        // Key
+        // data
+        $validation = Validator::make($request->all(), [
+            'data' => 'required',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+
+        $data = !is_string($request->data) ? json_encode($request->data) : $request->data;
+        $manuel_data_cart = $this->manuel_data_cart
+        ->where('id', $id)
+        ->update([
+            'cart' => $data
+        ]);
+   
+        return response()->json([
+            'success' => 'You update cart success',
+        ]);
+    }
+
     public function manuel_bookings(){
         // https://travelta.online/agent/manual_booking/items
         $manuel_data_cart = $this->manuel_data_cart

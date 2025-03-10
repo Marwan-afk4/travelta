@@ -334,13 +334,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('/items', 'manuel_bookings')->middleware('can:view_manuel_booking');
         Route::delete('/cart/delete/{id}', 'delete_cart')->middleware('can:view_manuel_booking');
         Route::get('/cart_data/{id}', 'cart_data')->middleware('can:view_manuel_booking');
+        Route::put('/update_cart_data/{id}', 'update_cart_data')->middleware('can:view_manuel_booking');
         Route::post('/cart', 'cart')->middleware('can:view_manuel_booking');
         Route::get('/supplier_customer', 'to_b2_filter')->middleware('can:view_manuel_booking');
         Route::post('/service_supplier', 'from_supplier')->middleware('can:view_manuel_booking');
         Route::post('/taxes', 'from_taxes')->middleware('can:view_manuel_booking');
         Route::get('/lists', 'lists')->middleware('can:view_manuel_booking');
         Route::post('/pdf', 'pdf')->middleware('can:view_manuel_booking');
-        
     });
 
     Route::prefix('booking')->group(function(){
