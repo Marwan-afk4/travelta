@@ -186,7 +186,7 @@ class LeadController extends Controller
         ]);
     }
 
-    public function leads_search(){
+    public function leads_search(Request $request){
         // /leads/leads_search
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $user_id = $request->user()->affilate_id;
@@ -482,15 +482,16 @@ class LeadController extends Controller
             $customer = $this->customer_data
             ->where('customer_id', $id)
             ->where('affilate_id', $agent_id)
-            ->delete();
+            ->first();
         } 
         else {
             $customer = $this->customer_data
             ->where('customer_id', $id)
             ->where('agent_id', $agent_id)
-            ->delete();
+            ->first();
         }
         $this->deleteImage($customer->image);
+        $customer->delete();
 
         return response()->json([
             'success' => 'You delete data success'
