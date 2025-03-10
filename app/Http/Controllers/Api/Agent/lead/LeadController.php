@@ -8,6 +8,8 @@ use App\trait\image;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\api\agent\lead\LeadRequest;
 use Illuminate\Validation\Rule;
+use App\Exports\ExportLeads;
+use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\Customer;
 use App\Models\CustomerData;
@@ -149,6 +151,11 @@ class LeadController extends Controller
             'countries' => $countries,
             'cities' => $cities,
         ]);
+    }
+
+    public function export_excel(){
+        // /agent/leads/export_excel
+        return Excel::download(new ExportLeads, 'leads_template.xlsx');
     }
 
     public function status(Request $request, $id){
