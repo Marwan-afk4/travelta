@@ -10,6 +10,7 @@ use App\Http\Requests\api\agent\lead\LeadRequest;
 use Illuminate\Validation\Rule;
 use App\Exports\ExportLeads;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\Leads;
 
 use App\Models\Customer;
 use App\Models\CustomerData;
@@ -156,6 +157,19 @@ class LeadController extends Controller
     public function export_excel(){
         // /agent/leads/export_excel
         return Excel::download(new ExportLeads, 'leads_template.xlsx');
+    }
+
+    public function import_excel(){
+        // /agent/leads/import_excel
+        $validation = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,csv',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        Excel::import(new Leads, $request->file('file'));
+
+        return response()->json(['message' => 'File uploaded successfully']);
     }
 
     public function status(Request $request, $id){

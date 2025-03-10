@@ -64,8 +64,8 @@ class TourRequest extends FormRequest
             'hotels.*.name' => ['required'],
 
             'pricing.*.person_type' => ['required', 'in:adult,child,infant'],
-            'pricing.*.min_age' => ['required', 'numeric'],
-            'pricing.*.max_age' => ['required', 'numeric'],
+            'pricing.*.min_age' => ['nullable', 'numeric'],
+            'pricing.*.max_age' => ['nullable', 'numeric'],
             'pricing.*.pricing_item' => ['required'],
             'pricing.*.pricing_item.*.currency_id' => ['required', 'exists:currency_agents,id'],
             'pricing.*.pricing_item.*.price' => ['required', 'numeric'],

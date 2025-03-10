@@ -96,7 +96,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view')->middleware('can:view_lead');
             Route::get('/lists', 'lists');
             Route::get('export_excel', 'export_excel')->middleware('can:add_lead');
-            Route::get('leads_search', 'leads_search')->middleware('can:add_lead');
+            Route::post('import_excel', 'import_excel')->middleware('can:add_lead');
             Route::get('leads_search', 'leads_search')->middleware('can:add_lead');
             Route::post('update/{id}', 'modify')->middleware('can:update_lead');
             Route::put('status/{id}', 'status')->middleware('can:update_lead');
