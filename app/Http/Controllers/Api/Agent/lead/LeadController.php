@@ -90,7 +90,9 @@ class LeadController extends Controller
                 'customer',
                 'source:id,source',
                 'agent_sales' => function($query) {
-                    $query->select('id', 'name', 'department_id')->with('department:id,name');
+                    $query->select('id', 'name', 'department_id')->with([
+                        'department:id,name'
+                    ]);
                 },
                 'service:id,service_name',
                 'nationality:id,name',
