@@ -226,26 +226,33 @@ class BookingController extends Controller
         $engine_hotel = EngineHotelResource::collection($booking_engine);
         $engine_upcoming = $engine_hotel->where('check_in', '>', date('Y-m-d'));
         $engine_current = $engine_hotel->where('check_in', '<=', date('Y-m-d'))
-        ->orWhere('check_out', '>=', date('Y-m-d'));
+        ->Where('check_out', '>=', date('Y-m-d'));
         $engine_past = $engine_hotel->where('check_out', '<', date('Y-m-d'));
 
         $booing_tour_engine = $this->booing_tour_engine
         ->where($agent_type, $agent_id)
         ->get();
-        $booing_tour_engine = EngineTourResource::collection($booing_tour_engine);
-        $engine_upcoming = $booing_tour_engine->where('check_in', '>', date('Y-m-d'));
-        $engine_current = $booing_tour_engine->where('check_in', '<=', date('Y-m-d'))
-        ->orWhere('check_out', '>=', date('Y-m-d'));
-        $engine_past = $booing_tour_engine->where('check_out', '<', date('Y-m-d'));
+        $booing_tour_engine = EngineTourResource::collection($booing_tour_engine)->toArray(request());
+        $booing_tour_engine = collect($booing_tour_engine);
+        $engine_tour_upcoming = $booing_tour_engine
+        ->where('check_in', '>', date('Y-m-d'));
+        $engine_tour_current = $booing_tour_engine
+        ->where('check_in', '<=', date('Y-m-d'))
+        ->where('check_out', '>=', date('Y-m-d'));
+        $engine_tour_past = $booing_tour_engine
+        ->where('check_out', '<', date('Y-m-d'));
         // EngineTourResource
         $booking_engine_upcoming = [
-            'hotels' => $engine_upcoming
+            'hotels' => $engine_upcoming,
+            'tour' => $engine_tour_upcoming,
         ];
         $booking_engine_current = [
-            'hotels' => $engine_current
+            'hotels' => $engine_current,
+            'tour' => $engine_tour_current,
         ];
         $booking_engine_past = [
-            'hotels' => $engine_past
+            'hotels' => $engine_past,
+            'tour' => $engine_tour_past,
         ];
 
         return response()->json([
