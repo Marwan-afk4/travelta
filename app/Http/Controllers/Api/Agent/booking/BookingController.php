@@ -10,9 +10,11 @@ use App\Http\Resources\ManuelHotelResource;
 use App\Http\Resources\ManuelTourResource;
 use App\Http\Resources\ManuelVisaResource;
 use App\Http\Resources\EngineHotelResource;
+use App\Http\Resources\EngineTourResource;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\BookingengineList;
+use App\Models\BookTourengine;
 use App\Models\BookingTask;
 use App\Models\ManuelBooking;
 use App\Models\AffilateAgent;
@@ -24,7 +26,7 @@ class BookingController extends Controller
     public function __construct(private Service $services, 
     private ManuelBooking $manuel_booking, private AffilateAgent $affilate,
     private Agent $agent, private BookingengineList $booking_engine,
-    private BookingTask $booking_task){}
+    private BookingTask $booking_task, private BookTourengine $booing_tour_engine){}
 
     public function services(){
         $services = $this->services
@@ -226,6 +228,21 @@ class BookingController extends Controller
         $engine_current = $engine_hotel->where('check_in', '=', date('Y-m-d'));
         $engine_past = $engine_hotel->where('check_in', '<=', date('Y-m-d'));
 
+        $booing_tour_engine = $this->booing_tour_engine
+        ->where($agent_type, $agent_id)
+        ->get();
+        $engine_hotel = EngineHotelResource::collection($booing_tour_engine);
+        // EngineTourResource
+        $booking_engine_upcoming = [
+            'hotels' => $engine_upcoming
+        ];
+        $booking_engine_current = [
+            'hotels' => $engine_current
+        ];
+        $booking_engine_past = [
+            'hotels' => $engine_past
+        ];
+
         return response()->json([
             'upcoming' => $upcoming,
             'current' => $current,
@@ -233,6 +250,9 @@ class BookingController extends Controller
             'engine_upcoming' => $engine_upcoming,
             'engine_current' => $engine_current,
             'engine_past' => $engine_past,
+            'booking_engine_upcoming' => $booking_engine_upcoming,
+            'booking_engine_current' => $booking_engine_current,
+            'booking_engine_past' => $booking_engine_past,
         ]);
     }
 

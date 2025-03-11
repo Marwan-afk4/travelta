@@ -9,6 +9,8 @@ class BookTourengine extends Model
 
 
     protected $fillable =[
+        'affilate_id',
+        'agent_id',
         'tour_id',
         'from_supplier_id',
         'country_id',
