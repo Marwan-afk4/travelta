@@ -328,7 +328,7 @@ class LeadController extends Controller
         // Keys
         // name, phone, email, gender
         // image, watts, source_id, agent_sales_id, service_id,
-        // nationality_id, country_id, city_id, status      
+        // nationality_id, country_id, city_id, status
         $validation = Validator::make($request->all(), [
             'phone' => ['unique:customers,phone'],
             'email' => ['unique:customers,email'],
