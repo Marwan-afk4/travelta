@@ -33,7 +33,8 @@ class CustomerData extends Model
     }
 
     public function request(){
-        return $this->hasOne(RequestBooking::class, 'customer_id', 'customer_id');
+        return $this->hasOne(RequestBooking::class, 'customer_id', 'customer_id')
+        ->whereIn('stages', ['Pending', 'Price quotation', 'Negotiation']);
     }
 
     public function customer(){

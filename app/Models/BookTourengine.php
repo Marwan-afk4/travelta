@@ -28,6 +28,18 @@ class BookTourengine extends Model
         'request_status',
     ];
 
+    public function operation_confirmed(){
+        return $this->hasMany(OperationBookingConfirmed::class, 'engine_tour_id');
+    }
+
+    public function operation_vouchered(){
+        return $this->hasMany(OperationBookingVouchered::class, 'engine_tour_id');
+    }
+
+    public function operation_canceled(){
+        return $this->hasMany(OperationBookingCanceled::class, 'engine_tour_id');
+    }
+
     public function tour(){
         return $this->belongsTo(Tour::class);
     }

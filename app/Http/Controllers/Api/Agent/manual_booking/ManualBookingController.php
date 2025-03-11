@@ -45,6 +45,8 @@ use App\Models\Agent;
 use App\Models\AffilateAgent;
 use App\Models\AgentPayable;
 use App\Models\HrmEmployee;
+use App\Models\CustomerSource;
+use App\Models\Nationality;
 use App\trait\image;
 
 class ManualBookingController extends Controller
@@ -63,7 +65,7 @@ class ManualBookingController extends Controller
     private BookingPayment $booking_payment, private Agent $agent,
     private AffilateAgent $affilate_agent, private AgentPayable $agent_payable,
     private HrmEmployee $employees, private SupplierBalance $supplier_balance,
-    private CustomerSource $sources){}
+    private CustomerSource $sources, private Nationality $nationalities){}
     
     protected $hotelRequest = [
         'check_in',
@@ -266,6 +268,8 @@ class ManualBookingController extends Controller
         ->where('status', 1)
         ->where('agent', 1)
         ->get();
+        $nationalities = $this->nationalities
+        ->get();
 
         return response()->json([
             'cities' => $cities,
@@ -279,6 +283,7 @@ class ManualBookingController extends Controller
             'suppliers' => $suppliers,
             'employees' => $employees,
             'sources' => $sources,
+            'nationalities' => $nationalities,
         ]);
     }
 
