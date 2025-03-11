@@ -238,8 +238,8 @@ class CreateTourController extends Controller
                     ->create([
                         'tour_id' => $tour->id,
                         'person_type' => $item['person_type'],
-                        'min_age' => $item['min_age'],
-                        'max_age' => $item['max_age'],
+                        'min_age' => $item['min_age'] ?? null,
+                        'max_age' => $item['max_age'] ?? null,
                     ]);
                     if (isset($item['pricing_item'])) {
                         $pricing_item = $item['pricing_item'];
@@ -520,8 +520,8 @@ class CreateTourController extends Controller
                     ->create([
                         'tour_id' => $tour->id,
                         'person_type' => $item['person_type'],
-                        'min_age' => $item['min_age'],
-                        'max_age' => $item['max_age'],
+                        'min_age' => $item['min_age'] ?? null,
+                        'max_age' => $item['max_age'] ?? null,
                     ]);
                     if (isset($item['pricing_item'])) {
                         $pricing_item = $item['pricing_item'];

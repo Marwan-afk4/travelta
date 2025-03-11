@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class BookTourengine extends Model
 {
-
-
     protected $fillable =[
+        'affilate_id',
+        'agent_id',
+        'date',
         'tour_id',
         'from_supplier_id',
         'country_id',

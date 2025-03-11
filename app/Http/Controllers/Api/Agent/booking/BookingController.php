@@ -10,9 +10,11 @@ use App\Http\Resources\ManuelHotelResource;
 use App\Http\Resources\ManuelTourResource;
 use App\Http\Resources\ManuelVisaResource;
 use App\Http\Resources\EngineHotelResource;
+use App\Http\Resources\EngineTourResource;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\BookingengineList;
+use App\Models\BookTourengine;
 use App\Models\BookingTask;
 use App\Models\ManuelBooking;
 use App\Models\AffilateAgent;
@@ -24,7 +26,7 @@ class BookingController extends Controller
     public function __construct(private Service $services, 
     private ManuelBooking $manuel_booking, private AffilateAgent $affilate,
     private Agent $agent, private BookingengineList $booking_engine,
-    private BookingTask $booking_task){}
+    private BookingTask $booking_task, private BookTourengine $booing_tour_engine){}
 
     public function services(){
         $services = $this->services
@@ -222,9 +224,36 @@ class BookingController extends Controller
         ->where($agent_type, $agent_id)
         ->get();
         $engine_hotel = EngineHotelResource::collection($booking_engine);
-        $engine_upcoming = $engine_hotel->where('check_in', '>=', date('Y-m-d'));
-        $engine_current = $engine_hotel->where('check_in', '=', date('Y-m-d'));
-        $engine_past = $engine_hotel->where('check_in', '<=', date('Y-m-d'));
+        $engine_upcoming = $engine_hotel->where('check_in', '>', date('Y-m-d'));
+        $engine_current = $engine_hotel->where('check_in', '<=', date('Y-m-d'))
+        ->Where('check_out', '>=', date('Y-m-d'));
+        $engine_past = $engine_hotel->where('check_out', '<', date('Y-m-d'));
+
+        $booing_tour_engine = $this->booing_tour_engine
+        ->where($agent_type, $agent_id)
+        ->get();
+        $booing_tour_engine = EngineTourResource::collection($booing_tour_engine)->toArray(request());
+        $booing_tour_engine = collect($booing_tour_engine);
+        $engine_tour_upcoming = $booing_tour_engine
+        ->where('check_in', '>', date('Y-m-d'));
+        $engine_tour_current = $booing_tour_engine
+        ->where('check_in', '<=', date('Y-m-d'))
+        ->where('check_out', '>=', date('Y-m-d'));
+        $engine_tour_past = $booing_tour_engine
+        ->where('check_out', '<', date('Y-m-d'));
+        // EngineTourResource
+        $booking_engine_upcoming = [
+            'hotels' => $engine_upcoming,
+            'tour' => $engine_tour_upcoming,
+        ];
+        $booking_engine_current = [
+            'hotels' => $engine_current,
+            'tour' => $engine_tour_current,
+        ];
+        $booking_engine_past = [
+            'hotels' => $engine_past,
+            'tour' => $engine_tour_past,
+        ];
 
         return response()->json([
             'upcoming' => $upcoming,
@@ -233,6 +262,9 @@ class BookingController extends Controller
             'engine_upcoming' => $engine_upcoming,
             'engine_current' => $engine_current,
             'engine_past' => $engine_past,
+            'booking_engine_upcoming' => $booking_engine_upcoming,
+            'booking_engine_current' => $booking_engine_current,
+            'booking_engine_past' => $booking_engine_past,
         ]);
     }
 
@@ -293,7 +325,12 @@ class BookingController extends Controller
             $traveler['email'] = $data->email;
             $traveler['position'] = 'Customer';
         }
+        $travelers = [
+            'adults' => $manuel_booking->adults,
+            'children' => $manuel_booking->children,
+        ];
         $payments = $manuel_booking->payments;
+        $total_remainder = $manuel_booking->payments_cart;
         $confirmation_tasks = $manuel_booking->tasks;
         $actions = [
             'confirmed' => $manuel_booking->operation_confirmed,
@@ -307,7 +344,10 @@ class BookingController extends Controller
         ];
         return response()->json([
             'traveler' => $traveler,
+            'travelers' => $travelers,
             'payments' => $payments,
+            'total_payment' => $payments->sum('amount'),
+            'total_remainder' => $total_remainder->sum('due_payment'),
             'actions' => $actions,
             'agent_data' => $agent_data,
             'confirmation_tasks' => $confirmation_tasks,
@@ -340,7 +380,7 @@ class BookingController extends Controller
         // Keys
         // request_status
         $validation = Validator::make($request->all(), [
-            'request_status' => 'required|in:pending,reject,approve',
+            'request_status' => 'required|in:pending,reject,approve,upon_availability',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -359,9 +399,9 @@ class BookingController extends Controller
     public function special_request_status_engine(Request $request, $id){
         // https://travelta.online/agent/booking/request_status_engine/{id}
         // Keys
-        // request_status
+        // request_status => pending,reject,approve,upon_availability
         $validation = Validator::make($request->all(), [
-            'request_status' => 'required|in:pending,reject,approve',
+            'request_status' => 'required|in:pending,reject,approve,upon_availability',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);

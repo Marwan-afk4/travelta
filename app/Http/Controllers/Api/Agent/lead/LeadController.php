@@ -8,6 +8,9 @@ use App\trait\image;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\api\agent\lead\LeadRequest;
 use Illuminate\Validation\Rule;
+use App\Exports\ExportLeads;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\Leads;
 
 use App\Models\Customer;
 use App\Models\CustomerData;
@@ -57,7 +60,10 @@ class LeadController extends Controller
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('affilate_id', $agent_id)
-            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 'city')
+            ->with(['customer', 'source:id,source', 'agent_sales:name,department_id' => function($query){
+                $query->with('department:id,name');
+            }, 'service:id,service_name', 'nationality:id,name', 'country:id,name', 
+            'city:id,name', 'request'])
             ->get()
             ->map(function ($item) {
                 if ($item->customer->role == 'customer') {
@@ -69,7 +75,10 @@ class LeadController extends Controller
                     $item->watts = $item->customer->watts;
                     $item->image = $item->customer->image;
                 }
+                $item->stages = $item?->request?->stages ?? null;
+                $item->priority = $item?->request?->priority ?? null;
                 $item->makeHidden('customer');
+                $item->makeHidden('request');
                 return $item;
             });
         } 
@@ -77,7 +86,20 @@ class LeadController extends Controller
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('agent_id', $agent_id)
-            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 'city')
+            ->with([
+                'customer',
+                'source:id,source',
+                'agent_sales' => function($query) {
+                    $query->select('id', 'name', 'department_id')->with([
+                        'department:id,name'
+                    ]);
+                },
+                'service:id,service_name',
+                'nationality:id,name',
+                'country:id,name',
+                'city:id,name',
+                'request'
+            ])
             ->get()
             ->map(function ($item) {
                 if ($item->customer->role == 'customer') {
@@ -89,7 +111,10 @@ class LeadController extends Controller
                     $item->watts = $item->customer->watts;
                     $item->image = $item->customer->image;
                 }
+                $item->stages = $item?->request?->stages ?? null;
+                $item->priority = $item?->request?->priority ?? null;
                 $item->makeHidden('customer');
+                $item->makeHidden('request');
                 return $item;
             });
         }
@@ -143,6 +168,24 @@ class LeadController extends Controller
         ]);
     }
 
+    public function export_excel(){
+        // /agent/leads/export_excel
+        return Excel::download(new ExportLeads, 'leads_template.xlsx');
+    }
+
+    public function import_excel(){
+        // /agent/leads/import_excel
+        $validation = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,csv',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        Excel::import(new Leads, $request->file('file'));
+
+        return response()->json(['message' => 'File uploaded successfully']);
+    }
+
     public function status(Request $request, $id){
         // /leads/status/{id}
         $validation = Validator::make($request->all(), [
@@ -178,7 +221,7 @@ class LeadController extends Controller
         ]);
     }
 
-    public function leads_search(){
+    public function leads_search(Request $request){
         // /leads/leads_search
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $user_id = $request->user()->affilate_id;
@@ -285,7 +328,7 @@ class LeadController extends Controller
         // Keys
         // name, phone, email, gender
         // image, watts, source_id, agent_sales_id, service_id,
-        // nationality_id, country_id, city_id, status      
+        // nationality_id, country_id, city_id, status
         $validation = Validator::make($request->all(), [
             'phone' => ['unique:customers,phone'],
             'email' => ['unique:customers,email'],
@@ -474,15 +517,18 @@ class LeadController extends Controller
             $customer = $this->customer_data
             ->where('customer_id', $id)
             ->where('affilate_id', $agent_id)
-            ->delete();
+            ->first();
         } 
         else {
             $customer = $this->customer_data
             ->where('customer_id', $id)
             ->where('agent_id', $agent_id)
-            ->delete();
+            ->first();
         }
-        $this->deleteImage($customer->image);
+        if (!empty($customer)) {
+            $this->deleteImage($customer->image);
+            $customer->delete();
+        }
 
         return response()->json([
             'success' => 'You delete data success'

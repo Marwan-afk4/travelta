@@ -95,8 +95,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(LeadController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_lead');
             Route::get('/lists', 'lists');
+            Route::get('export_excel', 'export_excel')->middleware('can:add_lead');
+            Route::post('import_excel', 'import_excel')->middleware('can:add_lead');
             Route::get('leads_search', 'leads_search')->middleware('can:add_lead');
-            Route::put('update/{id}', 'modify')->middleware('can:update_lead');
+            Route::post('update/{id}', 'modify')->middleware('can:update_lead');
             Route::put('status/{id}', 'status')->middleware('can:update_lead');
             Route::post('add_lead', 'add_lead')->middleware('can:add_lead');
             Route::post('add', 'create')->middleware('can:add_lead');
@@ -146,6 +148,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/profile/{id}', 'profile')->middleware('can:view_supplier');
             Route::get('/transactions/{id}', 'transactions')->middleware('can:view_supplier');
             Route::get('/transaction_details/{manuel_booking_id}', 'transaction_details')->middleware('can:view_supplier');
+            Route::post('/upload_papers', 'upload_papers')->middleware('can:update_supplier');
         });
     });
 
@@ -334,13 +337,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::get('/items', 'manuel_bookings')->middleware('can:view_manuel_booking');
         Route::delete('/cart/delete/{id}', 'delete_cart')->middleware('can:view_manuel_booking');
         Route::get('/cart_data/{id}', 'cart_data')->middleware('can:view_manuel_booking');
+        Route::put('/update_cart_data/{id}', 'update_cart_data')->middleware('can:view_manuel_booking');
         Route::post('/cart', 'cart')->middleware('can:view_manuel_booking');
         Route::get('/supplier_customer', 'to_b2_filter')->middleware('can:view_manuel_booking');
         Route::post('/service_supplier', 'from_supplier')->middleware('can:view_manuel_booking');
         Route::post('/taxes', 'from_taxes')->middleware('can:view_manuel_booking');
         Route::get('/lists', 'lists')->middleware('can:view_manuel_booking');
         Route::post('/pdf', 'pdf')->middleware('can:view_manuel_booking');
-        
     });
 
     Route::prefix('booking')->group(function(){

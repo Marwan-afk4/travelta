@@ -32,6 +32,10 @@ class CustomerData extends Model
         return url('storage/' . $this->attributes['image']);
     }
 
+    public function request(){
+        return $this->hasOne(RequestBooking::class, 'customer_id', 'customer_id');
+    }
+
     public function customer(){
         return $this->belongsTo(Customer::class);
     }

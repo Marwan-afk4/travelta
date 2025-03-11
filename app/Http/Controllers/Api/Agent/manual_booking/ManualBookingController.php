@@ -62,7 +62,8 @@ class ManualBookingController extends Controller
     private Customer $customers, private FinantiolAcounting $financial_accounting,
     private BookingPayment $booking_payment, private Agent $agent,
     private AffilateAgent $affilate_agent, private AgentPayable $agent_payable,
-    private HrmEmployee $employees, private SupplierBalance $supplier_balance){}
+    private HrmEmployee $employees, private SupplierBalance $supplier_balance,
+    private CustomerSource $sources){}
     
     protected $hotelRequest = [
         'check_in',
@@ -213,6 +214,9 @@ class ManualBookingController extends Controller
         else{
             $role = 'agent_id';
         }
+        $sources = $this->sources
+        ->where('status', 1)
+        ->get();
         $cities = $this->cities
         ->get();
         $contries = $this->contries
@@ -274,6 +278,7 @@ class ManualBookingController extends Controller
             'customers' => $customers,
             'suppliers' => $suppliers,
             'employees' => $employees,
+            'sources' => $sources,
         ]);
     }
 
@@ -648,6 +653,29 @@ class ManualBookingController extends Controller
    
         return response()->json([
             'data' => $arr,
+        ]);
+    }
+
+    public function update_cart_data(Request $request, $id){
+        // https://travelta.online/agent/manual_booking/update_cart_data/{id}
+        // Key
+        // data
+        $validation = Validator::make($request->all(), [
+            'data' => 'required',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+
+        $data = !is_string($request->data) ? json_encode($request->data) : $request->data;
+        $manuel_data_cart = $this->manuel_data_cart
+        ->where('id', $id)
+        ->update([
+            'cart' => $data
+        ]);
+   
+        return response()->json([
+            'success' => 'You update cart success',
         ]);
     }
 

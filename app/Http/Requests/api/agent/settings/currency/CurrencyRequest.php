@@ -26,6 +26,7 @@ class CurrencyRequest extends FormRequest
         return [
             'currancy_id' => ['required', 'exists:currancies,id'],
             'name' => ['required'],
+            'point' => ['required', 'numeric']
         ];
     }
 

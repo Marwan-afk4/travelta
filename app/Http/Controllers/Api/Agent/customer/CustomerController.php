@@ -35,8 +35,24 @@ class CustomerController extends Controller
             })
             ->with(['customer' => function($query){
                 $query->with('country:id,name', 'city:id,name');
-            }])
-            ->get();
+            }, 'request'])
+            ->get()
+            ->map(function ($item) {
+                $item->id = $item->customer->id;
+                $item->name = $item->customer->name;
+                $item->phone = $item->customer->phone;
+                $item->email = $item->customer->email;
+                $item->gender = $item->customer->gender;
+                $item->emergency_phone = $item->customer->emergency_phone;
+                $item->watts = $item->customer->watts;
+                $item->image = $item->customer->image;
+                
+                $item->stages = $item?->request?->stages ?? null;
+                $item->priority = $item?->request?->priority ?? null;
+                $item->makeHidden('customer');
+                $item->makeHidden('request');
+                return $item;
+            });
         }
         else {
             $customers = $this->customer_data
@@ -47,12 +63,28 @@ class CustomerController extends Controller
             })
             ->with(['customer' => function($query){
                 $query->with('country:id,name', 'city:id,name');
-            }])
-            ->get();
+            }, 'request'])
+            ->get()
+            ->map(function ($item) {
+                $item->id = $item->customer->id;
+                $item->name = $item->customer->name;
+                $item->phone = $item->customer->phone;
+                $item->email = $item->customer->email;
+                $item->gender = $item->customer->gender;
+                $item->emergency_phone = $item->customer->emergency_phone;
+                $item->watts = $item->customer->watts;
+                $item->image = $item->customer->image;
+                
+                $item->stages = $item?->request?->stages ?? null;
+                $item->priority = $item?->request?->priority ?? null;
+                $item->makeHidden('customer');
+                $item->makeHidden('request');
+                return $item;
+            });
         }
 
         return response()->json([
-            'customers' => $customers->pluck('customer')
+            'customers' => $customers
         ]);
     }
 
