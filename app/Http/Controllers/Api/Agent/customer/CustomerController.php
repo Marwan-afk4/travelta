@@ -38,6 +38,7 @@ class CustomerController extends Controller
             }, 'request'])
             ->get()
             ->map(function ($item) {
+                $item->id = $item->customer->id;
                 $item->name = $item->customer->name;
                 $item->phone = $item->customer->phone;
                 $item->email = $item->customer->email;
@@ -65,6 +66,7 @@ class CustomerController extends Controller
             }, 'request'])
             ->get()
             ->map(function ($item) {
+                $item->id = $item->customer->id;
                 $item->name = $item->customer->name;
                 $item->phone = $item->customer->phone;
                 $item->email = $item->customer->email;

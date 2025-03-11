@@ -16,8 +16,8 @@ class EngineTourResource extends JsonResource
     public function toArray(Request $request): array
     {
         $date = $this->date;
-        $date = Carbon::parse($date);
-        $date = $date->format('Y-m-d');
+        $date = Carbon::parse($date)->addDays($this->tour?->days ?? 0);
+        $check_out = $date->format('Y-m-d');
         return [
             'id' => $this->id,
             'supplier_from_name' => $this->from_supplier->name ?? null,
@@ -32,8 +32,9 @@ class EngineTourResource extends JsonResource
             'hotel_name' => $this->to_hotel->hotel_name ?? null,
             
             'check_in' => $this->date ?? null,
-            'check_out' => $this->check_out ?? null,
-            'no_nights' => $this->no_of_nights ?? null,
+            'check_out' => $check_out ?? null,
+            'days' => $this->tour->days ?? null,
+            'nights' => $this->tour->nights ?? null,
             'tour' => $this->tour->name ?? null,
             'no_of_people' => $this->no_of_people ?? null,
             
