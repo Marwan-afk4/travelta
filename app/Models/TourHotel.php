@@ -10,4 +10,8 @@ class TourHotel extends Model
         'tour_id',
         'name',
     ];
+
+    public function bookTour(){
+        return $this->hasMany(BookTourengine::class, 'to_hotel_id');
+    }
 }

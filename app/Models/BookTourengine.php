@@ -49,10 +49,10 @@ class BookTourengine extends Model
     }
 
     public function book_tour_extra(){
-        return $this->hasMany(BookTourExtra::class);
+        return $this->hasMany(BookTourExtra::class, 'book_tour_id');
     }
 
     public function book_tour_room(){
-        return $this->hasMany(BookTourRoom::class);
+        return $this->hasMany(BookTourRoom::class, 'book_tour_id');
     }
 }
