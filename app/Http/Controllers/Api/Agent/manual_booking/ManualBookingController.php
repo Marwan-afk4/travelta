@@ -62,7 +62,8 @@ class ManualBookingController extends Controller
     private Customer $customers, private FinantiolAcounting $financial_accounting,
     private BookingPayment $booking_payment, private Agent $agent,
     private AffilateAgent $affilate_agent, private AgentPayable $agent_payable,
-    private HrmEmployee $employees, private SupplierBalance $supplier_balance){}
+    private HrmEmployee $employees, private SupplierBalance $supplier_balance,
+    private CustomerSource $sources){}
     
     protected $hotelRequest = [
         'check_in',
@@ -213,6 +214,9 @@ class ManualBookingController extends Controller
         else{
             $role = 'agent_id';
         }
+        $sources = $this->sources
+        ->where('status', 1)
+        ->get();
         $cities = $this->cities
         ->get();
         $contries = $this->contries
@@ -274,6 +278,7 @@ class ManualBookingController extends Controller
             'customers' => $customers,
             'suppliers' => $suppliers,
             'employees' => $employees,
+            'sources' => $sources,
         ]);
     }
 
