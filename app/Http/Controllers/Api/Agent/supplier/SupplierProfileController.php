@@ -10,6 +10,8 @@ use App\Http\Resources\ManuelFlightResource;
 use App\Http\Resources\ManuelHotelResource;
 use App\Http\Resources\ManuelTourResource;
 use App\Http\Resources\ManuelVisaResource;
+use Illuminate\Support\Facades\Validator;
+use App\trait\image;
 
 use App\Models\SupplierAgent; 
 use App\Models\ManuelBooking;
@@ -26,7 +28,9 @@ class SupplierProfileController extends Controller
         private LegalPaper $legal_papers,
         private AgentPayment $agent_payment,
         private SupplierBalance $balances,
-        private PaymentsCart $payment_cart){}
+        private PaymentsCart $payment_cart
+    ){}
+    use image;
 
     public function profile(Request $request, $id){
         // https://travelta.online/agent/supplier/profile/{id}
@@ -69,6 +73,54 @@ class SupplierProfileController extends Controller
             'manuel_booking' => $manuel_booking,
             'legal_papers' => $legal_papers,
             'balances' => $balances,
+        ]);
+    }
+
+    public function upload_papers(Request $request){
+        // https://travelta.online/agent/supplier/upload_papers
+        // Keys
+        // images[{image, type, supplier_id}]
+        //{"images": [{"image": "", "type": "id", "supplier_id": "1"}]}
+        $validation = Validator::make($request->all(), [
+            'images' => 'required',
+            'images.*.image' => 'required',
+            'images.*.type' => 'required',
+            'images.*.supplier_id' => 'required|exists:supplier_agents,id',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+
+        $images = $request->images;
+        foreach ($images as $item) {
+            $image = $this->storeBase64Image($item['image'], 'agent/supplier/legal_papers');
+            $this->legal_papers
+            ->create([
+                'image' => $image,
+                'supplier_agent_id' => $item['supplier_id'],
+                'type' => $item['type'],
+                $role => $agent_id,
+            ]);
+        }
+
+        return response()->json([
+            'success' => 'You add data success',
+            'data' => $request->all()
         ]);
     }
 

@@ -148,6 +148,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/profile/{id}', 'profile')->middleware('can:view_supplier');
             Route::get('/transactions/{id}', 'transactions')->middleware('can:view_supplier');
             Route::get('/transaction_details/{manuel_booking_id}', 'transaction_details')->middleware('can:view_supplier');
+            Route::post('/upload_papers', 'upload_papers')->middleware('can:update_supplier');
         });
     });
 

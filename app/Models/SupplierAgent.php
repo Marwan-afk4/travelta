@@ -22,8 +22,13 @@ class SupplierAgent extends Model
     public function getNameAttribute(){
         return $this->attributes['agent'];
     }
+
     public function services(){
         return $this->belongsToMany(Service::class, 'supplier_agent_service', 'supplier_agent_id', 'service_id');
+    }
+    
+    public function legal_papers(){
+        return $this->hasMany(LegalPaper::class, 'supplier_agent_id');
     }
 
     public function getemailsAttribute($data){
