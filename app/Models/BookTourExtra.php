@@ -15,7 +15,7 @@ class BookTourExtra extends Model
     ];
 
     public function book_tour(){
-        return $this->belongsTo(BookTourengine::class);
+        return $this->belongsTo(BookTourengine::class, 'book_tour_id');
     }
 
     public function extra(){

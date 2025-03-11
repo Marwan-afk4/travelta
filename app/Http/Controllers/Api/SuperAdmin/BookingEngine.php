@@ -559,6 +559,9 @@ class BookingEngine extends Controller
         'status' => 'success',
         'message' => 'Tour booked successfully',
         'tour' => $createBooking,
+        'tour_extra' => $createBooking->book_tour_extra,
+        'tour_room' => $createBooking->book_tour_room,
+        'tour_hotel' => $createBooking->to_hotel
     ], 200);
 }
 
