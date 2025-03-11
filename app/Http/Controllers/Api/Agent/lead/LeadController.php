@@ -60,8 +60,10 @@ class LeadController extends Controller
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('affilate_id', $agent_id)
-            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 
-            'city', 'request')
+            ->with(['customer', 'source:id,source', 'agent_sales:name,department_id' => function($query){
+                $query->with('department:id,name');
+            }, 'service:id,service_name', 'nationality:id,name', 'country:id,name', 
+            'city:id,name', 'request'])
             ->get()
             ->map(function ($item) {
                 if ($item->customer->role == 'customer') {
@@ -84,8 +86,18 @@ class LeadController extends Controller
             $leads = $this->customer_data
             ->where('type', 'lead')
             ->where('agent_id', $agent_id)
-            ->with('customer', 'source', 'agent_sales', 'service', 'nationality', 'country', 
-            'city', 'request')
+            ->with([
+                'customer',
+                'source:id,source',
+                'agent_sales' => function($query) {
+                    $query->select('id', 'name', 'department_id')->with('department:id,name');
+                },
+                'service:id,service_name',
+                'nationality:id,name',
+                'country:id,name',
+                'city:id,name',
+                'request'
+            ])
             ->get()
             ->map(function ($item) {
                 if ($item->customer->role == 'customer') {

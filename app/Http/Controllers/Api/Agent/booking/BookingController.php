@@ -224,14 +224,19 @@ class BookingController extends Controller
         ->where($agent_type, $agent_id)
         ->get();
         $engine_hotel = EngineHotelResource::collection($booking_engine);
-        $engine_upcoming = $engine_hotel->where('check_in', '>=', date('Y-m-d'));
-        $engine_current = $engine_hotel->where('check_in', '=', date('Y-m-d'));
-        $engine_past = $engine_hotel->where('check_in', '<=', date('Y-m-d'));
+        $engine_upcoming = $engine_hotel->where('check_in', '>', date('Y-m-d'));
+        $engine_current = $engine_hotel->where('check_in', '<=', date('Y-m-d'))
+        ->orWhere('check_out', '>=', date('Y-m-d'));
+        $engine_past = $engine_hotel->where('check_out', '<', date('Y-m-d'));
 
         $booing_tour_engine = $this->booing_tour_engine
         ->where($agent_type, $agent_id)
         ->get();
-        $engine_hotel = EngineHotelResource::collection($booing_tour_engine);
+        $booing_tour_engine = EngineTourResource::collection($booing_tour_engine);
+        $engine_upcoming = $booing_tour_engine->where('check_in', '>', date('Y-m-d'));
+        $engine_current = $booing_tour_engine->where('check_in', '<=', date('Y-m-d'))
+        ->orWhere('check_out', '>=', date('Y-m-d'));
+        $engine_past = $booing_tour_engine->where('check_out', '<', date('Y-m-d'));
         // EngineTourResource
         $booking_engine_upcoming = [
             'hotels' => $engine_upcoming
