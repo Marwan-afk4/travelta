@@ -558,10 +558,14 @@ class BookingEngine extends Controller
     return response()->json([
         'status' => 'success',
         'message' => 'Tour booked successfully',
-        'tour' => $createBooking,
-        'tour_extra' => $createBooking->book_tour_extra,
-        'tour_room' => $createBooking->book_tour_room,
-        'tour_hotel' => $createBooking->to_hotel
+        'tour' => BookTourengine::with([
+            'tour',
+            'tour.agent:id,name,email,phone',
+            'currency', // Get full currency details
+            'country', // Get full country details
+            'book_tour_extra.extra', // Get full details of booked extras
+            'book_tour_room.to_hotel'
+        ])->find($createBooking->id),
     ], 200);
 }
 

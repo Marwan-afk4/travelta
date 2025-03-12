@@ -70,4 +70,8 @@ class Agent extends Model
     public function manualpayment(){
         return $this->hasMany(ManualPayment::class);
     }
+
+    public function tour(){
+        return $this->hasMany(Tour::class);
+    }
 }

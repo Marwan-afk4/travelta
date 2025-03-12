@@ -114,4 +114,8 @@ class Tour extends Model
     return $this->belongsTo(CurrencyAgent::class, 'currency_id');
 }
 
+    public function agent(){
+        return $this->belongsTo(Agent::class, 'agent_id');
+    }
+
 }

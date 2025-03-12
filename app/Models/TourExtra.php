@@ -18,4 +18,8 @@ class TourExtra extends Model
     {
         return $this->belongsTo(CurrencyAgent::class, 'currency_id');
     }
+
+    public function book_tour_extra(){
+        return $this->hasMany(BookTourExtra::class, 'tour_extra_id');
+    }
 }

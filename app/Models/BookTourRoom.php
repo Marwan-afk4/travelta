@@ -21,4 +21,9 @@ class BookTourRoom extends Model
     {
         return $this->belongsTo(BookTourengine::class, 'book_tour_id');
     }
+
+    public function to_hotel()
+    {
+        return $this->belongsTo(TourHotel::class, 'to_hotel_id');
+    }
 }
