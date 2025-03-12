@@ -188,8 +188,10 @@ class LeadController extends Controller
 
     public function status(Request $request, $id){
         // /leads/status/{id}
+        // Keys
+        // status
         $validation = Validator::make($request->all(), [
-            'status' => 'required|boolean',
+            'status' => 'required|in:active,inactive,suspend',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -217,7 +219,7 @@ class LeadController extends Controller
         ]);
 
         return response()->json([
-            'success' => $request->status ? 'active': 'banned'
+            'success' => $request->status
         ]);
     }
 

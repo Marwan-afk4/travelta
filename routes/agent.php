@@ -350,11 +350,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(BookingController::class)->group(function(){
             Route::get('/', 'booking')->middleware('can:view_bookings');
             Route::get('/details/{id}', 'details')->middleware('can:view_bookings');
+            Route::get('/engine_tour_details/{id}', 'engine_tour_details')->middleware('can:view_bookings');
             Route::get('/engine_details/{id}', 'engine_details')->middleware('can:view_bookings');
             Route::put('/special_request/{id}', 'special_request')->middleware('can:view_bookings');
             Route::put('/request_status/{id}', 'special_request_status')->middleware('can:update_bookings');
-            Route::put('/engine_special_request/{id}', 'engine_special_request')->middleware('can:view_bookings');
+            Route::put('/engine_special_request/{id}', 'engine_special_request')->middleware('can:update_bookings');
             Route::put('/request_status_engine/{id}', 'special_request_status_engine')->middleware('can:update_bookings');
+            Route::put('/engine_tour_special_request/{id}', 'engine_tour_special_request')->middleware('can:update_bookings');
+            Route::put('/special_status_tour_engine/{id}', 'special_status_tour_engine')->middleware('can:update_bookings');
         });
         Route::controller(BookingUpdateController::class)->group(function(){
             Route::get('/hotel/{id}', 'hotel')->middleware('can:update_bookings');

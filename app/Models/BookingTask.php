@@ -11,6 +11,7 @@ class BookingTask extends Model
         'affilate_id',
         'manuel_booking_id',
         'booking_engine_id', 
+        'engine_tour_id', 
         'notes',
         'confirmation_number',
         'notification',

@@ -64,9 +64,63 @@ class CustomerProfileController extends Controller
         'flight', 'tour', 'visa')
         ->where('to_customer_id', $id)
         ->where($role, $agent_id)
-        ->get();
+        ->get()
+        ->map(function ($item) {
+            if ($item->relationLoaded('hotel') && $item->hotel) { 
+                $item->type = 'Hotel';
+                $item->check_in = $item->hotel->check_in;
+                $item->check_out = $item->hotel->check_out;
+            }
+            elseif ($item->relationLoaded('bus') && $item->bus) { 
+                $item->type = 'Bus';
+                $item->check_in = $item->bus->departure;
+                $item->check_out = $item->bus->arrival;
+            }
+            elseif ($item->relationLoaded('flight') && $item->flight) { 
+                $item->type = 'Flight';
+                $item->check_in = $item->flight->departure;
+                $item->check_out = $item->flight->arrival;
+            }
+            elseif ($item->relationLoaded('visa') && $item->visa) { 
+                $item->type = 'Visa';
+                $item->check_in = $item->visa->travel_date;
+                $item->check_out = null;
+            }
+            elseif ($item->relationLoaded('tour') && $item->tour) { 
+                $item->type = 'Tour';
+                $item->check_in = $item->tour?->hotel?->min('check_in') ?? null;
+                $item->check_out = $item->tour?->hotel?->max('check_out') ?? null;
+            }
+            else{
+                $item->type = null;
+                $item->check_in = null;
+                $item->check_out = null;
+            }
+            $item->supplier_from_name = $this->from_supplier->agent ?? null;
+            $item->supplier_from_email = is_string($item->from_supplier->emails) ? 
+            json_decode($item->from_supplier->emails)[0] ?? $item->from_supplier->emails 
+            : $item->from_supplier->emails[0];
+            $item->supplier_from_phone = is_string($item->from_supplier->emails) ? 
+            json_decode($item->from_supplier->phones)[0] ?? $item->from_supplier->phones
+            : $item->from_supplier->phones[0];
+            $item->country = $item->country->name ?? null;
+            $item->total_price = number_format($item->total_price, 2, '.', '');
+            $item->to_name = $item->to_client->name ?? null;
+            $item->to_role = $item->to_client->agent ? 'Supplier' : 'Customer';
+            $item->to_email = $item->to_client->emails ? $item->to_client->emails[0]: $item->to_client->email;
+            $item->to_phone = $item->to_client->phones ? $item->to_client->phones[0]: $item->to_client->phone;
+ 
+            unset($item->hotel);
+            unset($item->bus);
+            unset($item->flight);
+            unset($item->visa);
+            unset($item->tour);
+            unset($item->country);
+            unset($item->to_client);
+            unset($item->from_supplier);
+            return $item;
+        });
         $requests = BookingRequestResource::collection($requests);
-        $manuel_booking = ManuelBookingResource::collection($manuel_booking);
         $legal_papers = $this->legal_papers
         ->where('customer_id', $id)
         ->get();
