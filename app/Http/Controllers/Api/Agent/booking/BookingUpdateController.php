@@ -400,7 +400,7 @@ class BookingUpdateController extends Controller
                 }
             }
             $customer = $this->customer_data
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->where('customer_id', $manuel_booking->to_customer_id ?? null)
             ->where($role, $agent_id)
             ->first();
@@ -716,7 +716,7 @@ class BookingUpdateController extends Controller
                 }
             }
             $customer = $this->customer_data
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->where('customer_id', $manuel_booking->to_customer_id ?? null)
             ->where($role, $agent_id)
             ->first();
@@ -1032,7 +1032,7 @@ class BookingUpdateController extends Controller
                 }
             }
             $customer = $this->customer_data
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->where('customer_id', $manuel_booking->to_customer_id ?? null)
             ->where($role, $agent_id)
             ->first();
@@ -1348,7 +1348,7 @@ class BookingUpdateController extends Controller
                 }
             }
             $customer = $this->customer_data
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->where('customer_id', $manuel_booking->to_customer_id ?? null)
             ->where($role, $agent_id)
             ->first();
@@ -1717,7 +1717,7 @@ class BookingUpdateController extends Controller
                 }
             }
             $customer = $this->customer_data
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->where('customer_id', $manuel_booking->to_customer_id ?? null)
             ->where($role, $agent_id)
             ->first();

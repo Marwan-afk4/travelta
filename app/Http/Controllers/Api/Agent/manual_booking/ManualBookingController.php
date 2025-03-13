@@ -254,7 +254,7 @@ class ManualBookingController extends Controller
         ->get();
         $customers = $this->customer_data
         ->where($role, $agent_id)
-        ->where('status', 1)
+        ->whereIn('status', ['active', 'inactive'])
         ->with('customer')
         ->get()
         ->pluck('customer');
@@ -302,7 +302,7 @@ class ManualBookingController extends Controller
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $customers = $this->customer_data
             ->where('affilate_id', $agent_id)
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->with('customer')
             ->get();
             $suppliers = $this->supplier_agent
@@ -313,7 +313,7 @@ class ManualBookingController extends Controller
         else{
             $customers = $this->customer_data
             ->where('agent_id', $agent_id)
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->with('customer')
             ->get();
             $suppliers = $this->supplier_agent
@@ -1212,7 +1212,7 @@ class ManualBookingController extends Controller
                 }
             }
             $customer = $this->customer_data
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->where('customer_id', $manuel_data_cart['to_customer_id'] ?? null)
             ->where($role, $agent_id)
             ->first();

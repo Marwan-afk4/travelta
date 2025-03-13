@@ -50,7 +50,7 @@ class RequestListsController extends Controller
         }
         $customers = $this->customer_data
         ->where($role, $agent_id)
-        ->where('status', 1)
+        ->whereIn('status', ['active', 'inactive'])
         ->with('customer')
         ->get()
         ->map(function ($item) {
