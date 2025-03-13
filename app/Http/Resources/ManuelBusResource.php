@@ -17,8 +17,10 @@ class ManuelBusResource extends JsonResource
         return [
             'id' => $this->id,
             'supplier_from_name' => $this->from_supplier->agent ?? null,
-            'supplier_from_email' => $this->from_supplier?->emails[0] ?? $this->from_supplier->emails,
-            'supplier_from_phone' => $this->from_supplier?->phones[0] ?? $this->from_supplier->phones,
+            'supplier_from_email' => isset($this?->from_supplier?->emails[0]) ? $this->from_supplier->emails[0]
+            : $this->from_supplier->emails ?? null,
+            'supplier_from_phone' => isset($this?->from_supplier?->phones[0]) ? $this->from_supplier->phones[0]
+            : $this->from_supplier->phones ?? null,
             'country' => $this->country->name ?? null,
             'total_price' => number_format($this->total_price, 2, '.', ''),
             'to_name' => $this->to_client->name ?? null,
