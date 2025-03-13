@@ -27,7 +27,8 @@ class ManuelHotelResource extends JsonResource
             'to_role' => isset($this->to_client->agent) ? 'Supplier' : 'Customer',
             'to_email' => isset($this->to_client->emails) ? $this->to_client->emails[0]: 
             $this->to_client->email ?? null,
-            'to_phone' => isset($this->to_client->phones) ? strval($this->to_client->phones[0]): $this->to_client->phone ?? null,
+            'to_phone' => isset($this->to_client->phones) ? strval($this->to_client->phones[0]): 
+            $this->to_client->phone ?? null,
             'hotel_name' => $this->hotel->hotel_name ?? null,
             'check_in' => $this->hotel->check_in ?? null,
             'check_out' => $this->hotel->check_out ?? null,
