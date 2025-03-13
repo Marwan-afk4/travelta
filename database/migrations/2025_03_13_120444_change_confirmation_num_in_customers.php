@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('operation_booking_vouchereds', function (Blueprint $table) {
-            $table->string('confirmation_num')->nullable()->change(); 
+        Schema::table('customers', function (Blueprint $table) {
+            $table->enum('status', ['active', 'inactive', 'suspend'])
+            ->default('active')->change(); 
         });
     }
 
@@ -21,7 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('operation_booking_vouchereds', function (Blueprint $table) {
+        Schema::table('customers', function (Blueprint $table) {
             //
         });
     }

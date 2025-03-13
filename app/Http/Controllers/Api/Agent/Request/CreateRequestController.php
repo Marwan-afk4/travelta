@@ -850,7 +850,7 @@ class CreateRequestController extends Controller
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
-            } 
+            }
             $request_tour = $this->request_tour
             ->where('request_booking_id', $request_booking->id)
             ->first();
