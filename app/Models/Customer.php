@@ -28,6 +28,7 @@ class Customer extends Model
         if (isset($this->attributes['image'])) {
             return url('storage/' . $this->attributes['image']);
         }
+        return null;
     }
 
     public function manuel(){
