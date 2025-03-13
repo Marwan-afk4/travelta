@@ -305,6 +305,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::post('/add_visa', 'add_visa')->middleware('can:add_request');
             Route::post('/add_flight', 'add_flight')->middleware('can:add_request');
             Route::post('/add_tour', 'add_tour')->middleware('can:add_request');
+            
+            Route::post('/update_hotel/{id}', 'update_hotel')->middleware('can:update_request');
+            Route::post('/update_bus/{id}', 'update_bus')->middleware('can:update_request');
+            Route::post('/update_visa/{id}', 'update_visa')->middleware('can:update_request');
+            Route::post('/update_flight/{id}', 'update_flight')->middleware('can:update_request');
+            Route::post('/update_tour/{id}', 'update_tour')->middleware('can:update_request');
+
             Route::put('/priority/{id}', 'priority')->middleware('can:priority_request');
             Route::put('/stages/{id}', 'stages')->middleware('can:stages_request');
             Route::put('/notes/{id}', 'notes')->middleware('can:notes_request');

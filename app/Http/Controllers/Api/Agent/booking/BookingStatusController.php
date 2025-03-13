@@ -268,7 +268,7 @@ class BookingStatusController extends Controller
         $agent = $engine_tour_booking->tour->{$role};
         if ($agent != $agent_id) {
             return response()->json([
-                'errors' => 'You to make action you must has room'
+                'errors' => 'You to make action you must has tour'
             ], 400);
         }
         $engine_tour_booking->update([
@@ -318,7 +318,7 @@ class BookingStatusController extends Controller
         $agent = $engine_tour_booking->tour->{$role};
         if ($agent != $agent_id) {
             return response()->json([
-                'errors' => 'You to make action you must has room'
+                'errors' => 'You to make action you must has tour'
             ], 400);
         }
         $engine_tour_booking->update([
@@ -366,7 +366,7 @@ class BookingStatusController extends Controller
         $agent = $engine_tour_booking->tour->{$role};
         if ($agent != $agent_id) {
             return response()->json([
-                'errors' => 'You to make action you must has room'
+                'errors' => 'You to make action you must has tour'
             ], 400);
         }
         $engine_tour_booking->update([
