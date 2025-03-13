@@ -265,6 +265,12 @@ class BookingStatusController extends Controller
         $this->engine_tour_booking
         ->where('id', $id)
         ->first();
+        $agent = $engine_tour_booking->tour->{$role};
+        if ($agent != $agent_id) {
+            return response()->json([
+                'errors' => 'You to make action you must has room'
+            ], 400);
+        }
         $engine_tour_booking->update([
             'status' => 'confirmed'
         ]);
@@ -275,7 +281,7 @@ class BookingStatusController extends Controller
     }
 
     public function engine_tour_vouchered(Request $request, $id){
-        // agent/booking/vouchered/{id}
+        // agent/booking/engine_tour_vouchered/{id}
         // Keys
         // totally_paid, confirmation_num, name, phone, email
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
@@ -309,6 +315,12 @@ class BookingStatusController extends Controller
         $engine_tour_booking = $this->engine_tour_booking
         ->where('id', $id)
         ->first();
+        $agent = $engine_tour_booking->tour->{$role};
+        if ($agent != $agent_id) {
+            return response()->json([
+                'errors' => 'You to make action you must has room'
+            ], 400);
+        }
         $engine_tour_booking->update([
             'status' => 'vouchered'
         ]);
@@ -319,7 +331,7 @@ class BookingStatusController extends Controller
     }
 
     public function engine_tour_canceled(Request $request, $id){
-        // agent/booking/canceled/{id}
+        // agent/booking/engine_tour_canceled/{id}
         // Keys
         // cancelation_reason
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
@@ -351,6 +363,12 @@ class BookingStatusController extends Controller
         $engine_tour_booking = $this->engine_tour_booking
         ->where('id', $id)
         ->first();
+        $agent = $engine_tour_booking->tour->{$role};
+        if ($agent != $agent_id) {
+            return response()->json([
+                'errors' => 'You to make action you must has room'
+            ], 400);
+        }
         $engine_tour_booking->update([
             'status' => 'canceled',
         ]);

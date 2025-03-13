@@ -380,6 +380,10 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::put('/engine_confirmed/{id}', 'engine_confirmed')->middleware('can:status_bookings');
             Route::put('/engine_vouchered/{id}', 'engine_vouchered')->middleware('can:status_bookings');
             Route::put('/engine_canceled/{id}', 'engine_canceled')->middleware('can:status_bookings');
+
+            Route::put('/engine_tour_confirmed/{id}', 'engine_tour_confirmed')->middleware('can:status_bookings');
+            Route::put('/engine_tour_vouchered/{id}', 'engine_tour_vouchered')->middleware('can:status_bookings');
+            Route::put('/engine_tour_canceled/{id}', 'engine_tour_canceled')->middleware('can:status_bookings');
         });
         Route::controller(ConfirmationTaskController::class)->prefix('task')->group(function(){
             Route::get('/manuel/{id}', 'manuel_tasks')->middleware('can:view_bookings');
@@ -512,6 +516,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         });
         Route::controller(CurrencyController::class)->prefix('currency')->group(function(){
             Route::get('/', 'view')->middleware('can:view_setting_currency');
+            Route::get('/item/{id}', 'currency')->middleware('can:view_setting_currency');
             Route::post('add', 'create')->middleware('can:add_setting_currency');
             Route::post('update/{id}', 'modify')->middleware('can:update_setting_currency');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_setting_currency');
