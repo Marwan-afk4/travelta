@@ -379,7 +379,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
 
             Route::put('/engine_confirmed/{id}', 'engine_confirmed')->middleware('can:status_bookings');
             Route::put('/engine_vouchered/{id}', 'engine_vouchered')->middleware('can:status_bookings');
-            Route::put('/canceled/{id}', 'canceled')->middleware('can:status_bookings');
+            Route::put('/engine_canceled/{id}', 'engine_canceled')->middleware('can:status_bookings');
         });
         Route::controller(ConfirmationTaskController::class)->prefix('task')->group(function(){
             Route::get('/manuel/{id}', 'manuel_tasks')->middleware('can:view_bookings');
@@ -505,7 +505,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('/settings')->group(function(){
         Route::controller(TaxController::class)->prefix('tax')->group(function(){
             Route::get('/', 'view')->middleware('can:view_setting_tax');
-            Route::get('item/{id}', 'group')->middleware('can:view_setting_tax');
+            Route::get('item/{id}', 'tax')->middleware('can:view_setting_tax');
             Route::post('add', 'create')->middleware('can:add_setting_tax');
             Route::post('update/{id}', 'modify')->middleware('can:update_setting_tax');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_setting_tax');
