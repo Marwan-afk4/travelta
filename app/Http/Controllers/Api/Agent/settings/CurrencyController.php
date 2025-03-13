@@ -37,7 +37,7 @@ class CurrencyController extends Controller
         } 
         $currency = $this->currency
         ->select('id', 'currancy_symbol', 'currancy_name')
-        ->whereNotIn('currancy_id', $currency_agent->pluck('id'))
+        ->whereNotIn('id', $currency_agent->pluck('currancy_id'))
         ->get();
 
         return response()->json([
