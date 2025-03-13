@@ -24,7 +24,7 @@ class ManuelHotelResource extends JsonResource
             'country' => $this->country->name ?? null,
             'total_price' => number_format($this->total_price, 2, '.', ''),
             'to_name' => $this->to_client->name ?? null,
-            'to_role' => $this->to_client->agent ? 'Supplier' : 'Customer',
+            'to_role' => isset($this->to_client->agent) ? 'Supplier' : 'Customer',
             'to_email' => $this->to_client->emails ? $this->to_client->emails[0]: $this->to_client->email,
             'to_phone' => $this->to_client->phones ? strval($this->to_client->phones[0]): $this->to_client->phone,
             'hotel_name' => $this->hotel->hotel_name ?? null,
