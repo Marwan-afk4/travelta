@@ -33,7 +33,7 @@ class GroupController extends Controller
         $group = $this->groups
         ->with('nationalities')
         ->where('id', $id)
-        ->get(); 
+        ->first(); 
 
         return response()->json([
             'group' => $group,

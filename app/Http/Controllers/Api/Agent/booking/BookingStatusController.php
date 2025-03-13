@@ -108,13 +108,35 @@ class BookingStatusController extends Controller
         ]);
     }
 
+    // ___________________________________________________________
     public function engine_confirmed(Request $request, $id){
         // agent/booking/engine_confirmed/{id}
         // Keys
         // comfirmed, deposits[{deposit, date}]
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
         $engine_booking = $this->engine_booking
         ->where('id', $id)
         ->first();
+        $agent = $engine_booking->room->{$role};
+        if ($agent != $agent_id) {
+            return response()->json([
+                'errors' => 'You to make action you must has room'
+            ], 400);
+        }
         $engine_booking->update([
             'status' => 'confirmed'
         ]);
@@ -125,12 +147,26 @@ class BookingStatusController extends Controller
     }
 
     public function engine_vouchered(Request $request, $id){
-        // agent/booking/vouchered/{id}
+        // agent/booking/engine_vouchered/{id}
         // Keys
         // totally_paid, confirmation_num, name, phone, email
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
         $validation = Validator::make($request->all(), [
-            'totally_paid' => 'required|boolean',
-            'confirmation_num' => 'required',
+            'totally_paid' => 'required|boolean', 
             'name' => 'required',
             'phone' => 'required',
             'email' => 'required|email',
@@ -145,6 +181,12 @@ class BookingStatusController extends Controller
         $engine_booking = $this->engine_booking
         ->where('id', $id)
         ->first();
+        $agent = $engine_booking->room->{$role};
+        if ($agent != $agent_id) {
+            return response()->json([
+                'errors' => 'You to make action you must has room'
+            ], 400);
+        }
         $engine_booking->update([
             'status' => 'vouchered'
         ]);
@@ -155,9 +197,24 @@ class BookingStatusController extends Controller
     }
 
     public function engine_canceled(Request $request, $id){
-        // agent/booking/canceled/{id}
+        // agent/booking/engine_canceled/{id}
         // Keys
         // cancelation_reason
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
         $validation = Validator::make($request->all(), [
             'cancelation_reason' => 'required',
         ]);
@@ -172,6 +229,12 @@ class BookingStatusController extends Controller
         $engine_booking = $this->engine_booking
         ->where('id', $id)
         ->first();
+        $agent = $engine_booking->room->{$role};
+        if ($agent != $agent_id) {
+            return response()->json([
+                'errors' => 'You to make action you must has room'
+            ], 400);
+        }
         $engine_booking->update([
             'status' => 'canceled',
         ]);
@@ -183,6 +246,21 @@ class BookingStatusController extends Controller
     // _____________________________________________________________________________
     public function engine_tour_confirmed(Request $request, $id){
         // agent/booking/engine_tour_confirmed/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
         $engine_tour_booking = 
         $this->engine_tour_booking
         ->where('id', $id)
@@ -200,9 +278,23 @@ class BookingStatusController extends Controller
         // agent/booking/vouchered/{id}
         // Keys
         // totally_paid, confirmation_num, name, phone, email
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
         $validation = Validator::make($request->all(), [
-            'totally_paid' => 'required|boolean',
-            'confirmation_num' => 'required',
+            'totally_paid' => 'required|boolean', 
             'name' => 'required',
             'phone' => 'required',
             'email' => 'required|email',
@@ -230,6 +322,21 @@ class BookingStatusController extends Controller
         // agent/booking/canceled/{id}
         // Keys
         // cancelation_reason
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        }
+        else{
+            $role = 'agent_id';
+        }
         $validation = Validator::make($request->all(), [
             'cancelation_reason' => 'required',
         ]);
