@@ -31,19 +31,19 @@ class Leads implements ToModel, WithHeadingRow
             ->first();
             $service = is_numeric($row['service']) ??
             Service::where('service_name', 'like', "%{$row['service']}%")
-            ->first()?->id ?? null;
+            ->first();
             $nationality = is_numeric($row['nationality']) ??
             Nationality::where('name', 'like', "%{$row['nationality']}%")
-            ->first()?->id ?? null;
+            ->first();
             $country = is_numeric($row['country']) ??
             Country::where('name', 'like', "%{$row['country']}%")
-            ->first()?->id ?? null;
+            ->first();
             $city = is_numeric($row['city']) ??
             City::where('name', 'like', "%{$row['city']}%")
-            ->first()?->id ?? null;
+            ->first();
             $source = is_numeric($row['source']) ??
             CustomerSource::where('name', 'like', "%{$row['source']}%")
-            ->first()?->id ?? null;
+            ->first();
             // service_id, nationality_id, country_id, city_id
             if (auth()->user()->affilate_id && !empty(auth()->user()->affilate_id)) {
                 $agent_id = auth()->user()->affilate_id;
@@ -85,11 +85,11 @@ class Leads implements ToModel, WithHeadingRow
                 'status'  => 1,
                 'emergency_phone'  => $row['emergency_phone'],
                 'customer_id' => $customer->id,
-                'source_id'  => $source == 0 ? null: $source,
-                'service_id'  => $service == 0 ? null: $service,
-                'nationality_id'  => $nationality == 0 ? null: $nationality,
-                'country_id'  => $country == 0 ? null: $country,
-                'city_id'  => $city == 0 ? null: $city,
+                'source_id'  => empty($source->id) ? null: $source->id,
+                'service_id'  => empty($service->id) ? null: $service->id,
+                'nationality_id'  => empty($nationality->id) ? null: $nationality->id,
+                'country_id'  => empty($country->id) ? null: $country->id,
+                'city_id'  => empty($city->id) ? null: $city->id,
                 $role => $agent_id,
             ]);
             return new $customer_data;
