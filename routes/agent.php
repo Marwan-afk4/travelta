@@ -139,6 +139,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(SupplierController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_supplier');
             Route::get('item/{id}', 'supplier')->middleware('can:view_supplier');
+            Route::post('import_excel', 'import_excel')->middleware('can:add_supplier');
             Route::post('add', 'create')->middleware('can:add_supplier');
             Route::post('update/{id}', 'modify')->middleware('can:update_supplier');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_supplier');
