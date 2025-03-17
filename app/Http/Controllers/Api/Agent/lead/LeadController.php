@@ -173,7 +173,7 @@ class LeadController extends Controller
         return Excel::download(new ExportLeads, 'leads_template.xlsx');
     }
 
-    public function import_excel(){
+    public function import_excel(Request $request){
         // /agent/leads/import_excel
         $validation = Validator::make($request->all(), [
             'file' => 'required|mimes:xlsx,csv',
