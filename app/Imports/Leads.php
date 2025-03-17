@@ -24,6 +24,9 @@ class Leads implements ToModel
     */
     public function model(array $row)
     {
+        return response()->json([
+            'success' => $row
+        ]);
         $image = null;
         if (isset($row['image']) && !empty($row['image']) && !is_string($row['image'])) {
             $image = $this->uploadFile($row['image'], 'agent/lead/image');
