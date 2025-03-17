@@ -182,6 +182,10 @@ class LeadController extends Controller
             return response()->json(['errors'=>$validation->errors()], 401);
         }
         Excel::import(new Leads, $request->file('file'));
+        $this->customer_data
+        ->whereNull('affilate_id')
+        ->whereNull('agent_id')
+        ->delete();
 
         return response()->json(['message' => 'File uploaded successfully']);
     }
