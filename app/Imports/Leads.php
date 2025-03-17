@@ -10,6 +10,7 @@ use App\Models\Nationality;
 use App\Models\Country;
 use App\Models\City;
 use App\Models\CustomerSource;
+use App\Models\HrmEmployee;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -34,6 +35,9 @@ class Leads implements ToModel, WithHeadingRow
             ->first();
             $nationality =
             Nationality::where('name', 'like', "%{$row['nationality']}%")
+            ->first();
+            $agent = HrmEmployee::where('name', 'like', "%{$row['agent']}%")
+            ->where('agent', 1)
             ->first();
             $country =
             Country::where('name', 'like', "%{$row['country']}%")
@@ -90,6 +94,7 @@ class Leads implements ToModel, WithHeadingRow
                 'nationality_id'  => empty($nationality->id) ? null: $nationality->id,
                 'country_id'  => empty($country->id) ? null: $country->id,
                 'city_id'  => empty($city->id) ? null: $city->id,
+                'agent_sales_id'  => empty($agent->id) ? null: $agent->id,
                 $role => $agent_id,
             ]);
             return new $customer_data;
