@@ -477,6 +477,36 @@ class CreateRequestController extends Controller
         }
     }
     //____________________________________________________________
+    public function request_item(Request $request, $id){
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $request_booking = $this->request_booking
+        ->with(['customer', 'service', 'admin_agent',
+        'currency', 'adults', 'children', 'hotel', 'bus',
+        'flight', 'tour' => function($query){
+            $query->with(['bus', 'hotel']);
+        }, 'visa'])
+        ->where('id', $id)
+        ->first();
+
+        return response()->json([
+            'request_booking' => $request_booking
+        ]);
+    }
+    //____________________________________________________________
 
     public function update_hotel(BookingRequestRequest $request, $id){
         // agent/request/update_hotel/{id}

@@ -53,6 +53,7 @@ class HRMagentController extends Controller
         $employees = $this->agents
         ->where($role, $agent_id)
         ->where('agent', 0)
+        ->where('status', 1)
         ->get();
 
         return response()->json([
