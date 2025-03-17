@@ -29,20 +29,20 @@ class Leads implements ToModel, WithHeadingRow
             $customer = Customer::
             where('phone', $row['phone'])
             ->first();
-            $service = is_numeric($row['service']) ??
+            $service =
             Service::where('service_name', 'like', "%{$row['service']}%")
             ->first();
-            $nationality = is_numeric($row['nationality']) ??
+            $nationality =
             Nationality::where('name', 'like', "%{$row['nationality']}%")
             ->first();
-            $country = is_numeric($row['country']) ??
+            $country =
             Country::where('name', 'like', "%{$row['country']}%")
             ->first();
-            $city = is_numeric($row['city']) ??
+            $city =
             City::where('name', 'like', "%{$row['city']}%")
             ->first();
-            $source = is_numeric($row['source']) ??
-            CustomerSource::where('name', 'like', "%{$row['source']}%")
+            $source =
+            CustomerSource::where('source', 'like', "%{$row['source']}%")
             ->first();
             // service_id, nationality_id, country_id, city_id
             if (auth()->user()->affilate_id && !empty(auth()->user()->affilate_id)) {
