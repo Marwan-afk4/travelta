@@ -238,7 +238,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/lists', 'lists')->middleware('can:view_OE_owner');
             Route::get('/item/{id}', 'owner')->middleware('can:view_OE_owner');
             Route::post('add', 'create')->middleware('can:add_OE_owner');
-            Route::put('update/{id}', 'modify')->middleware('can:update_OE_owner');
+            Route::post('update/{id}', 'modify')->middleware('can:update_OE_owner');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_OE_owner');
         });
         Route::controller(OwnerTransactionController::class)->prefix('owner')
@@ -260,7 +260,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view')->middleware('can:view_expenses_category');
             Route::get('/item/{id}', 'category')->middleware('can:view_expenses_category');
             Route::post('add', 'create')->middleware('can:add_expenses_category');
-            Route::put('update/{id}', 'modify')->middleware('can:update_expenses_category');
+            Route::post('update/{id}', 'modify')->middleware('can:update_expenses_category');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_expenses_category');
         });
         Route::controller(ExpensesController::class)->prefix('expenses')
@@ -270,7 +270,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/item/{id}', 'category')->middleware('can:view_expenses');
             Route::post('/filter', 'filter')->middleware('can:view_expenses');
             Route::post('add', 'create')->middleware('can:add_expenses');
-            Route::put('update/{id}', 'modify')->middleware('can:update_expenses');
+            Route::post('update/{id}', 'modify')->middleware('can:update_expenses');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_expenses');
         });
         Route::controller(CategoryRevenueController::class)->prefix('revenue/category')
@@ -278,7 +278,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view')->middleware('can:view_revenue_category');
             Route::get('/item/{id}', 'category')->middleware('can:view_revenue_category');
             Route::post('add', 'create')->middleware('can:add_revenue_category');
-            Route::put('update/{id}', 'modify')->middleware('can:update_revenue_category');
+            Route::post('update/{id}', 'modify')->middleware('can:update_revenue_category');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_revenue_category');
         });
         Route::controller(RevenueController::class)->prefix('revenue')
@@ -288,7 +288,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/item/{id}', 'category')->middleware('can:view_revenue');
             Route::post('/filter', 'filter')->middleware('can:view_revenue');
             Route::post('add', 'create')->middleware('can:add_revenue');
-            Route::put('update/{id}', 'modify')->middleware('can:update_revenue');
+            Route::post('update/{id}', 'modify')->middleware('can:update_revenue');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_revenue');
         });
     });
