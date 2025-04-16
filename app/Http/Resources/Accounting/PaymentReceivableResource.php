@@ -32,6 +32,8 @@ class PaymentReceivableResource extends JsonResource
             'manuel_code' => $this->code,
             'created' => $this->created_at->format('Y-m-d'),
             'type' => empty($this->to_supplier_id) ? 'Customer': 'Supplier',
+            'currency_id' => $this->currency_id,
+            'currency' => $this->currency->name, 
             'client_name' => $this?->to_client?->name ?? null,
             'client_phone' => empty($this->to_supplier_id) ? $this?->to_client?->phone : $this?->to_client?->phones[0] ?? $this?->to_client?->phones ?? null,
             'total' => $this->total_price,
