@@ -437,16 +437,15 @@ class SupplierProfileController extends Controller
         ->where($agent_type, $agent_id)
         ->get();
         
-        $due_supplier = $this->payment_cart
-        ->where($agent_type, $agent_id)
-        ->where('supplier_id', $id)
-        ->where('status', 'approve')
-        ->get();
-        
         $due = [];
         foreach ($currencies as $item) {
-            $due_from_supplier = $due_supplier
+            $due_supplier = $this->payment_cart
+            ->where($agent_type, $agent_id)
+            ->where('supplier_id', $id)
+            ->where('status', 'approve')
             ->where('currency_id', $item->id)
+            ->get();
+            $due_from_supplier = $due_supplier 
             ->sum('due_payment');
             $due_from_agent = $this->manuel_booking
             ->where('from_supplier_id', $id)
