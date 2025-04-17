@@ -19,6 +19,7 @@ use App\Models\LegalPaper;
 use App\Models\PaymentsCart;
 use App\Models\AgentPayment;
 use App\Models\SupplierBalance;
+use App\Models\CurrencyAgent;
 
 class SupplierProfileController extends Controller
 {
@@ -28,7 +29,8 @@ class SupplierProfileController extends Controller
         private LegalPaper $legal_papers,
         private AgentPayment $agent_payment,
         private SupplierBalance $balances,
-        private PaymentsCart $payment_cart
+        private PaymentsCart $payment_cart,
+        private CurrencyAgent $currency_agent,
     ){}
     use image;
 
@@ -431,32 +433,43 @@ class SupplierProfileController extends Controller
         });
         $transactions_history = collect()->merge($t_hotel_past)->merge($t_bus_past)
         ->merge($t_visa_past)->merge($t_flight_past)->merge($t_tour_past); 
+        $currencies = $this->currency_agent
+        ->where($agent_type, $agent_id)
+        ->get();
         
         $due_supplier = $this->payment_cart
         ->where($agent_type, $agent_id)
         ->where('supplier_id', $id)
         ->where('status', 'approve')
         ->get();
-        $due_from_supplier = $due_supplier->sum('due_payment');
-        $due_from_agent = $this->manuel_booking
-        ->where('from_supplier_id', $id)
-        ->sum('cost');
-        $due_from_agent -= $this->agent_payment
-        ->where($agent_type, $agent_id)
-        ->where('supplier_id', $id)
-        ->sum('amount');
-        $debt = 0;
-        $credit = 0;
-        if ($due_from_supplier > $due_from_agent) {
-            $credit = $due_from_supplier - $due_from_agent;
-        } else {
-            $debt = $due_from_agent - $due_from_supplier;
+        
+        $due = [];
+        foreach ($currencies as $item) {
+            $due_from_supplier = $due_supplier
+            ->where('currency_id', $item->id)
+            ->sum('due_payment');
+            $due_from_agent = $this->manuel_booking
+            ->where('from_supplier_id', $id)
+            ->where('currency_id', $item->id)
+            ->sum('cost');
+            $due_from_agent -= $this->agent_payment
+            ->where($agent_type, $agent_id)
+            ->where('supplier_id', $id)
+            ->where('currency_id', $item->id)
+            ->sum('amount');
+            $debt = 0;
+            $credit = 0;
+            if ($due_from_supplier > $due_from_agent) {
+                $credit = $due_from_supplier - $due_from_agent;
+            } else {
+                $debt = $due_from_agent - $due_from_supplier;
+            }
+            $due[$item->name] = [
+                'due_from_supplier' => $due_supplier->select('id', 'manuel_booking_id', 'amount', 'payment', 'due_payment', 'date'),
+                'total_credit' => $credit,
+                'total_debt' => $debt,
+            ];
         }
-        $due = [
-            'due_from_supplier' => $due_supplier->select('id', 'manuel_booking_id', 'amount', 'payment', 'due_payment', 'date'),
-            'total_credit' => $credit,
-            'total_debt' => $debt,
-        ];
         
         return response()->json([
             'transactions_history_debt' => array_values($transactions_history->where('type', 'debt')->toArray()),
