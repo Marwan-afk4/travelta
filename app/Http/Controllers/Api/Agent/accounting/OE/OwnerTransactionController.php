@@ -79,13 +79,19 @@ class OwnerTransactionController extends Controller
         else {
             $role = 'agent_id';
         }
+        
+        $owners = $this->owner
+        ->with(['currency:id,name'])
+        ->where($role, $agent_id)
+        ->get(); 
         $transactions = $this->owner_transactions
         ->where($role, $agent_id)
         ->with(['currency:id,name', 'owner:id,name', 'financial:id,name'])
         ->get();
 
         return response()->json([
-            'transactions' => $transactions
+            'transactions' => $transactions,
+            'owners' => $owners,
         ]);
     }
 }
