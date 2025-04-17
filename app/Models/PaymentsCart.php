@@ -22,4 +22,8 @@ class PaymentsCart extends Model
     public function getDuePaymentAttribute(){
         return $this->attributes['amount'] - $this->attributes['payment'];
     }
+
+    public function manuel_booking(){
+        return $this->belongsTo(ManuelBooking::class, 'manuel_booking_id');
+    }
 }

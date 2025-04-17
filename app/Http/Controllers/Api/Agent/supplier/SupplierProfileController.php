@@ -443,7 +443,9 @@ class SupplierProfileController extends Controller
             ->where($agent_type, $agent_id)
             ->where('supplier_id', $id)
             ->where('status', 'approve')
-            ->where('currency_id', $item->id)
+            ->whereHas('manuel_booking', function($query) use($item){
+                $query->where('currency_id', $item->id);
+            })
             ->get();
             $due_from_supplier = $due_supplier 
             ->sum('due_payment');
