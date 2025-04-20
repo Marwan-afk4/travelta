@@ -148,13 +148,16 @@ class LeadController extends Controller
         ->with([
             'customer',
             'source:id,source',
-            'agent_sales:name,department_id' => function($query){
-                $query->with('department:id,name');
+            'agent_sales' => function($query) {
+                $query->select('id', 'name', 'department_id')->with([
+                    'department:id,name'
+                ]);
             },
             'service:id,service_name',
             'nationality:id,name',
             'country:id,name',
             'city:id,name',
+            'request'
         ])
         ->first();
 
