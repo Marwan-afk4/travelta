@@ -551,9 +551,9 @@ class CreateRequestController extends Controller
                 foreach ($adult_data as $item) {
                     $this->request_adults
                     ->create([
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
@@ -562,9 +562,9 @@ class CreateRequestController extends Controller
                 foreach ($child_data as $item) {
                     $this->request_children
                     ->create([
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
@@ -629,9 +629,9 @@ class CreateRequestController extends Controller
                 foreach ($adult_data as $item) {
                     $this->request_adults
                     ->create([
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
@@ -640,9 +640,9 @@ class CreateRequestController extends Controller
                 foreach ($child_data as $item) {
                     $this->request_children
                     ->create([
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
@@ -705,9 +705,9 @@ class CreateRequestController extends Controller
                 foreach ($adult_data as $item) {
                     $this->request_adults
                     ->create([
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
@@ -716,9 +716,9 @@ class CreateRequestController extends Controller
                 foreach ($child_data as $item) {
                     $this->request_children
                     ->create([
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
@@ -784,9 +784,9 @@ class CreateRequestController extends Controller
                 foreach ($adult_data as $item) {
                     $this->request_adults
                     ->create([
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
@@ -795,9 +795,9 @@ class CreateRequestController extends Controller
                 foreach ($child_data as $item) {
                     $this->request_children
                     ->create([
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
@@ -864,9 +864,9 @@ class CreateRequestController extends Controller
                 foreach ($adult_data as $item) {
                     $this->request_adults
                     ->create([
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
@@ -875,9 +875,9 @@ class CreateRequestController extends Controller
                 foreach ($child_data as $item) {
                     $this->request_children
                     ->create([
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'], 
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
                         'request_booking_id' => $request_booking->id
                     ]);
                 }
