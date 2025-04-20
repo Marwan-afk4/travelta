@@ -184,26 +184,26 @@ class RequestListsController extends Controller
         }, 'visa', 'stage_data'])
         ->first();
         
-        $request_booking = [
-            'id' => $request_booking->id ?? null,
-            'to_name' => $request_booking->customer?->name ?? null, 
-            'to_phone' => $request_booking->customer?->phone ?? null,
-            'agent' => $request_booking->admin_agent?->name ?? null,
-            'currecy' => $request_booking->currency->name ?? null,
-            'service' => $request_booking->service->service_name ?? null,
-            'adults' => $request_booking->adults ?? null,
-            'children' => $request_booking->children ?? null,
-            'hotel' => $request_booking->hotel ?? null,
-            'bus' => $request_booking->bus ?? null,
-            'flight' => $request_booking->flight ?? null,
-            'visa' => $request_booking->visa ?? null,
-            'tour' => $request_booking->expected_tour ?? null,
+        // $request_booking = [
+        //     'id' => $request_booking->id ?? null,
+        //     'to_name' => $request_booking->customer?->name ?? null, 
+        //     'to_phone' => $request_booking->customer?->phone ?? null,
+        //     'agent' => $request_booking->admin_agent?->name ?? null,
+        //     'currecy' => $request_booking->currency->name ?? null,
+        //     'service' => $request_booking->service->service_name ?? null,
+        //     'adults' => $request_booking->adults ?? null,
+        //     'children' => $request_booking->children ?? null,
+        //     'hotel' => $request_booking->hotel ?? null,
+        //     'bus' => $request_booking->bus ?? null,
+        //     'flight' => $request_booking->flight ?? null,
+        //     'visa' => $request_booking->visa ?? null,
+        //     'tour' => $request_booking->expected_tour ?? null,
 
-            'expected_revenue' => $request_booking->expected_revenue ?? null,
-            'priority' => $request_booking->priority ?? null,
-            'stages' => $request_booking->stages ?? null,
-            'stage_data' => $request_booking->stage_data ?? null,
-        ];
+        //     'expected_revenue' => $request_booking->expected_revenue ?? null,
+        //     'priority' => $request_booking->priority ?? null,
+        //     'stages' => $request_booking->stages ?? null,
+        //     'stage_data' => $request_booking->stage_data ?? null,
+        // ];
         return response()->json([
             'request' => $request_booking
         ]); 
