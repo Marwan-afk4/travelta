@@ -478,6 +478,7 @@ class CreateRequestController extends Controller
     }
     //____________________________________________________________
     public function request_item(Request $request, $id){
+        // agent/request/item/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }
