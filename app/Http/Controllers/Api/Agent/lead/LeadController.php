@@ -521,18 +521,21 @@ class LeadController extends Controller
  
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
             $customer = $this->customer_data
-            ->where('customer_id', $id)
+            ->where('id', $id)
             ->where('affilate_id', $agent_id)
             ->first();
         } 
         else {
             $customer = $this->customer_data
-            ->where('customer_id', $id)
+            ->where('id', $id)
             ->where('agent_id', $agent_id)
             ->first();
         }
         if (!empty($customer)) {
-            $this->deleteImage($customer->image);
+            try {
+                $this->deleteImage($customer->image);
+            } catch (\Throwable $th) { 
+            }
             $customer->delete();
         }
 
