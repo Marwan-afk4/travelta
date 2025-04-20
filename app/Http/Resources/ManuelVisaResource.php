@@ -37,6 +37,7 @@ class ManuelVisaResource extends JsonResource
             'notes' => $this->visa->notes ?? null,
             'created_at' => $this->created_at ?? null,
             'code' => $this->code ?? null,
+            'voucher' => $this->voucher ?? null,
             'payment_status' => $this->payment_type ?? null,
             'status' => $this->status ?? null,
             'special_request' => $this->special_request ?? null,

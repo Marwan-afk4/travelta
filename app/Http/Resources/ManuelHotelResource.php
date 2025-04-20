@@ -44,6 +44,7 @@ class ManuelHotelResource extends JsonResource
             'payment_status' => $this->payment_type ?? null,
             'status' => $this->status ?? null, 
             'special_request' => $this->special_request ?? null,
+            'voucher' => $this->voucher ?? null,
         ];
     }
 }
