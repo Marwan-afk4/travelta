@@ -31,8 +31,11 @@ class ManuelBooking extends Model
         'special_request',
         'request_status'
     ];
-    protected $appends = ['to_client'];
-
+    protected $appends = ['to_client', 'voucher_link'];
+ 
+    public function getVoucherLinkAttribute(){
+        return url('storage/' . $this->voucher);
+    }
     public function tasks(){
         return $this->hasMany(BookingTask::class, 'manuel_booking_id');
     }
