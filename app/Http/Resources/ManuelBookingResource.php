@@ -33,7 +33,7 @@ class ManuelBookingResource extends JsonResource
             'flight' => $this->flight,
             'tour' => $this->tour,
             'visa' => $this->visa,
-            'voucher' => $this->voucher ?? null,
+            'voucher' => $this->voucher_link ?? null,
         ];
     }
 }
