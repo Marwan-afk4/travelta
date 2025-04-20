@@ -1323,29 +1323,32 @@ class ManualBookingController extends Controller
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
         }
-        
+        $invoice_pdf_path = null;
+        $voucher_pdf_path = null;
         if ($request->invoice && !empty($request->invoice)) {
-            $pdf_path = $this->upload($request, 'invoice', 'agent/manuel/invoice');
+            $invoice_pdf_path = $this->upload($request, 'invoice', 'agent/manuel/invoice');
             $booking_payment = $this->booking_payment
             ->where('manuel_booking_id', $request->manuel_id)
             ->first();
             if (!empty($booking_payment)) {
                 $booking_payment->update([
-                    'invoice' => $pdf_path,
+                    'invoice' => $invoice_pdf_path,
                 ]);
             }
         }
         if ($request->voucher && !empty($request->voucher)) {
-            $pdf_path = $this->upload($request, 'voucher', 'agent/manuel/voucher');
+            $voucher_pdf_path = $this->upload($request, 'voucher', 'agent/manuel/voucher');
             $this->manuel_booking
             ->where('id', $request->manuel_id)
             ->update([
-                'voucher' => $pdf_path,
+                'voucher' => $voucher_pdf_path,
             ]);
         }
 
         return response()->json([
-            'success' => 'You upload pdf success'
+            'success' => 'You upload pdf success',
+            'invoice_pdf_path' => url('storage/' . $invoice_pdf_path),
+            'voucher_pdf_path' => url('storage/' . $voucher_pdf_path),
         ]);
     }
 }
