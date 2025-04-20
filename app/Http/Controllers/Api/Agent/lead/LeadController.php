@@ -124,6 +124,59 @@ class LeadController extends Controller
         ]);
     }
 
+    public function lead(Request $request, $id){
+        // /leads/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $lead = $this->customer_data
+        ->where('type', 'lead')
+        ->where($role, $agent_id)
+        ->where('id', $id)
+        ->with([
+            'customer',
+            'source:id,source',
+            'agent_sales:name,department_id' => function($query){
+                $query->with('department:id,name');
+            },
+            'service:id,service_name',
+            'nationality:id,name',
+            'country:id,name',
+            'city:id,name',
+        ])
+        ->first();
+
+        if ($lead && $lead->customer && $lead->customer->role === 'customer') {
+            $lead->name = $lead->customer->name;
+            $lead->phone = $lead->customer->phone;
+            $lead->email = $lead->customer->email;
+            $lead->gender = $lead->customer->gender;
+            $lead->emergency_phone = $lead->customer->emergency_phone;
+            $lead->watts = $lead->customer->watts;
+            $lead->image = $lead->customer->image;
+        }
+
+        // Hide relationships you don’t want to return
+        if ($lead) {
+            $lead->setHidden(['customer']);
+        }
+        return response()->json([
+            'lead' => $lead
+        ]);
+    }
+
     public function lists(Request $request){
         // /agent/leads/lists
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
