@@ -67,6 +67,34 @@ class ConfirmationTaskController extends Controller
             'tasks' => $tasks,
         ]);
     }
+    
+    public function engine_tour_tasks(Request $request, $id){
+        // http://localhost/travelta/public/agent/booking/task/tour_engine/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+
+        $tasks = $this->tasks
+        ->where('engine_tour_id', $id)
+        ->where($role, $agent_id)
+        ->get();
+
+        return response()->json([
+            'tasks' => $tasks,
+        ]);
+    }
 
     public function task(Request $request, $id){
         // http://localhost/travelta/public/agent/booking/task/item/{id}
@@ -99,10 +127,12 @@ class ConfirmationTaskController extends Controller
     public function create(Request $request){
         // http://localhost/travelta/public/agent/booking/task/add
         // Keys
-        // manuel_booking_id, booking_engine_id, notes, confirmation_number, notification
+        // manuel_booking_id, booking_engine_id, notes, confirmation_number, notification,
+        // engine_tour_id
         $validation = Validator::make($request->all(), [
             'manuel_booking_id' => 'exists:manuel_bookings,id|nullable',
             'booking_engine_id' => 'exists:bookingengine_lists,id|nullable',
+            'engine_tour_id' => 'exists:book_tourengines,id|nullable',
             'notes' => 'sometimes',
             'confirmation_number' => 'required',
             'notification' => 'date|required',
@@ -140,9 +170,11 @@ class ConfirmationTaskController extends Controller
         // http://localhost/travelta/public/agent/booking/task/update/{id}
         // Keys
         // manuel_booking_id, booking_engine_id, notes, confirmation_number, notification
+        // engine_tour_id
         $validation = Validator::make($request->all(), [
             'manuel_booking_id' => 'exists:manuel_bookings,id|nullable',
             'booking_engine_id' => 'exists:bookingengine_lists,id|nullable',
+            'engine_tour_id' => 'exists:book_tourengines,id|nullable',
             'notes' => 'sometimes',
             'confirmation_number' => 'required',
             'notification' => 'date|required',

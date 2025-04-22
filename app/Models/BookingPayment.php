@@ -18,6 +18,11 @@ class BookingPayment extends Model
         'agent_id',
         'affilate_id',
     ];
+    protected $appends = ['invoice_link'];
+
+    public function getInvoiceLinkAttribute(){
+        return url('storage/' . $this->invoice);
+    }
 
     public function financial(){
         return $this->belongsTo(FinantiolAcounting::class, 'financial_id');

@@ -254,7 +254,7 @@ class ManualBookingController extends Controller
         ->get();
         $customers = $this->customer_data
         ->where($role, $agent_id)
-        ->where('status', 1)
+        ->whereIn('status', ['active', 'inactive'])
         ->with('customer')
         ->get()
         ->pluck('customer');
@@ -302,7 +302,7 @@ class ManualBookingController extends Controller
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
             $customers = $this->customer_data
             ->where('affilate_id', $agent_id)
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->with('customer')
             ->get();
             $suppliers = $this->supplier_agent
@@ -313,7 +313,7 @@ class ManualBookingController extends Controller
         else{
             $customers = $this->customer_data
             ->where('agent_id', $agent_id)
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->with('customer')
             ->get();
             $suppliers = $this->supplier_agent
@@ -1142,7 +1142,7 @@ class ManualBookingController extends Controller
                         ->where('code', $code)
                         ->first();
                     }
-                    $this->booking_payment
+                    $booking_payment = $this->booking_payment
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
                         'date' => date('Y-m-d'),
@@ -1180,7 +1180,7 @@ class ManualBookingController extends Controller
                     ->where('code', $code)
                     ->first();
                 }
-                $this->booking_payment
+                $booking_payment = $this->booking_payment
                 ->create([
                     'manuel_booking_id' => $manuel_booking->id,
                     'date' => date('Y-m-d'),
@@ -1212,7 +1212,7 @@ class ManualBookingController extends Controller
                 }
             }
             $customer = $this->customer_data
-            ->where('status', 1)
+            ->whereIn('status', ['active', 'inactive'])
             ->where('customer_id', $manuel_data_cart['to_customer_id'] ?? null)
             ->where($role, $agent_id)
             ->first();
@@ -1294,6 +1294,18 @@ class ManualBookingController extends Controller
                         'balance' => $supplier_balance->balance + $manuelRequest['cost']
                     ]);
                 }
+           } 
+           if (!empty($manuel_booking->to_supplier_id)) {
+               $client_data = $manuel_booking->to_client;
+               $client['name'] = $client_data->name;
+               $client['phone'] = $client_data->phones[0] ?? $client_data->phones;
+               $client['email'] = $client_data->emails[0] ?? $client_data->emails;
+           }
+           else{
+               $client_data = $manuel_booking->to_client;
+               $client['name'] = $client_data->name;
+               $client['phone'] = $client_data->phone;
+               $client['email'] = $client_data->email;
            }
             return response()->json([ 
                 'hotel' => $hotel[0] ?? null,
@@ -1304,6 +1316,8 @@ class ManualBookingController extends Controller
                 'agent_data' => $agent_data,
                 'total_payment' => $amount_payment,
                 'due_payments' => $request->payments ?? [],
+                'booking_payment' => $booking_payment,
+                'client' => $client,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             $manuel_booking->delete();
@@ -1323,29 +1337,32 @@ class ManualBookingController extends Controller
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
         }
-        
+        $invoice_pdf_path = null;
+        $voucher_pdf_path = null;
         if ($request->invoice && !empty($request->invoice)) {
-            $pdf_path = $this->upload($request, 'invoice', 'agent/manuel/invoice');
+            $invoice_pdf_path = $this->upload($request, 'invoice', 'agent/manuel/invoice');
             $booking_payment = $this->booking_payment
             ->where('manuel_booking_id', $request->manuel_id)
             ->first();
             if (!empty($booking_payment)) {
                 $booking_payment->update([
-                    'invoice' => $pdf_path,
+                    'invoice' => $invoice_pdf_path,
                 ]);
             }
         }
         if ($request->voucher && !empty($request->voucher)) {
-            $pdf_path = $this->upload($request, 'voucher', 'agent/manuel/voucher');
+            $voucher_pdf_path = $this->upload($request, 'voucher', 'agent/manuel/voucher');
             $this->manuel_booking
             ->where('id', $request->manuel_id)
             ->update([
-                'voucher' => $pdf_path,
+                'voucher' => $voucher_pdf_path,
             ]);
         }
 
         return response()->json([
-            'success' => 'You upload pdf success'
+            'success' => 'You upload pdf success',
+            'invoice_pdf_path' => url('storage/' . $invoice_pdf_path),
+            'voucher_pdf_path' => url('storage/' . $voucher_pdf_path),
         ]);
     }
 }

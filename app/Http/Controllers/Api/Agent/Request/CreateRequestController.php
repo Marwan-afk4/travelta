@@ -476,6 +476,459 @@ class CreateRequestController extends Controller
             ], 400);
         }
     }
+    //____________________________________________________________
+    public function request_item(Request $request, $id){
+        // agent/request/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $request_booking = $this->request_booking
+        ->with(['customer', 'service', 'admin_agent',
+        'currency', 'adults', 'children', 'hotel', 'bus',
+        'flight', 'tour' => function($query){
+            $query->with(['bus', 'hotel']);
+        }, 'visa'])
+        ->where('id', $id)
+        ->first();
+
+        return response()->json([
+            'request_booking' => $request_booking
+        ]);
+    }
+    //____________________________________________________________
+
+    public function update_hotel(BookingRequestRequest $request, $id){
+        // agent/request/update_hotel/{id}
+        // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
+        // priority,
+        // check_in, check_out,  nights, hotel_name, room_type, room_quantity, adults, 
+        // childreen, notes,
+        // adult_data => [{title, first_name, last_name}]
+        // child_data => [{age, first_name, last_name}]
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $requestBookingRequest = $request->only($this->requestBookingRequest);
+        $hotelRequest = $request->only($this->hotelRequest);
+        $requestBookingRequest[$role] = $agent_id;
+        $request_booking = $this->request_booking
+        ->first();
+        $request_booking->update($requestBookingRequest);
+        try{
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            $this->request_adults
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            $this->request_children
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            if ($adult_data) {
+                foreach ($adult_data as $item) {
+                    $this->request_adults
+                    ->create([
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            }
+            if ($child_data) {
+                foreach ($child_data as $item) {
+                    $this->request_children
+                    ->create([
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            }
+            $this->request_hotel
+            ->where('request_booking_id', $request_booking->id)
+            ->update($hotelRequest);
+
+            return response()->json([
+                'success' => 'You update data success'
+            ]);
+        }
+        catch (\Throwable $th) {
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
+    }
+
+    public function update_bus(BookingRequestRequest $request, $id){
+        // agent/request/update_bus/{id}
+        // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
+        // priority,
+        // from, to, departure, arrival, adults, childreen, 
+        // adult_price, child_price, bus, bus_number, driver_phone, notes, 
+        // adult_data => [{title, first_name, last_name}]
+        // child_data => [{age, first_name, last_name}]
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $requestBookingRequest = $request->only($this->requestBookingRequest);
+        $busRequest = $request->only($this->busRequest);
+        $requestBookingRequest[$role] = $agent_id;
+        $request_booking = $this->request_booking
+        ->where($role, $agent_id)
+        ->where('id', $id)
+        ->first();
+        $request_booking->update($requestBookingRequest);
+
+        try{
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            $this->request_adults
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            $this->request_children
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            if ($adult_data) {
+                foreach ($adult_data as $item) {
+                    $this->request_adults
+                    ->create([
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            }
+            if ($child_data) {
+                foreach ($child_data as $item) {
+                    $this->request_children
+                    ->create([
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            } 
+            $this->request_bus
+            ->where('request_booking_id', $request_booking->id)
+            ->update($busRequest);
+
+            return response()->json([
+                'success' => 'You update data success'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
+    }
+
+    public function update_visa(BookingRequestRequest $request, $id){
+        // agent/request/update_visa/{id}
+        // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
+        // priority, 
+        // country,travel_date,appointment_date,notes, adults,childreen, 
+        // adult_data => [{title, first_name, last_name}]
+        // child_data => [{age, first_name, last_name}]
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $requestBookingRequest = $request->only($this->requestBookingRequest);
+        $visaRequest = $request->only($this->visaRequest);
+        $requestBookingRequest[$role] = $agent_id;
+        $request_booking = $this->request_booking
+        ->where('id', $id)
+        ->where($role, $agent_id)
+        ->first();
+        $request_booking->update($requestBookingRequest);
+
+        try{
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            $this->request_adults
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            $this->request_children
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            if ($adult_data) {
+                foreach ($adult_data as $item) {
+                    $this->request_adults
+                    ->create([
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            }
+            if ($child_data) {
+                foreach ($child_data as $item) {
+                    $this->request_children
+                    ->create([
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            }
+            $visaRequest['request_booking_id'] = $request_booking->id;
+            $this->request_visa
+            ->where('request_booking_id', $request_booking->id)
+            ->update($visaRequest);
+
+            return response()->json([
+                'success' => 'You update data success'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
+    }
+
+    public function update_flight(BookingRequestRequest $request, $id){
+        // agent/request/update_flight/{id}
+        // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
+        // priority,
+        // 'type' => [domestic, international], 'direction' => [one_way, round_trip, multi_city], 'from_to' => [{'from':'Alex', 'to':'America'}, {'from':'America', 'to':'Italy'}], 'departure', 'arrival', 'class', 'adults', 
+        // 'childreen', 'infants', 'airline', 'ticket_number', 'adult_price', 
+        // 'child_price', 'ref_pnr',  'notes',
+        // adult_data => [{title, first_name, last_name}]
+        // child_data => [{age, first_name, last_name}]
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $requestBookingRequest = $request->only($this->requestBookingRequest);
+        $flightRequest = $request->only($this->flightRequest);
+        $requestBookingRequest[$role] = $agent_id;
+        $request_booking = $this->request_booking
+        ->where('id', $id)
+        ->where($role, $agent_id)
+        ->first();
+        $request_booking->update($requestBookingRequest);
+
+        try{
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            $this->request_adults
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            $this->request_children
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            if ($adult_data) {
+                foreach ($adult_data as $item) {
+                    $this->request_adults
+                    ->create([
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            }
+            if ($child_data) {
+                foreach ($child_data as $item) {
+                    $this->request_children
+                    ->create([
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            }
+            $flightRequest['request_booking_id'] = $request_booking->id;
+            $this->request_flight
+            ->where('request_booking_id', $request_booking->id)
+            ->update($flightRequest);
+
+            return response()->json([
+                'success' => 'You update data success'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
+    }
+
+    public function update_tour(BookingRequestRequest $request, $id){
+        // agent/request/update_tour
+        // customer_id, admin_agent_id, service_id, currency_id,  expected_revenue, 
+        // priority,
+        // tour, type => [domestic, international],  flight_date, adult_price, child_price, 
+        // adults, childreen, notes
+        // tour_bus [transportation, seats, departure => if flight]
+        // tour_hotels [destination, hotel_name, room_type, check_in, check_out, nights]
+        // adult_data => [{title, first_name, last_name}]
+        // child_data => [{age, first_name, last_name}]
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $requestBookingRequest = $request->only($this->requestBookingRequest);
+        $tourRequest = $request->only($this->tourRequest);
+        $requestBookingRequest[$role] = $agent_id;
+        $request_booking = $this->request_booking
+        ->where('id', $id)
+        ->where($role, $agent_id)
+        ->first();
+        $request_booking->update($requestBookingRequest);
+
+        try{
+            $adult_data = is_string($request->adult_data) ? json_decode($request->adult_data):$request->adult_data;
+            $child_data = is_string($request->child_data) ? json_decode($request->child_data):$request->child_data;
+            $this->request_adults
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            $this->request_children
+            ->where('request_booking_id', $request_booking->id)
+            ->delete();
+            if ($adult_data) {
+                foreach ($adult_data as $item) {
+                    $this->request_adults
+                    ->create([
+                        'title' => $item->title,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            }
+            if ($child_data) {
+                foreach ($child_data as $item) {
+                    $this->request_children
+                    ->create([
+                        'age' => $item->age,
+                        'first_name' => $item->first_name,
+                        'last_name' => $item->last_name, 
+                        'request_booking_id' => $request_booking->id
+                    ]);
+                }
+            }
+            $request_tour = $this->request_tour
+            ->where('request_booking_id', $request_booking->id)
+            ->first();
+            if (empty($request_tour)) {
+                return response()->json([
+                    'success' => 'You update data success'
+                ]);
+            }
+            $request_tour->update($tourRequest);
+            $tour_bus = is_string($request->tour_bus) ? json_decode($request->tour_bus): $request->tour_bus;
+            $tour_hotels = is_string($request->tour_hotels) ? json_decode($request->tour_hotels): $request->tour_hotels;
+            if ($tour_bus) {
+                foreach ($tour_bus as $item) {
+                    $this->request_tour_bus
+                    ->create([
+                        'request_tour_id' => $request_tour->id,
+                        'transportation' => $item['transportation'],
+                        'seats' => $item['seats'],
+                        'departure' => $item['departure'] ?? null,
+                    ]);
+                }
+            }
+            if ($tour_hotels) {
+                foreach ($tour_hotels as $item) {
+                    $this->request_tour_hotel
+                    ->create([
+                        'request_tour_id' => $request_tour->id,
+                        'destination' => $item['destination'],
+                        'hotel_name' => $item['hotel_name'],
+                        'room_type' => $item['room_type'],
+                        'check_in' => $item['check_in'],
+                        'check_out' => $item['check_out'],
+                        'nights' => $item['nights'],
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => 'You update data success'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => 'Something Errors'
+            ], 400);
+        }
+    }
+    //_______________________________________________________________________
 
     public function priority(Request $request, $id){
         // /agent/request/priority/{id}

@@ -38,6 +38,18 @@ class RequestGate
             }
             return false;
         });
+        Gate::define('update_request', function ($user) {
+            if ($user instanceof Agent || $user instanceof AffilateAgent) {
+                return true;
+            }
+            if ($user->user_positions && 
+            ($user instanceof AdminAgent || $user instanceof HrmEmployee) && 
+            $user->user_positions->perimitions->pluck('module')->contains('request') &&
+            $user->user_positions->perimitions->pluck('action')->contains('update') ) {
+                return true;
+            }
+            return false;
+        });
         Gate::define('priority_request', function ($user) {
             if ($user instanceof Agent || $user instanceof AffilateAgent) {
                 return true;

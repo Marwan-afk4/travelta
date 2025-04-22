@@ -287,5 +287,4 @@ class FinancialController extends Controller
             'success' => 'You delete financial success'
         ], 200);
     }
-
 }

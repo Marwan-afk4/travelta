@@ -95,6 +95,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(LeadController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_lead');
             Route::get('/lists', 'lists');
+            Route::get('/item/{id}', 'lead');
             Route::get('export_excel', 'export_excel')->middleware('can:add_lead');
             Route::post('import_excel', 'import_excel')->middleware('can:add_lead');
             Route::get('leads_search', 'leads_search')->middleware('can:add_lead');
@@ -139,6 +140,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(SupplierController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_supplier');
             Route::get('item/{id}', 'supplier')->middleware('can:view_supplier');
+            Route::post('import_excel', 'import_excel')->middleware('can:add_supplier');
             Route::post('add', 'create')->middleware('can:add_supplier');
             Route::post('update/{id}', 'modify')->middleware('can:update_supplier');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_supplier');
@@ -237,7 +239,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/lists', 'lists')->middleware('can:view_OE_owner');
             Route::get('/item/{id}', 'owner')->middleware('can:view_OE_owner');
             Route::post('add', 'create')->middleware('can:add_OE_owner');
-            Route::put('update/{id}', 'modify')->middleware('can:update_OE_owner');
+            Route::post('update/{id}', 'modify')->middleware('can:update_OE_owner');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_OE_owner');
         });
         Route::controller(OwnerTransactionController::class)->prefix('owner')
@@ -259,7 +261,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view')->middleware('can:view_expenses_category');
             Route::get('/item/{id}', 'category')->middleware('can:view_expenses_category');
             Route::post('add', 'create')->middleware('can:add_expenses_category');
-            Route::put('update/{id}', 'modify')->middleware('can:update_expenses_category');
+            Route::post('update/{id}', 'modify')->middleware('can:update_expenses_category');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_expenses_category');
         });
         Route::controller(ExpensesController::class)->prefix('expenses')
@@ -269,7 +271,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/item/{id}', 'category')->middleware('can:view_expenses');
             Route::post('/filter', 'filter')->middleware('can:view_expenses');
             Route::post('add', 'create')->middleware('can:add_expenses');
-            Route::put('update/{id}', 'modify')->middleware('can:update_expenses');
+            Route::post('update/{id}', 'modify')->middleware('can:update_expenses');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_expenses');
         });
         Route::controller(CategoryRevenueController::class)->prefix('revenue/category')
@@ -277,7 +279,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view')->middleware('can:view_revenue_category');
             Route::get('/item/{id}', 'category')->middleware('can:view_revenue_category');
             Route::post('add', 'create')->middleware('can:add_revenue_category');
-            Route::put('update/{id}', 'modify')->middleware('can:update_revenue_category');
+            Route::post('update/{id}', 'modify')->middleware('can:update_revenue_category');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_revenue_category');
         });
         Route::controller(RevenueController::class)->prefix('revenue')
@@ -287,7 +289,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/item/{id}', 'category')->middleware('can:view_revenue');
             Route::post('/filter', 'filter')->middleware('can:view_revenue');
             Route::post('add', 'create')->middleware('can:add_revenue');
-            Route::put('update/{id}', 'modify')->middleware('can:update_revenue');
+            Route::post('update/{id}', 'modify')->middleware('can:update_revenue');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_revenue');
         });
     });
@@ -305,6 +307,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::post('/add_visa', 'add_visa')->middleware('can:add_request');
             Route::post('/add_flight', 'add_flight')->middleware('can:add_request');
             Route::post('/add_tour', 'add_tour')->middleware('can:add_request');
+            
+            Route::post('/update_hotel/{id}', 'update_hotel')->middleware('can:update_request');
+            Route::post('/update_bus/{id}', 'update_bus')->middleware('can:update_request');
+            Route::post('/update_visa/{id}', 'update_visa')->middleware('can:update_request');
+            Route::post('/update_flight/{id}', 'update_flight')->middleware('can:update_request');
+            Route::post('/update_tour/{id}', 'update_tour')->middleware('can:update_request');
+
             Route::put('/priority/{id}', 'priority')->middleware('can:priority_request');
             Route::put('/stages/{id}', 'stages')->middleware('can:stages_request');
             Route::put('/notes/{id}', 'notes')->middleware('can:notes_request');
@@ -350,11 +359,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
         Route::controller(BookingController::class)->group(function(){
             Route::get('/', 'booking')->middleware('can:view_bookings');
             Route::get('/details/{id}', 'details')->middleware('can:view_bookings');
+            Route::get('/engine_tour_details/{id}', 'engine_tour_details')->middleware('can:view_bookings');
             Route::get('/engine_details/{id}', 'engine_details')->middleware('can:view_bookings');
             Route::put('/special_request/{id}', 'special_request')->middleware('can:view_bookings');
             Route::put('/request_status/{id}', 'special_request_status')->middleware('can:update_bookings');
-            Route::put('/engine_special_request/{id}', 'engine_special_request')->middleware('can:view_bookings');
+            Route::put('/engine_special_request/{id}', 'engine_special_request')->middleware('can:update_bookings');
             Route::put('/request_status_engine/{id}', 'special_request_status_engine')->middleware('can:update_bookings');
+            Route::put('/engine_tour_special_request/{id}', 'engine_tour_special_request')->middleware('can:update_bookings');
+            Route::put('/special_status_tour_engine/{id}', 'special_status_tour_engine')->middleware('can:update_bookings');
         });
         Route::controller(BookingUpdateController::class)->group(function(){
             Route::get('/hotel/{id}', 'hotel')->middleware('can:update_bookings');
@@ -373,10 +385,19 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::put('/confirmed/{id}', 'confirmed')->middleware('can:status_bookings');
             Route::put('/vouchered/{id}', 'vouchered')->middleware('can:status_bookings');
             Route::put('/canceled/{id}', 'canceled')->middleware('can:status_bookings');
+
+            Route::put('/engine_confirmed/{id}', 'engine_confirmed')->middleware('can:status_bookings');
+            Route::put('/engine_vouchered/{id}', 'engine_vouchered')->middleware('can:status_bookings');
+            Route::put('/engine_canceled/{id}', 'engine_canceled')->middleware('can:status_bookings');
+
+            Route::put('/engine_tour_confirmed/{id}', 'engine_tour_confirmed')->middleware('can:status_bookings');
+            Route::put('/engine_tour_vouchered/{id}', 'engine_tour_vouchered')->middleware('can:status_bookings');
+            Route::put('/engine_tour_canceled/{id}', 'engine_tour_canceled')->middleware('can:status_bookings');
         });
         Route::controller(ConfirmationTaskController::class)->prefix('task')->group(function(){
             Route::get('/manuel/{id}', 'manuel_tasks')->middleware('can:view_bookings');
             Route::get('/engine/{id}', 'engine_tasks')->middleware('can:view_bookings');
+            Route::get('/tour_engine/{id}', 'engine_tour_tasks')->middleware('can:view_bookings');
             Route::get('/item/{id}', 'task')->middleware('can:view_bookings');
             Route::post('/add', 'create')->middleware('can:view_bookings');
             Route::put('/update/{id}', 'modify')->middleware('can:view_bookings');
@@ -391,6 +412,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('customer')->group(function(){
         Route::controller(CustomerController::class)->group(function(){
             Route::get('/', 'view')->middleware('can:view_customer');
+            Route::get('/request_item/{id}', 'request_item')->middleware('can:view_customer');
+            Route::put('/status/{id}', 'status')->middleware('can:update_customer');
             Route::put('/update/{id}', 'update')->middleware('can:update_customer');
         });
         Route::controller(CustomerProfileController::class)->group(function(){
@@ -497,12 +520,14 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     Route::prefix('/settings')->group(function(){
         Route::controller(TaxController::class)->prefix('tax')->group(function(){
             Route::get('/', 'view')->middleware('can:view_setting_tax');
+            Route::get('item/{id}', 'tax')->middleware('can:view_setting_tax');
             Route::post('add', 'create')->middleware('can:add_setting_tax');
-            Route::put('update/{id}', 'modify')->middleware('can:update_setting_tax');
+            Route::post('update/{id}', 'modify')->middleware('can:update_setting_tax');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_setting_tax');
         });
         Route::controller(CurrencyController::class)->prefix('currency')->group(function(){
             Route::get('/', 'view')->middleware('can:view_setting_currency');
+            Route::get('/item/{id}', 'currency')->middleware('can:view_setting_currency');
             Route::post('add', 'create')->middleware('can:add_setting_currency');
             Route::post('update/{id}', 'modify')->middleware('can:update_setting_currency');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_setting_currency');
@@ -511,7 +536,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view')->middleware('can:view_setting_group');
             Route::get('item/{id}', 'group')->middleware('can:view_setting_group');
             Route::post('add', 'create')->middleware('can:add_setting_group');
-            Route::put('update/{id}', 'modify')->middleware('can:update_setting_group');
+            Route::post('update/{id}', 'modify')->middleware('can:update_setting_group');
             Route::delete('delete/{id}', 'delete')->middleware('can:delete_setting_group');
         });
     });

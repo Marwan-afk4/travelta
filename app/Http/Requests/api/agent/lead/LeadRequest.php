@@ -36,7 +36,7 @@ class LeadRequest extends FormRequest
             'nationality_id' => ['required', 'exists:nationalities,id'],
             'country_id' => ['required', 'exists:countries,id'],
             'city_id' => ['required', 'exists:cities,id'],
-            'status' => ['required', 'boolean'],
+            'status' => ['required', 'in:active,inactive,suspend'],
         ];
     }
 

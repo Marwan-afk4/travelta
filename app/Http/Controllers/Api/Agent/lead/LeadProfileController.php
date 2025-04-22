@@ -34,7 +34,7 @@ class LeadProfileController extends Controller
         $customer_info = $this->customer_data 
         ->select('name', 'phone', 'email', 'gender', 'total_booking', 
         'watts', 'source_id', 'agent_sales_id', 'service_id', 'nationality_id', 'country_id',
-        'city_id', 'image', 'created_at as date_added', 'customer_id')
+        'city_id', 'image', 'created_at as date_added', 'customer_id', 'status')
         ->with(['source:id,source', 'agent_sales:id,name', 'service:id,service_name', 
         'nationality:id,name', 'country:id,name', 'city:id,name'])
         ->where('id', $id)

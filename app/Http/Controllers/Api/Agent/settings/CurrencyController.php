@@ -37,11 +37,41 @@ class CurrencyController extends Controller
         } 
         $currency = $this->currency
         ->select('id', 'currancy_symbol', 'currancy_name')
+        ->whereNotIn('id', $currency_agent->pluck('currancy_id'))
         ->get();
 
         return response()->json([
             'currency_agent' => $currency_agent,
             'currencies' => $currency,
+        ]);
+    }
+
+    public function currency(Request $request, $id){
+        // /settings/currency/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $currency_agent = $this->currency_agent
+            ->where('affilate_id', $agent_id)
+            ->where('id', $id)
+            ->first();
+        } 
+        else {
+            $currency_agent = $this->currency_agent
+            ->where('agent_id', $agent_id)
+            ->where('id', $id)
+            ->first();
+        }
+
+        return response()->json([
+            'currency_agent' => $currency_agent,
         ]);
     }
 

@@ -124,6 +124,62 @@ class LeadController extends Controller
         ]);
     }
 
+    public function lead(Request $request, $id){
+        // /leads/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+        $lead = $this->customer_data
+        ->where('type', 'lead')
+        ->where($role, $agent_id)
+        ->where('id', $id)
+        ->with([
+            'customer',
+            'source:id,source',
+            'agent_sales' => function($query) {
+                $query->select('id', 'name', 'department_id')->with([
+                    'department:id,name'
+                ]);
+            },
+            'service:id,service_name',
+            'nationality:id,name',
+            'country:id,name',
+            'city:id,name',
+            'request'
+        ])
+        ->first();
+
+        if ($lead && $lead->customer && $lead->customer->role === 'customer') {
+            $lead->name = $lead->customer->name;
+            $lead->phone = $lead->customer->phone;
+            $lead->email = $lead->customer->email;
+            $lead->gender = $lead->customer->gender;
+            $lead->emergency_phone = $lead->customer->emergency_phone;
+            $lead->watts = $lead->customer->watts;
+            $lead->image = $lead->customer->image;
+        }
+
+        // Hide relationships you don’t want to return
+        if ($lead) {
+            $lead->setHidden(['customer']);
+        }
+        return response()->json([
+            'lead' => $lead
+        ]);
+    }
+
     public function lists(Request $request){
         // /agent/leads/lists
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
@@ -173,7 +229,7 @@ class LeadController extends Controller
         return Excel::download(new ExportLeads, 'leads_template.xlsx');
     }
 
-    public function import_excel(){
+    public function import_excel(Request $request){
         // /agent/leads/import_excel
         $validation = Validator::make($request->all(), [
             'file' => 'required|mimes:xlsx,csv',
@@ -182,14 +238,20 @@ class LeadController extends Controller
             return response()->json(['errors'=>$validation->errors()], 401);
         }
         Excel::import(new Leads, $request->file('file'));
+        $this->customer_data
+        ->whereNull('affilate_id')
+        ->whereNull('agent_id')
+        ->delete();
 
         return response()->json(['message' => 'File uploaded successfully']);
     }
 
     public function status(Request $request, $id){
         // /leads/status/{id}
+        // Keys
+        // status
         $validation = Validator::make($request->all(), [
-            'status' => 'required|boolean',
+            'status' => 'required|in:active,inactive,suspend',
         ]);
         if($validation->fails()){
             return response()->json(['errors'=>$validation->errors()], 401);
@@ -217,7 +279,7 @@ class LeadController extends Controller
         ]);
 
         return response()->json([
-            'success' => $request->status ? 'active': 'banned'
+            'success' => $request->status
         ]);
     }
 
@@ -515,18 +577,21 @@ class LeadController extends Controller
  
         if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {        
             $customer = $this->customer_data
-            ->where('customer_id', $id)
+            ->where('id', $id)
             ->where('affilate_id', $agent_id)
             ->first();
         } 
         else {
             $customer = $this->customer_data
-            ->where('customer_id', $id)
+            ->where('id', $id)
             ->where('agent_id', $agent_id)
             ->first();
         }
         if (!empty($customer)) {
-            $this->deleteImage($customer->image);
+            try {
+                $this->deleteImage($customer->image);
+            } catch (\Throwable $th) { 
+            }
             $customer->delete();
         }
 

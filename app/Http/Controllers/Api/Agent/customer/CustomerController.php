@@ -30,9 +30,6 @@ class CustomerController extends Controller
             $customers = $this->customer_data
             ->where('type', 'customer')
             ->where('affilate_id', $agent_id)
-            ->whereHas('customer', function($query){
-                $query->where('role', 'customer');
-            })
             ->with(['customer' => function($query){
                 $query->with('country:id,name', 'city:id,name');
             }, 'request'])
@@ -58,9 +55,6 @@ class CustomerController extends Controller
             $customers = $this->customer_data
             ->where('type', 'customer')
             ->where('agent_id', $agent_id)
-            ->whereHas('customer', function($query){
-                $query->where('role', 'customer');
-            })
             ->with(['customer' => function($query){
                 $query->with('country:id,name', 'city:id,name');
             }, 'request'])
@@ -85,6 +79,44 @@ class CustomerController extends Controller
 
         return response()->json([
             'customers' => $customers
+        ]);
+    }
+
+    public function status(Request $request, $id){
+        // customer/status/{id}
+        // Keys
+        // status
+        $validation = Validator::make($request->all(), [
+            'status' => 'required|in:active,inactive,suspend',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $role = 'affilate_id';
+        } 
+        else {
+            $role = 'agent_id';
+        }
+
+        $this->customer_data
+        ->where('customer_id', $id)
+        ->where($role, $agent_id)
+        ->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'success' => $request->status
         ]);
     }
 

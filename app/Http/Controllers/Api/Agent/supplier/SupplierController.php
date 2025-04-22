@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api\Agent\supplier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request; 
 use App\Http\Requests\api\agent\supplier\SupplierRequest;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\SupplierImport;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\SupplierAgent;
 use App\Models\SupplierBalance;
@@ -56,6 +59,19 @@ class SupplierController extends Controller
             'supplier_agent' => $supplier_agent,
             'services' => $services
         ]);
+    }
+
+    public function import_excel(Request $request){
+        // /agent/supplier/import_excel
+        $validation = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,csv',
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        Excel::import(new SupplierImport, $request->file('file'));
+
+        return response()->json(['message' => 'File uploaded successfully']);
     }
 
     public function supplier(Request $request, $id){

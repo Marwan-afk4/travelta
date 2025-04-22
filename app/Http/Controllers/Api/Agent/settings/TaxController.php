@@ -46,6 +46,18 @@ class TaxController extends Controller
         ]);
     }
 
+    public function tax($id){
+        // /settings/tax/item/{id}
+        $tax = $this->tax
+        ->where('id', $id)
+        ->with('country')
+        ->first(); 
+
+        return response()->json([
+            'tax' => $tax, 
+        ]);
+    }
+
     public function create(TaxRequest $request){
         // /settings/tax/add
         // Keys

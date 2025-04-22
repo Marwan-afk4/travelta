@@ -30,6 +30,7 @@ class BookingengineList extends Model
         'special_request',
         'currancy_id',
         'request_status',
+        'count',
     ];
     protected $appends = ['to_client'];
 
