@@ -333,6 +333,7 @@ class BookingEngine extends Controller
 
         // Generate booking code
         $validatedData['code'] = 'E' . rand(10000, 99999) . strtolower(Str::random(1));
+        $validatedData['count'] = $request->quantity;
 
         // Create BookingengineList
         $bookingList = BookingengineList::create($validatedData);
