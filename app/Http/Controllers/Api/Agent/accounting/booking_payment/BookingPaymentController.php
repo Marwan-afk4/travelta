@@ -105,7 +105,7 @@ class BookingPaymentController extends Controller
                 "amount" => $item->amount,
                 "date" => $item->date, 
                 "code" => $item->code, 
-                "financial" => $item->financial->name,
+                "financial" => $item?->financial?->name ?? null,
             ];
         });
         $remaining_list = $booking->payments_cart
