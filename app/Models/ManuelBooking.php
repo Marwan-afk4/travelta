@@ -32,10 +32,11 @@ class ManuelBooking extends Model
         'request_status'
     ];
     protected $appends = ['to_client', 'voucher_link'];
- 
+
     public function getVoucherLinkAttribute(){
         return url('storage/' . $this->voucher);
     }
+
     public function tasks(){
         return $this->hasMany(BookingTask::class, 'manuel_booking_id');
     }
@@ -83,7 +84,6 @@ class ManuelBooking extends Model
     public function taxes(){
         return $this->belongsToMany(Tax::class, 'manuel_taxes', 'manuel_id', 'tax_id');
     }
- 
 
     public function country(){
         return $this->belongsTo(Country::class);
