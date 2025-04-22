@@ -1142,7 +1142,7 @@ class ManualBookingController extends Controller
                         ->where('code', $code)
                         ->first();
                     }
-                    $this->booking_payment
+                    $booking_payment = $this->booking_payment
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
                         'date' => date('Y-m-d'),
@@ -1180,7 +1180,7 @@ class ManualBookingController extends Controller
                     ->where('code', $code)
                     ->first();
                 }
-                $this->booking_payment
+                $booking_payment = $this->booking_payment
                 ->create([
                     'manuel_booking_id' => $manuel_booking->id,
                     'date' => date('Y-m-d'),
@@ -1294,6 +1294,18 @@ class ManualBookingController extends Controller
                         'balance' => $supplier_balance->balance + $manuelRequest['cost']
                     ]);
                 }
+           } 
+           if (!empty($manuel_booking->to_supplier_id)) {
+               $client_data = $manuel_booking->to_client;
+               $client['name'] = $client_data->name;
+               $client['phone'] = $client_data->phones[0] ?? $client_data->phones;
+               $client['email'] = $client_data->emails[0] ?? $client_data->emails;
+           }
+           else{
+               $client_data = $manuel_booking->to_client;
+               $client['name'] = $client_data->name;
+               $client['phone'] = $client_data->phone;
+               $client['email'] = $client_data->email;
            }
             return response()->json([ 
                 'hotel' => $hotel[0] ?? null,
@@ -1304,6 +1316,8 @@ class ManualBookingController extends Controller
                 'agent_data' => $agent_data,
                 'total_payment' => $amount_payment,
                 'due_payments' => $request->payments ?? [],
+                'booking_payment' => $booking_payment,
+                'client' => $client,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             $manuel_booking->delete();
