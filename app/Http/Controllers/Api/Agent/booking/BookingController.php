@@ -350,6 +350,7 @@ class BookingController extends Controller
             'actions' => $actions,
             'agent_data' => $agent_data,
             'confirmation_tasks' => $confirmation_tasks,
+            'voucher' => $manuel_booking->manuel_booking_link,
         ]);
     }
 
