@@ -1315,7 +1315,8 @@ class ManualBookingController extends Controller
                 'tour' => $tour[0] ?? null,
                 'agent_data' => $agent_data,
                 'total_payment' => $amount_payment,
-                'due_payments' => $request->payments ?? [],
+                'due_payments' => is_array($request->payments) ? $request->payments
+                : json_decode($request->payments) ?? [],
                 'booking_payment' => $booking_payment,
                 'client' => $client,
             ]);
