@@ -71,12 +71,12 @@ class BookingPaymentController extends Controller
         $data = collect([]);
         if (!empty($booking)) {
             $data['id'] = $booking->id;
-            $data['to_client'] = $booking->to_client->name;
+            $data['to_client'] = $booking?->to_client?->name ?? null;
             $data['code'] = $booking->code;
-            $data['to_phone'] = $booking->to_client->phones[0] ?? $booking->to_client->phones ?? $booking->to_client->phone;
-            $data['to_email'] = $booking->to_client->emails[0] ?? $booking->to_client->emails ?? $booking->to_client->email;
+            $data['to_phone'] = $booking?->to_client?->phones[0] ?? $booking?->to_client?->phones ?? $booking?->to_client?->phone ?? null;
+            $data['to_email'] = $booking?->to_client?->emails[0] ?? $booking?->to_client?->emails ?? $booking?->to_client?->email ?? null;
 
-            $data['from_name'] = $booking->from_supplier->agent ?? null;
+            $data['from_name'] = $booking?->from_supplier?->agent ?? null;
             $data['from_phone'] = $booking->from_supplier->phones[0] ?? $booking->from_supplier->phones ?? null;
             $data['from_email'] = $booking->from_supplier->emails[0] ?? $booking->from_supplier->emails ?? null;
 
