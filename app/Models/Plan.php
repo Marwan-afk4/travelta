@@ -22,8 +22,13 @@ class Plan extends Model
         'admin_cost',
         'branch_cost',
         'type',
-        'discount_value'
+        'discount_value',
+        'currancy_id'
     ];
+
+    public function currancy(){
+        return $this->belongsTo(Currancy::class, 'currancy_id');
+    }
 
     public function agents(){
         return $this->hasMany(Agent::class);

@@ -17,6 +17,7 @@ class InvoiceController extends Controller
         // /agent/invoice
         $plan = $this->plans
         ->where('id', $request->user()->plan_id)
+        ->with('currancy')
         ->first();
         $start_date = $request->user()->start_date;
         $end_date = $request->user()->end_date;
