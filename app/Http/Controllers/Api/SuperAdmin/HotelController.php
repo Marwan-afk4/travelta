@@ -86,7 +86,7 @@ class HotelController extends Controller
     $validator = Validator::make($request->all(), [
         'hotel_name' => 'required|string|unique:hotels,hotel_name',
         'description' => 'nullable|string',
-        'email' => 'required|email|unique:hotels,email',
+        'email' => 'email|unique:hotels,email',
         'phone_number' => 'required|string|unique:hotels,phone_number',
         'hotel_logo' => 'nullable',
         'country_id' => 'required|integer|exists:countries,id',
