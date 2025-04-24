@@ -383,17 +383,17 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::post('/update_tour/{id}', 'update_tour')->middleware('can:update_bookings');
         });
         Route::controller(BookingStatusController::class)->group(function(){
-            Route::put('/confirmed/{id}', 'confirmed')->middleware('can:status_bookings');
-            Route::put('/vouchered/{id}', 'vouchered')->middleware('can:status_bookings');
-            Route::put('/canceled/{id}', 'canceled')->middleware('can:status_bookings');
+            Route::post('/confirmed/{id}', 'confirmed')->middleware('can:status_bookings');
+            Route::post('/vouchered/{id}', 'vouchered')->middleware('can:status_bookings');
+            Route::post('/canceled/{id}', 'canceled')->middleware('can:status_bookings');
 
-            Route::put('/engine_confirmed/{id}', 'engine_confirmed')->middleware('can:status_bookings');
-            Route::put('/engine_vouchered/{id}', 'engine_vouchered')->middleware('can:status_bookings');
-            Route::put('/engine_canceled/{id}', 'engine_canceled')->middleware('can:status_bookings');
+            Route::post('/engine_confirmed/{id}', 'engine_confirmed')->middleware('can:status_bookings');
+            Route::post('/engine_vouchered/{id}', 'engine_vouchered')->middleware('can:status_bookings');
+            Route::post('/engine_canceled/{id}', 'engine_canceled')->middleware('can:status_bookings');
 
-            Route::put('/engine_tour_confirmed/{id}', 'engine_tour_confirmed')->middleware('can:status_bookings');
-            Route::put('/engine_tour_vouchered/{id}', 'engine_tour_vouchered')->middleware('can:status_bookings');
-            Route::put('/engine_tour_canceled/{id}', 'engine_tour_canceled')->middleware('can:status_bookings');
+            Route::post('/engine_tour_confirmed/{id}', 'engine_tour_confirmed')->middleware('can:status_bookings');
+            Route::post('/engine_tour_vouchered/{id}', 'engine_tour_vouchered')->middleware('can:status_bookings');
+            Route::post('/engine_tour_canceled/{id}', 'engine_tour_canceled')->middleware('can:status_bookings');
         });
         Route::controller(ConfirmationTaskController::class)->prefix('task')->group(function(){
             Route::get('/manuel/{id}', 'manuel_tasks')->middleware('can:view_bookings');
@@ -415,7 +415,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/', 'view')->middleware('can:view_customer');
             Route::get('/request_item/{id}', 'request_item')->middleware('can:view_customer');
             Route::put('/status/{id}', 'status')->middleware('can:update_customer');
-            Route::put('/update/{id}', 'update')->middleware('can:update_customer');
+            Route::post('/update/{id}', 'update')->middleware('can:update_customer');
         });
         Route::controller(CustomerProfileController::class)->group(function(){
             Route::get('/profile/{id}', 'profile')->middleware('can:view_customer');
