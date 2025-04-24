@@ -893,6 +893,13 @@ class CreateRequestController extends Controller
             $request_tour->update($tourRequest);
             $tour_bus = is_string($request->tour_bus) ? json_decode($request->tour_bus): $request->tour_bus;
             $tour_hotels = is_string($request->tour_hotels) ? json_decode($request->tour_hotels): $request->tour_hotels;
+            
+            $this->request_tour_bus
+            ->where('request_tour_id', $request_tour->id)
+            ->delete();
+            $this->request_tour_hotel
+            ->where('request_tour_id', $request_tour->id)
+            ->delete();
             if ($tour_bus) {
                 foreach ($tour_bus as $item) {
                     $this->request_tour_bus
