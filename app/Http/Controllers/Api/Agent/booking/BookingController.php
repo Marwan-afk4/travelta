@@ -638,4 +638,42 @@ class BookingController extends Controller
         ]);
     } 
     // ____________________________ End Special Status _________________________________
+    
+
+    // _____________________________ Start Booking ___________________________________________
+    public function booking_item(Request $request, $id){
+        // https://travelta.online/agent/booking_item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
+        }
+        else{
+            $agent_type = 'agent_id';
+        }
+        $manuel_booking = $this->manuel_booking
+        ->with([ 'hotel', 'taxes', 'from_supplier', 'bus'
+        , 'visa', 'flight', 'service', 'currency', 'country',
+        'city', 'agent_sales', 'adults', 'children',
+        'tour' => function($query){
+            $query->with([
+                'hotel', 'bus'
+            ]);
+        }])
+        ->where($agent_type, $agent_id)
+        ->where('id', $id)
+        ->first();
+
+
+        return response()->json([
+            'manuel_booking' => $manuel_booking,
+        ]);
+    }
 }

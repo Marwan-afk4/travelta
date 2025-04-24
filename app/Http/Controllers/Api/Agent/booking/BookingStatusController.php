@@ -110,9 +110,7 @@ class BookingStatusController extends Controller
 
     // ___________________________________________________________
     public function engine_confirmed(Request $request, $id){
-        // agent/booking/engine_confirmed/{id}
-        // Keys
-        // comfirmed, deposits[{deposit, date}]
+        // agent/booking/engine_confirmed/{id} 
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
         }

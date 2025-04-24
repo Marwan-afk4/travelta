@@ -898,9 +898,9 @@ class CreateRequestController extends Controller
                     $this->request_tour_bus
                     ->create([
                         'request_tour_id' => $request_tour->id,
-                        'transportation' => $item['transportation'],
-                        'seats' => $item['seats'],
-                        'departure' => $item['departure'] ?? null,
+                        'transportation' => $item->transportation,
+                        'seats' => $item->seats,
+                        'departure' => $item->departure ?? null,
                     ]);
                 }
             }
@@ -909,12 +909,12 @@ class CreateRequestController extends Controller
                     $this->request_tour_hotel
                     ->create([
                         'request_tour_id' => $request_tour->id,
-                        'destination' => $item['destination'],
-                        'hotel_name' => $item['hotel_name'],
-                        'room_type' => $item['room_type'],
-                        'check_in' => $item['check_in'],
-                        'check_out' => $item['check_out'],
-                        'nights' => $item['nights'],
+                        'destination' => $item->destination,
+                        'hotel_name' => $item->hotel_name,
+                        'room_type' => $item->room_type,
+                        'check_in' => $item->check_in,
+                        'check_out' => $item->check_out,
+                        'nights' => $item->nights,
                     ]);
                 }
             }

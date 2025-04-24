@@ -107,10 +107,10 @@ class LeadController extends Controller
                     $item->phone = $item->customer->phone;
                     $item->email = $item->customer->email;
                     $item->gender = $item->customer->gender;
-                    $item->emergency_phone = $item->customer->emergency_phone;
                     $item->watts = $item->customer->watts;
                     $item->image = $item->customer->image;
                 }
+                $item->emergency_phone = $item->customer->emergency_phone;
                 $item->stages = $item?->request?->stages ?? null;
                 $item->priority = $item?->request?->priority ?? null;
                 $item->makeHidden('customer');
@@ -170,6 +170,7 @@ class LeadController extends Controller
             $lead->watts = $lead->customer->watts;
             $lead->image = $lead->customer->image;
         }
+        $lead->emergency_phone = $lead->customer->emergency_phone;
 
         // Hide relationships you don’t want to return
         if ($lead) {
