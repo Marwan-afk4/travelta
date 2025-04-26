@@ -309,19 +309,19 @@ class BookingController extends Controller
         $traveler = null;
         $data = $manuel_booking->to_client;
         if (!empty($manuel_booking->to_supplier_id)) {
-            $traveler['id'] = $data->id;
-            $traveler['name'] = $data->agent;
-            $traveler['phone'] = is_string($data->phones) ? json_decode($data->phones)[0] 
-            ?? $data->phones: $data->phones[0];
-            $traveler['email'] = is_string($data->emails) ? json_decode($data->emails)[0] 
-            ?? $data->emails: $data->emails[0];
+            $traveler['id'] = $data?->id ?? null;
+            $traveler['name'] = $data?->agent ?? null;
+            $traveler['phone'] = is_string($data?->phones) ? json_decode($data?->phones)[0] 
+            ?? $data?->phones ?? null: $data?->phones[0] ?? null;
+            $traveler['email'] = is_string($data?->emails) ? json_decode($data?->emails)[0] 
+            ?? $data?->emails: $data?->emails[0];
             $traveler['position'] = 'Supplier';
         }
         else{
-            $traveler['id'] = $data->id;
-            $traveler['name'] = $data->name;
-            $traveler['phone'] = $data->phone;
-            $traveler['email'] = $data->email;
+            $traveler['id'] = $data?->id ?? null;
+            $traveler['name'] = $data?->name ?? null;
+            $traveler['phone'] = $data?->phone ?? null;
+            $traveler['email'] = $data?->email ?? null;
             $traveler['position'] = 'Customer';
         }
         $travelers = [
