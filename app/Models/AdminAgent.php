@@ -35,6 +35,14 @@ class AdminAgent extends Model
         ];
     }
 
+    public function agent(){
+        return $this->belongsTo(Agent::class, 'agent_id');
+    }
+
+    public function affilate(){
+        return $this->belongsTo(AffilateAgent::class, 'affilate_id');
+    }
+
     public function position(){
         return $this->belongsTo(AdminAgentPosition::class, 'position_id');
     }

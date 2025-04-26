@@ -18,12 +18,13 @@ use App\Models\Plan;
 use App\Models\CustomerSource;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\AdminAgent;
 
 class AgentAuthController extends Controller
 {
     public function __construct(private Agent $agent, private AffilateAgent $affilate,
     private LegalPaper $legal_paper, private Plan $plans, private CustomerSource $sources,
-    private City $cities, private Country $countries){}
+    private City $cities, private Country $countries, private AdminAgent $admin_agent){}
 
     public function lists(){
         $sources = $this->sources
@@ -205,6 +206,70 @@ class AgentAuthController extends Controller
         ->where('email', $request->email)
         ->orWhere('phone', $request->email)
         ->first();
+        $admin_agent = $this->admin_agent
+        ->where('email', $request->email)
+        ->orWhere('phone', $request->email)
+        ->with('position')
+        ->first();
+        // if admin
+        if (!empty($admin_agent)) {
+            if (password_verify($request->input('password'), $admin_agent->password)) {
+                $user = $admin_agent;
+                if (!empty($admin_agent->agent)) {
+                    $user = $admin_agent->agent;
+                    $admin_agent->token = $admin_agent->createToken($user->role)->plainTextToken;
+                    if ((!empty($user->end_date) && $user->end_date > date('Y-m-d'))) {
+                        return response()->json([
+                            'user' => $admin_agent,
+                            'token' => $admin_agent->token,
+                        ], 200);
+                    }
+                }
+                elseif (!empty($admin_agent->affilate)) {
+                    $user = $admin_agent->affilate;
+                    $admin_agent->token = $admin_agent->createToken($user->role)->plainTextToken;
+                    if ((!empty($user->end_date) && $user->end_date > date('Y-m-d')) || 
+                    $user->role == 'affilate') {
+                        return response()->json([
+                            'user' => $admin_agent,
+                            'token' => $admin_agent->token,
+                        ], 200);
+                    }
+                }
+                
+                if ($user->role == 'freelancer') {
+                    $plans = $this->plans
+                    ->where('type', 'freelancer')
+                    ->get();
+                    return response()->json([
+                        'user' => $admin_agent,
+                        'token' => $admin_agent->token,
+                        'plans' => $plans,
+                    ], 200);
+                } 
+                elseif ($user->role == 'agent') {
+                    $plans = $this->plans
+                    ->where('type', 'agency')
+                    ->get();
+                    return response()->json([
+                        'user' => $admin_agent,
+                        'token' => $admin_agent->token,
+                        'plans' => $plans,
+                    ], 200);
+                }
+                elseif ($user->role == 'supplier') {
+                    $plans = $this->plans
+                    ->where('type', 'suplier')
+                    ->get(); 
+                    return response()->json([
+                        'user' => $admin_agent,
+                        'token' => $admin_agent->token,
+                        'plans' => $plans,
+                    ], 200);
+                }
+            }
+        }
+
         if (empty($user)) {
             $user = $this->affilate
             ->where('email', $request->email)
