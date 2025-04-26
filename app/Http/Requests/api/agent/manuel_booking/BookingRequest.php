@@ -38,7 +38,7 @@ class BookingRequest extends FormRequest
             'city_id' => ['sometimes', 'exists:cities,id'],
             'mark_up' => ['required', 'numeric'],
             'mark_up_type' => ['required', 'in:value,precentage'],
-            'payment_type' => ['required', 'in:full,partial,later'],
+            'payment_type' => [ 'in:full,partial,later'],
             'special_request' => ['nullable'],
         ];
     }
