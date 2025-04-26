@@ -916,8 +916,8 @@ class ManualBookingController extends Controller
         ]);
         $due_date = null;
         try{
-            if (isset($request->adults_data) && !empty($request->adults_data)) {
-                $adults_data = json_decode($request->adults_data) ?? [];
+            if (isset($manuel_data_cart['adults_data']) && !empty($manuel_data_cart['adults_data'])) { 
+                $adults_data = is_string($manuel_data_cart['adults_data']) ? json_decode($manuel_data_cart['adults_data']) : $manuel_data_cart['adults_data'];
                 foreach ($adults_data as $item) {	
                     $this->adults
                     ->create([
@@ -926,8 +926,8 @@ class ManualBookingController extends Controller
                         'first_name' => $item->first_name ?? null,
                         'last_name' => $item->last_name ?? null,
                     ]);
-                }
-                $child_data = json_decode($request->child_data) ?? [];
+                } 
+                $child_data = is_string($manuel_data_cart['children_data']) ? json_decode($manuel_data_cart['children_data']) : $manuel_data_cart['children_data'];
                 foreach ($child_data as $item) {
                     $this->child
                     ->create([
