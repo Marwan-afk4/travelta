@@ -662,7 +662,7 @@ class BookingController extends Controller
         ->with([ 'hotel', 'taxes', 'from_supplier', 'bus'
         , 'visa', 'flight', 'service', 'currency', 'country',
         'city', 'agent_sales', 'adults', 'children', 'to_supplier',
-        'to_customer', 'tour' => function($query){
+        'to_customer', 'adults', 'children', 'tour' => function($query){
             $query->with([
                 'hotel', 'bus'
             ]);
