@@ -209,7 +209,7 @@ class AgentAuthController extends Controller
         $admin_agent = $this->admin_agent
         ->where('email', $request->email)
         ->orWhere('phone', $request->email)
-        ->with('position')
+        ->with('position.perimitions')
         ->first();
         // if admin
         if (!empty($admin_agent)) {
