@@ -922,19 +922,19 @@ class ManualBookingController extends Controller
                     $this->adults
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
-                        'title' => $item['title'] ?? null,
-                        'first_name' => $item['first_name'] ?? null,
-                        'last_name' => $item['last_name'] ?? null,
+                        'title' => $item->title ?? null,
+                        'first_name' => $item->first_name ?? null,
+                        'last_name' => $item->last_name ?? null,
                     ]);
                 }
                 $child_data = json_decode($request->child_data) ?? [];
-                foreach ($child_data as $item) {	
+                foreach ($child_data as $item) {
                     $this->child
                     ->create([
                         'manuel_booking_id' => $manuel_booking->id,
-                        'age' => $item['age'] ?? null,
-                        'first_name' => $item['first_name'] ?? null,
-                        'last_name' => $item['last_name'] ?? null,
+                        'age' => $item->age ?? null,
+                        'first_name' => $item->first_name ?? null,
+                        'last_name' => $item->last_name ?? null,
                     ]);
                 }
             }
