@@ -46,7 +46,7 @@ class CartEditBookingRequest extends FormRequest
         }
         else{
             return [ 
-                'payment_type' => ['required', 'in:full,partial,later'], 
+                'payment_type' => ['in:full,partial,later'], 
             ];
         }
     }
