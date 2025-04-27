@@ -536,6 +536,8 @@ class CreateRequestController extends Controller
         $hotelRequest = $request->only($this->hotelRequest);
         $requestBookingRequest[$role] = $agent_id;
         $request_booking = $this->request_booking
+        ->where('id', $id)
+        ->where($role, $agent_id)
         ->first();
         $request_booking->update($requestBookingRequest);
         try{
