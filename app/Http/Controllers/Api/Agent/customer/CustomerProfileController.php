@@ -99,7 +99,7 @@ class CustomerProfileController extends Controller
             $item->supplier_from_name = $this->from_supplier->agent ?? null;
             $item->supplier_from_email = is_array($item?->from_supplier?->emails ?? null) ? 
             $item->from_supplier->emails[0] : $item?->from_supplier?->emails ?? null;
-            $item->supplier_from_phone = is_array($item->from_supplier->phones) ? 
+            $item->supplier_from_phone = is_array($item?->from_supplier?->phones ?? null) ? 
             $item->from_supplier->phones[0] : $item?->from_supplier?->phones ?? null;
             $item->country = $item->country->name ?? null;
             $item->total_price = number_format($item->total_price, 2, '.', '');
