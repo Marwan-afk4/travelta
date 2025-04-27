@@ -28,7 +28,7 @@ class FlightRequest extends FormRequest
             'direction' => ['required', 'in:one_way,round_trip,multi_city'],
             'from_to' => ['required'],
             'departure' => ['required', 'date'],
-            'arrival' => ['required', 'date'],
+            'arrival' => ['date'],
             'class' => ['required'],
             'adults' => ['required'],
             'childreen' => ['required'],
