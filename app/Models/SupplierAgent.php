@@ -32,10 +32,18 @@ class SupplierAgent extends Model
     }
 
     public function getemailsAttribute($data){
-        return json_decode($data) ?? $data;
+        try {
+            return json_decode($data);
+        } catch (\Throwable $th) {
+            return $data;
+        }
     }
 
     public function getphonesAttribute($data){
-        return json_decode($data) ?? $data;
+        try {
+            return json_decode($data);
+        } catch (\Throwable $th) {
+            return $data;
+        }
     }
 }
