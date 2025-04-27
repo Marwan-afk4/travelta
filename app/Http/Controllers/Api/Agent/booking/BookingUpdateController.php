@@ -244,7 +244,8 @@ class BookingUpdateController extends Controller
             $old_manuel_booking = clone $manuel_booking;
             $manuel_booking->update($bookingRequest);
             if ($request->taxes) {
-                $manuel_booking->taxes()->sync($request->taxes);
+                $taxes = is_string($request->taxes) ? json_decode($request->taxes) : $request->taxes;
+                $manuel_booking->taxes()->sync($taxes);
             }
             $this->manuel_hotel
             ->where('manuel_booking_id', $id)
@@ -340,7 +341,8 @@ class BookingUpdateController extends Controller
             $old_manuel_booking = clone $manuel_booking;
             $manuel_booking->update($bookingRequest);
             if ($request->taxes) {
-                $manuel_booking->taxes()->sync($request->taxes);
+                $taxes = is_string($request->taxes) ? json_decode($request->taxes) : $request->taxes;
+                $manuel_booking->taxes()->sync($taxes);
             }
             $this->manuel_flight
             ->where('manuel_booking_id', $id)
@@ -436,7 +438,8 @@ class BookingUpdateController extends Controller
             $old_manuel_booking = clone $manuel_booking;
             $manuel_booking->update($bookingRequest);
             if ($request->taxes) {
-                $manuel_booking->taxes()->sync($request->taxes);
+                $taxes = is_string($request->taxes) ? json_decode($request->taxes) : $request->taxes;
+                $manuel_booking->taxes()->sync($taxes);
             }
             $this->manuel_bus
             ->where('manuel_booking_id', $id)
@@ -532,7 +535,8 @@ class BookingUpdateController extends Controller
             $old_manuel_booking = clone $manuel_booking;
             $manuel_booking->update($bookingRequest);
             if ($request->taxes) {
-                $manuel_booking->taxes()->sync($request->taxes);
+                $taxes = is_string($request->taxes) ? json_decode($request->taxes) : $request->taxes;
+                $manuel_booking->taxes()->sync($taxes);
             }
             $this->manuel_visa
             ->where('manuel_booking_id', $id)
@@ -630,7 +634,8 @@ class BookingUpdateController extends Controller
             $old_manuel_booking = clone $manuel_booking;
             $manuel_booking->update($bookingRequest);
             if ($request->taxes) {
-                $manuel_booking->taxes()->sync($request->taxes);
+                $taxes = is_string($request->taxes) ? json_decode($request->taxes) : $request->taxes;
+                $manuel_booking->taxes()->sync($taxes);
             }
             $manuel_tour = $this->manuel_tour
             ->where('manuel_booking_id', $id)
