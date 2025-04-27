@@ -939,7 +939,7 @@ class ManualBookingController extends Controller
                 }
             }
             $taxes = is_string($manuel_data_cart['taxes']) ? json_decode($manuel_data_cart['taxes']) : $manuel_data_cart['taxes'];
-            $manuel_booking->taxes()->attach($taxes);
+            $manuel_booking->taxes()->sync($taxes);
             $service = $this->services
             ->where('id', $manuel_data_cart['from_service_id'])
             ->first()->service_name;
