@@ -30,7 +30,7 @@ class TourRequest extends FormRequest
             "child_price" => ['required', 'numeric'], 
             "adults" => ['required', 'numeric'], 
             "childreen" => ['required', 'numeric'], 
-            "flight_date" => ['required', 'date'], 
+            "flight_date" => ['date'], 
         ];
     }
 
