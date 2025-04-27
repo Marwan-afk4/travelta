@@ -654,46 +654,31 @@ class BookingUpdateController extends Controller
             ->where('manuel_tour_id', $id)
             ->delete();
             if ($request->tour_hotels) {
-                $validation = Validator::make($request->all(), [
-                    'tour_hotels.*.hotel_name' => 'required', 
-                    'tour_hotels.*.room_type' => 'required', 
-                    'tour_hotels.*.check_in' => 'required|date', 
-                    'tour_hotels.*.check_out' => 'required|date', 
-                    'tour_hotels.*.nights' => 'required', 
-                    'tour_hotels.*.destination' => 'required', 
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->tour_hotels as $item) {
+                $tour_hotels = is_string($request->tour_hotels) ? json_decode($request->tour_hotels)
+                : $request->tour_hotels;
+                foreach ($tour_hotels as $item) {
                     $this->tour_hotel
                     ->create([
                         'manuel_tour_id' => $manuel_tour->id,
-                        'hotel_name' => $item['hotel_name'],
-                        'room_type' => $item['room_type'],
-                        'check_in' => $item['check_in'],
-                        'check_out' => $item['check_out'],
-                        'nights' => $item['nights'],
-                        'destination' => $item['destination'],
+                        'hotel_name' => $item->hotel_name ?? $item['hotel_name'],
+                        'room_type' => $item->room_type ?? $item['room_type'],
+                        'check_in' => $item->check_in ?? $item['check_in'],
+                        'check_out' => $item->check_out ?? $item['check_out'],
+                        'nights' => $item->nights ?? $item['nights'],
+                        'destination' => $item->destination ?? $item['destination'],
                     ]);
                 }
             }
             if ($request->tour_buses) {
-                $validation = Validator::make($request->all(), [
-                    'tour_buses.*.transportation' => 'required',
-                    'tour_buses.*.seats' => 'required|numeric',
-                    'tour_buses.*.departure' => 'required|date',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->tour_buses as $item) {
+                $tour_buses = is_string($request->tour_buses) ? json_decode($request->tour_buses)
+                : $request->tour_buses;
+                foreach ($tour_buses as $item) {
                     $this->tour_bus
                     ->create([
                         'manuel_tour_id' => $manuel_tour->id,
-                        'transportation' => $item['transportation'],
-                        'seats' => $item['seats'],
-                        'departure' => $item['departure'],
+                        'transportation' => $item->transportation ?? $item['transportation'],
+                        'seats' => $item->seats ?? $item['seats'],
+                        'departure' => $item->departure ?? $item['departure'],
                     ]);
                 }
             }
