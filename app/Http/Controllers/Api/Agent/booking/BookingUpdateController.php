@@ -201,12 +201,11 @@ class BookingUpdateController extends Controller
     public function update_hotel(BookingRequest $request, HotelRequest $hotel_request,
     CartEditBookingRequest $cart_request, $id){
         // agent/booking/update_hotel/{id}
-        // to_supplier_id,to_customer_id,agent_sales_id,from_supplier_id,cost,price,currency_id,tax_type,total_price,country_id,city_id,mark_up,mark_up_type,payment_type,special_request,
+        // to_supplier_id,to_customer_id,agent_sales_id,from_supplier_id,cost,
+        // price,currency_id,tax_type,total_price,country_id,city_id,mark_up,mark_up_type,
+        // special_request,
         // check_in ,check_out ,nights ,hotel_name ,room_type ,room_quantity ,adults ,childreen,
-        // payment_type, total_cart, cart_id
-        // payment_methods[amount, payment_method_id]
-        // payments [{amount, date}]
-        // {"agent_sales_id": "4","from_supplier_id": "2","cost": "300","price": "200","currency_id": "3","total_price": "600","country_id": "2","mark_up": "22","mark_up_type": "value","payment_type": "partial","taxes": [    "3"],"adults_data": [    {"title": "R","first_name": "RR","last_name": "RRR"    }],"children_data": [    {"age": "22","first_name": "AA","last_name": "AAA"    }],"check_in": "2024-07-07","check_out": "2025-06-06","nights": "3","hotel_name": "SSS","room_type": "[\"SSSS\"]","room_quantity": "2","adults": "1","childreen": "1","to_supplier_id": "1","to_customer_id": null,"tax_type": "include","special_request": "SSS","total_cart": "2000","payment_methods": [    {"amount": "220","payment_method_id": "3"    }],"payments": [    {"amount": "250","date": "2025-04-04"    }]}
+        //"data": {"to_supplier_id": null,"to_customer_id": "4","agent_sales_id": "3","from_supplier_id": "1","cost": "111","price": "111","currency_id": "1","tax_type": "exclude","total_price": "111","country_id": "1","city_id": "1","mark_up": "111","mark_up_type": "precentage","special_request": "HHH","check_in": "2024-01-01","check_out": "2025-01-01","nights": "3","hotel_name": "HHHH","room_type": "[\"Single\"]","room_quantity": "1","adults": "1","childreen": "1","adults_data": [{"title": "Ahmed","first_name": "Yahia","last_name": "Rizk"}],"file": {}}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
             $agent_data = $this->affilate_agent
@@ -256,250 +255,30 @@ class BookingUpdateController extends Controller
             $this->children
             ->where('manuel_booking_id', $id)
             ->delete();
-            if ($request->adults_data) {
-                $validation = Validator::make($request->all(), [
-                    'adults_data' => 'array',
-                    'adults_data.*.title' => 'required',
-                    'adults_data.*.first_name' => 'required',
-                    'adults_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->adults_data as $item) {
+            if ($request->adults_data) { 
+                $adults_data = is_string($request->adults_data) ? json_decode($request->adults_data) : $request->adults_data; 
+                foreach ($adults_data as $item) {
                     $this->adults
                     ->create([
-                        'manuel_booking_id' => $id,
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'manuel_booking_id' => $id, 
+                        'title' => $item->title ?? $item['title'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
             if ($request->children_data) {
-                $validation = Validator::make($request->all(), [
-                    'children_data' => 'array',
-                    'children_data.*.age' => 'required|numeric',
-                    'children_data.*.first_name' => 'required',
-                    'children_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->children_data as $item) {
+                $children_data = is_string($request->children_data) ? json_decode($request->children_data) : $request->children_data; 
+                foreach ($children_data as $item) {
                     $this->children
                     ->create([
                         'manuel_booking_id' => $id,
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'age' => $item->age ?? $item['age'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
-            // Cart
-            $amount_payment = 0;
-            $oldamount = 0;
-            $booking_payments = $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->get();
-            foreach ($booking_payments as $item) {
-                $financial_accounting = $this->financial_accounting
-                ->where('id', $item->financial_id)
-                ->where($role, $agent_id)
-                ->first();
-                $oldamount += $item->amount;
-                $financial_accounting->balance -= $item->amount;
-                $financial_accounting->save();
-            }
-            $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->delete();
-            if ($cart_request->payment_methods) {
-                $payment_methods = is_string($cart_request->payment_methods) ? 
-                json_decode($cart_request->payment_methods) : $cart_request->payment_methods;
-                foreach ($payment_methods as $item) {
-                    $amount_payment += $item->amount ?? $item['amount'];
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                    while (!empty($booking_payment_item)) {
-                        $code = Str::random(8);
-                        $booking_payment_item = $this->booking_payment
-                        ->where('code', $code)
-                        ->first();
-                    }
-                    $this->booking_payment
-                    ->create([
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'date' => date('Y-m-d'),
-                        'amount' => $item->amount ?? $item['amount'],
-                        'financial_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                        'code' => $code,
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id ,
-                        'first_time' => 1,
-                    ]);
-                    $cartRequest = [
-                        'total' => $cart_request->total_cart,
-                        'payment' => $item->amount ?? $item['amount'],
-                        'payment_method_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                    ];
-                    $manuel_cart = $this->manuel_cart
-                    ->where('manuel_booking_id', $manuel_booking->id)
-                    ->update($cartRequest);
-                    $financial_accounting = $this->financial_accounting
-                    ->where('id', $item->payment_method_id ?? $item['payment_method_id'])
-                    ->where($role, $agent_id)
-                    ->first();
-                    $financial_accounting->balance = $financial_accounting->balance + ($item->amount?? $item['amount']);
-                }
-            }
-            else {
-                $code = Str::random(8);
-                $booking_payment_item = $this->booking_payment
-                ->where('code', $code)
-                ->first();
-                while (!empty($booking_payment_item)) {
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                }
-                $this->booking_payment
-                ->create([
-                    'manuel_booking_id' => $manuel_booking->id,
-                    'date' => date('Y-m-d'),
-                    'amount' => 0,
-                    'code' => $code,
-                    $role => $agent_id,
-                    'supplier_id' => $manuel_booking->to_supplier_id ,
-                    'first_time' => 1,
-                ]);
-            }
-            if ($cart_request->payment_type == 'partial' || $cart_request->payment_type == 'later') {
-                $validation = Validator::make($cart_request->all(), [
-                    'payments' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                $payments = is_string($cart_request->payments) ? json_decode($cart_request->payments)
-                : $cart_request->payments;
-                foreach ($payments as $item) {
-                    $this->payments_cart
-                    ->create([
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'amount' => $item->amount ?? $item['amount'],
-                        'date' => $item->date ?? $item['date'],
-                    ]);
-                }
-            }
-            $customer = $this->customer_data
-            ->whereIn('status', ['active', 'inactive'])
-            ->where('customer_id', $manuel_booking->to_customer_id ?? null)
-            ->where($role, $agent_id)
-            ->first();
-            if (!empty($customer)) {
-                $customer->update([
-                    'type' => 'customer',
-                    'total_booking' => $amount_payment + $customer->total_booking - $oldamount,
-                ]);
-                $this->customers
-                ->where('id', $manuel_booking->to_customer_id ?? null)
-                ->update([
-                    'role' => 'customer'
-                ]);
-                $position = 'Customer';
-            }
-            else{
-                $customer = $this->supplier_agent
-                ->where('id', $manuel_booking->to_supplier_id ?? null)
-                ->first();
-                $position = 'Supplier';
-            }
-            $data = [];
-            $data['name'] = $customer->name;
-            $data['position'] = $position;
-            $data['amount'] = $amount_payment;
-            $data['payment_date'] = date('Y-m-d');
-            $data['agent'] = $agent_data->name;
-            Mail::to($agent_data->email)->send(new PaymentMail($data));
-            $agent_data = [];
-            if (!empty($manuel_booking->affilate_id)) {
-                $agent = $manuel_booking->affilate; 
-            }
-            else{
-                $agent = $manuel_booking->agent; 
-            }
-            $agent_data = [
-                'name' => $agent->name,
-                'email' => $agent->email,
-                'phone' => $agent->phone,
-            ];
-            //............................
-           if (isset($manuel_booking->to_supplier_id) && is_numeric($manuel_booking->to_supplier_id)) {
-               $supplier_balance = $this->supplier_balance
-               ->where('supplier_id', $manuel_booking->to_supplier_id)
-               ->where('currency_id', $manuel_booking->currency_id ?? null)
-               ->first();
-               $old_balance = $this->supplier_balance
-               ->where('supplier_id', $old_manuel_booking->to_supplier_id)
-               ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-               ->first();
-
-               if (!empty($old_balance)) {
-                    $old_balance->update([
-                        'balance' => $old_balance->balance + $old_manuel_booking->total_price
-                    ]);
-               }
-               if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'balance' => -$manuel_booking->total_price,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-               }
-               else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance - $manuel_booking->total_price
-                    ]);
-               }
-           }
-           if (isset($manuel_booking->from_supplier_id) && is_numeric($manuel_booking->from_supplier_id)) {
-                $supplier_balance = $this->supplier_balance
-                ->where('supplier_id', $manuel_booking->from_supplier_id)
-                ->where('currency_id', $manuel_booking->currency_id ?? null)
-                ->first();
-                //old_manuel_booking
-                $old_balance = $this->supplier_balance
-                ->where('supplier_id', $old_manuel_booking->from_supplier_id)
-                ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-                ->first();
-                if (!empty($old_balance)) {
-                     $old_balance->update([
-                         'balance' => $old_balance->balance - $old_manuel_booking->cost
-                     ]);
-                }
-                if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->from_supplier_id,
-                        'balance' => $manuel_booking->cost,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-                }
-                else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance + $manuel_booking->cost
-                    ]);
-                }
-           }
            // __________________________________________________________________________
             return response()->json([
                 'success' => 'You update data success',
@@ -572,250 +351,30 @@ class BookingUpdateController extends Controller
             $this->children
             ->where('manuel_booking_id', $id)
             ->delete();
-            if ($request->adults_data) {
-                $validation = Validator::make($request->all(), [
-                    'adults_data' => 'array',
-                    'adults_data.*.title' => 'required',
-                    'adults_data.*.first_name' => 'required',
-                    'adults_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->adults_data as $item) {
+            if ($request->adults_data) { 
+                $adults_data = is_string($request->adults_data) ? json_decode($request->adults_data) : $request->adults_data; 
+                foreach ($adults_data as $item) {
                     $this->adults
                     ->create([
-                        'manuel_booking_id' => $id,
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'manuel_booking_id' => $id, 
+                        'title' => $item->title ?? $item['title'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
             if ($request->children_data) {
-                $validation = Validator::make($request->all(), [
-                    'children_data' => 'array',
-                    'children_data.*.age' => 'required|numeric',
-                    'children_data.*.first_name' => 'required',
-                    'children_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->children_data as $item) {
+                $children_data = is_string($request->children_data) ? json_decode($request->children_data) : $request->children_data; 
+                foreach ($children_data as $item) {
                     $this->children
                     ->create([
                         'manuel_booking_id' => $id,
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'age' => $item->age ?? $item['age'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
-            // Cart
-            $amount_payment = 0;
-            $oldamount = 0;
-            $booking_payments = $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->get();
-            foreach ($booking_payments as $item) {
-                $financial_accounting = $this->financial_accounting
-                ->where('id', $item->financial_id)
-                ->where($role, $agent_id)
-                ->first();
-                $oldamount += $item->amount;
-                $financial_accounting->balance -= $item->amount;
-                $financial_accounting->save();
-            }
-            $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->delete();
-            if ($cart_request->payment_methods) {
-                $payment_methods = is_string($cart_request->payment_methods) ? 
-                json_decode($cart_request->payment_methods) : $cart_request->payment_methods;
-                foreach ($payment_methods as $item) {
-                    $amount_payment += $item->amount ?? $item['amount'];
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                    while (!empty($booking_payment_item)) {
-                        $code = Str::random(8);
-                        $booking_payment_item = $this->booking_payment
-                        ->where('code', $code)
-                        ->first();
-                    }
-                    $this->booking_payment
-                    ->create([
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'date' => date('Y-m-d'),
-                        'amount' => $item->amount ?? $item['amount'],
-                        'financial_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                        'code' => $code,
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id ,
-                        'first_time' => 1,
-                    ]);
-                    $cartRequest = [
-                        'total' => $cart_request->total_cart,
-                        'payment' => $item->amount ?? $item['amount'],
-                        'payment_method_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                    ];
-                    $manuel_cart = $this->manuel_cart
-                    ->where('manuel_booking_id', $manuel_booking->id)
-                    ->update($cartRequest);
-                    $financial_accounting = $this->financial_accounting
-                    ->where('id', $item->payment_method_id ?? $item['payment_method_id'])
-                    ->where($role, $agent_id)
-                    ->first();
-                    $financial_accounting->balance = $financial_accounting->balance + ($item->amount?? $item['amount']);
-                }
-            }
-            else {
-                $code = Str::random(8);
-                $booking_payment_item = $this->booking_payment
-                ->where('code', $code)
-                ->first();
-                while (!empty($booking_payment_item)) {
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                }
-                $this->booking_payment
-                ->create([
-                    'manuel_booking_id' => $manuel_booking->id,
-                    'date' => date('Y-m-d'),
-                    'amount' => 0,
-                    'code' => $code,
-                    $role => $agent_id,
-                    'supplier_id' => $manuel_booking->to_supplier_id ,
-                    'first_time' => 1,
-                ]);
-            }
-            if ($cart_request->payment_type == 'partial' || $cart_request->payment_type == 'later') {
-                $validation = Validator::make($cart_request->all(), [
-                    'payments' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                $payments = is_string($cart_request->payments) ? json_decode($cart_request->payments)
-                : $cart_request->payments;
-                foreach ($payments as $item) {
-                    $this->payments_cart
-                    ->create([
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'amount' => $item->amount ?? $item['amount'],
-                        'date' => $item->date ?? $item['date'],
-                    ]);
-                }
-            }
-            $customer = $this->customer_data
-            ->whereIn('status', ['active', 'inactive'])
-            ->where('customer_id', $manuel_booking->to_customer_id ?? null)
-            ->where($role, $agent_id)
-            ->first();
-            if (!empty($customer)) {
-                $customer->update([
-                    'type' => 'customer',
-                    'total_booking' => $amount_payment + $customer->total_booking - $oldamount,
-                ]);
-                $this->customers
-                ->where('id', $manuel_booking->to_customer_id ?? null)
-                ->update([
-                    'role' => 'customer'
-                ]);
-                $position = 'Customer';
-            }
-            else{
-                $customer = $this->supplier_agent
-                ->where('id', $manuel_booking->to_supplier_id ?? null)
-                ->first();
-                $position = 'Supplier';
-            }
-            $data = [];
-            $data['name'] = $customer->name;
-            $data['position'] = $position;
-            $data['amount'] = $amount_payment;
-            $data['payment_date'] = date('Y-m-d');
-            $data['agent'] = $agent_data->name;
-            Mail::to($agent_data->email)->send(new PaymentMail($data));
-            $agent_data = [];
-            if (!empty($manuel_booking->affilate_id)) {
-                $agent = $manuel_booking->affilate; 
-            }
-            else{
-                $agent = $manuel_booking->agent; 
-            }
-            $agent_data = [
-                'name' => $agent->name,
-                'email' => $agent->email,
-                'phone' => $agent->phone,
-            ];
-            //............................
-           if (isset($manuel_booking->to_supplier_id) && is_numeric($manuel_booking->to_supplier_id)) {
-               $supplier_balance = $this->supplier_balance
-               ->where('supplier_id', $manuel_booking->to_supplier_id)
-               ->where('currency_id', $manuel_booking->currency_id ?? null)
-               ->first();
-               $old_balance = $this->supplier_balance
-               ->where('supplier_id', $old_manuel_booking->to_supplier_id)
-               ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-               ->first();
-
-               if (!empty($old_balance)) {
-                    $old_balance->update([
-                        'balance' => $old_balance->balance + $old_manuel_booking->total_price
-                    ]);
-               }
-               if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'balance' => -$manuel_booking->total_price,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-               }
-               else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance - $manuel_booking->total_price
-                    ]);
-               }
-           }
-           if (isset($manuel_booking->from_supplier_id) && is_numeric($manuel_booking->from_supplier_id)) {
-                $supplier_balance = $this->supplier_balance
-                ->where('supplier_id', $manuel_booking->from_supplier_id)
-                ->where('currency_id', $manuel_booking->currency_id ?? null)
-                ->first();
-                //old_manuel_booking
-                $old_balance = $this->supplier_balance
-                ->where('supplier_id', $old_manuel_booking->from_supplier_id)
-                ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-                ->first();
-                if (!empty($old_balance)) {
-                     $old_balance->update([
-                         'balance' => $old_balance->balance - $old_manuel_booking->cost
-                     ]);
-                }
-                if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->from_supplier_id,
-                        'balance' => $manuel_booking->cost,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-                }
-                else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance + $manuel_booking->cost
-                    ]);
-                }
-           }
            // __________________________________________________________________________
             return response()->json([
                 'success' => 'You update data success',
@@ -888,250 +447,30 @@ class BookingUpdateController extends Controller
             $this->children
             ->where('manuel_booking_id', $id)
             ->delete();
-            if ($request->adults_data) {
-                $validation = Validator::make($request->all(), [
-                    'adults_data' => 'array',
-                    'adults_data.*.title' => 'required',
-                    'adults_data.*.first_name' => 'required',
-                    'adults_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->adults_data as $item) {
+            if ($request->adults_data) { 
+                $adults_data = is_string($request->adults_data) ? json_decode($request->adults_data) : $request->adults_data; 
+                foreach ($adults_data as $item) {
                     $this->adults
                     ->create([
-                        'manuel_booking_id' => $id,
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'manuel_booking_id' => $id, 
+                        'title' => $item->title ?? $item['title'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
             if ($request->children_data) {
-                $validation = Validator::make($request->all(), [
-                    'children_data' => 'array',
-                    'children_data.*.age' => 'required|numeric',
-                    'children_data.*.first_name' => 'required',
-                    'children_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->children_data as $item) {
+                $children_data = is_string($request->children_data) ? json_decode($request->children_data) : $request->children_data; 
+                foreach ($children_data as $item) {
                     $this->children
                     ->create([
                         'manuel_booking_id' => $id,
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'age' => $item->age ?? $item['age'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
-            // Cart
-            $amount_payment = 0;
-            $oldamount = 0;
-            $booking_payments = $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->get();
-            foreach ($booking_payments as $item) {
-                $financial_accounting = $this->financial_accounting
-                ->where('id', $item->financial_id)
-                ->where($role, $agent_id)
-                ->first();
-                $oldamount += $item->amount;
-                $financial_accounting->balance -= $item->amount;
-                $financial_accounting->save();
-            }
-            $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->delete();
-            if ($cart_request->payment_methods) {
-                $payment_methods = is_string($cart_request->payment_methods) ? 
-                json_decode($cart_request->payment_methods) : $cart_request->payment_methods;
-                foreach ($payment_methods as $item) {
-                    $amount_payment += $item->amount ?? $item['amount'];
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                    while (!empty($booking_payment_item)) {
-                        $code = Str::random(8);
-                        $booking_payment_item = $this->booking_payment
-                        ->where('code', $code)
-                        ->first();
-                    }
-                    $this->booking_payment
-                    ->create([
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'date' => date('Y-m-d'),
-                        'amount' => $item->amount ?? $item['amount'],
-                        'financial_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                        'code' => $code,
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id ,
-                        'first_time' => 1,
-                    ]);
-                    $cartRequest = [
-                        'total' => $cart_request->total_cart,
-                        'payment' => $item->amount ?? $item['amount'],
-                        'payment_method_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                    ];
-                    $manuel_cart = $this->manuel_cart
-                    ->where('manuel_booking_id', $manuel_booking->id)
-                    ->update($cartRequest);
-                    $financial_accounting = $this->financial_accounting
-                    ->where('id', $item->payment_method_id ?? $item['payment_method_id'])
-                    ->where($role, $agent_id)
-                    ->first();
-                    $financial_accounting->balance = $financial_accounting->balance + ($item->amount?? $item['amount']);
-                }
-            }
-            else {
-                $code = Str::random(8);
-                $booking_payment_item = $this->booking_payment
-                ->where('code', $code)
-                ->first();
-                while (!empty($booking_payment_item)) {
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                }
-                $this->booking_payment
-                ->create([
-                    'manuel_booking_id' => $manuel_booking->id,
-                    'date' => date('Y-m-d'),
-                    'amount' => 0,
-                    'code' => $code,
-                    $role => $agent_id,
-                    'supplier_id' => $manuel_booking->to_supplier_id ,
-                    'first_time' => 1,
-                ]);
-            }
-            if ($cart_request->payment_type == 'partial' || $cart_request->payment_type == 'later') {
-                $validation = Validator::make($cart_request->all(), [
-                    'payments' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                $payments = is_string($cart_request->payments) ? json_decode($cart_request->payments)
-                : $cart_request->payments;
-                foreach ($payments as $item) {
-                    $this->payments_cart
-                    ->create([
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'amount' => $item->amount ?? $item['amount'],
-                        'date' => $item->date ?? $item['date'],
-                    ]);
-                }
-            }
-            $customer = $this->customer_data
-            ->whereIn('status', ['active', 'inactive'])
-            ->where('customer_id', $manuel_booking->to_customer_id ?? null)
-            ->where($role, $agent_id)
-            ->first();
-            if (!empty($customer)) {
-                $customer->update([
-                    'type' => 'customer',
-                    'total_booking' => $amount_payment + $customer->total_booking - $oldamount,
-                ]);
-                $this->customers
-                ->where('id', $manuel_booking->to_customer_id ?? null)
-                ->update([
-                    'role' => 'customer'
-                ]);
-                $position = 'Customer';
-            }
-            else{
-                $customer = $this->supplier_agent
-                ->where('id', $manuel_booking->to_supplier_id ?? null)
-                ->first();
-                $position = 'Supplier';
-            }
-            $data = [];
-            $data['name'] = $customer->name;
-            $data['position'] = $position;
-            $data['amount'] = $amount_payment;
-            $data['payment_date'] = date('Y-m-d');
-            $data['agent'] = $agent_data->name;
-            Mail::to($agent_data->email)->send(new PaymentMail($data));
-            $agent_data = [];
-            if (!empty($manuel_booking->affilate_id)) {
-                $agent = $manuel_booking->affilate; 
-            }
-            else{
-                $agent = $manuel_booking->agent; 
-            }
-            $agent_data = [
-                'name' => $agent->name,
-                'email' => $agent->email,
-                'phone' => $agent->phone,
-            ];
-            //............................
-           if (isset($manuel_booking->to_supplier_id) && is_numeric($manuel_booking->to_supplier_id)) {
-               $supplier_balance = $this->supplier_balance
-               ->where('supplier_id', $manuel_booking->to_supplier_id)
-               ->where('currency_id', $manuel_booking->currency_id ?? null)
-               ->first();
-               $old_balance = $this->supplier_balance
-               ->where('supplier_id', $old_manuel_booking->to_supplier_id)
-               ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-               ->first();
-
-               if (!empty($old_balance)) {
-                    $old_balance->update([
-                        'balance' => $old_balance->balance + $old_manuel_booking->total_price
-                    ]);
-               }
-               if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'balance' => -$manuel_booking->total_price,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-               }
-               else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance - $manuel_booking->total_price
-                    ]);
-               }
-           }
-           if (isset($manuel_booking->from_supplier_id) && is_numeric($manuel_booking->from_supplier_id)) {
-                $supplier_balance = $this->supplier_balance
-                ->where('supplier_id', $manuel_booking->from_supplier_id)
-                ->where('currency_id', $manuel_booking->currency_id ?? null)
-                ->first();
-                //old_manuel_booking
-                $old_balance = $this->supplier_balance
-                ->where('supplier_id', $old_manuel_booking->from_supplier_id)
-                ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-                ->first();
-                if (!empty($old_balance)) {
-                     $old_balance->update([
-                         'balance' => $old_balance->balance - $old_manuel_booking->cost
-                     ]);
-                }
-                if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->from_supplier_id,
-                        'balance' => $manuel_booking->cost,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-                }
-                else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance + $manuel_booking->cost
-                    ]);
-                }
-           }
            // __________________________________________________________________________
             return response()->json([
                 'success' => 'You update data success',
@@ -1204,250 +543,30 @@ class BookingUpdateController extends Controller
             $this->children
             ->where('manuel_booking_id', $id)
             ->delete();
-            if ($request->adults_data) {
-                $validation = Validator::make($request->all(), [
-                    'adults_data' => 'array',
-                    'adults_data.*.title' => 'required',
-                    'adults_data.*.first_name' => 'required',
-                    'adults_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->adults_data as $item) {
+            if ($request->adults_data) { 
+                $adults_data = is_string($request->adults_data) ? json_decode($request->adults_data) : $request->adults_data; 
+                foreach ($adults_data as $item) {
                     $this->adults
                     ->create([
-                        'manuel_booking_id' => $id,
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'manuel_booking_id' => $id, 
+                        'title' => $item->title ?? $item['title'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
             if ($request->children_data) {
-                $validation = Validator::make($request->all(), [
-                    'children_data' => 'array',
-                    'children_data.*.age' => 'required|numeric',
-                    'children_data.*.first_name' => 'required',
-                    'children_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->children_data as $item) {
+                $children_data = is_string($request->children_data) ? json_decode($request->children_data) : $request->children_data; 
+                foreach ($children_data as $item) {
                     $this->children
                     ->create([
                         'manuel_booking_id' => $id,
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'age' => $item->age ?? $item['age'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
-            // Cart
-            $amount_payment = 0;
-            $oldamount = 0;
-            $booking_payments = $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->get();
-            foreach ($booking_payments as $item) {
-                $financial_accounting = $this->financial_accounting
-                ->where('id', $item->financial_id)
-                ->where($role, $agent_id)
-                ->first();
-                $oldamount += $item->amount;
-                $financial_accounting->balance -= $item->amount;
-                $financial_accounting->save();
-            }
-            $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->delete();
-            if ($cart_request->payment_methods) {
-                $payment_methods = is_string($cart_request->payment_methods) ? 
-                json_decode($cart_request->payment_methods) : $cart_request->payment_methods;
-                foreach ($payment_methods as $item) {
-                    $amount_payment += $item->amount ?? $item['amount'];
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                    while (!empty($booking_payment_item)) {
-                        $code = Str::random(8);
-                        $booking_payment_item = $this->booking_payment
-                        ->where('code', $code)
-                        ->first();
-                    }
-                    $this->booking_payment
-                    ->create([
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'date' => date('Y-m-d'),
-                        'amount' => $item->amount ?? $item['amount'],
-                        'financial_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                        'code' => $code,
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id ,
-                        'first_time' => 1,
-                    ]);
-                    $cartRequest = [
-                        'total' => $cart_request->total_cart,
-                        'payment' => $item->amount ?? $item['amount'],
-                        'payment_method_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                    ];
-                    $manuel_cart = $this->manuel_cart
-                    ->where('manuel_booking_id', $manuel_booking->id)
-                    ->update($cartRequest);
-                    $financial_accounting = $this->financial_accounting
-                    ->where('id', $item->payment_method_id ?? $item['payment_method_id'])
-                    ->where($role, $agent_id)
-                    ->first();
-                    $financial_accounting->balance = $financial_accounting->balance + ($item->amount?? $item['amount']);
-                }
-            }
-            else {
-                $code = Str::random(8);
-                $booking_payment_item = $this->booking_payment
-                ->where('code', $code)
-                ->first();
-                while (!empty($booking_payment_item)) {
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                }
-                $this->booking_payment
-                ->create([
-                    'manuel_booking_id' => $manuel_booking->id,
-                    'date' => date('Y-m-d'),
-                    'amount' => 0,
-                    'code' => $code,
-                    $role => $agent_id,
-                    'supplier_id' => $manuel_booking->to_supplier_id ,
-                    'first_time' => 1,
-                ]);
-            }
-            if ($cart_request->payment_type == 'partial' || $cart_request->payment_type == 'later') {
-                $validation = Validator::make($cart_request->all(), [
-                    'payments' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                $payments = is_string($cart_request->payments) ? json_decode($cart_request->payments)
-                : $cart_request->payments;
-                foreach ($payments as $item) {
-                    $this->payments_cart
-                    ->create([
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'amount' => $item->amount ?? $item['amount'],
-                        'date' => $item->date ?? $item['date'],
-                    ]);
-                }
-            }
-            $customer = $this->customer_data
-            ->whereIn('status', ['active', 'inactive'])
-            ->where('customer_id', $manuel_booking->to_customer_id ?? null)
-            ->where($role, $agent_id)
-            ->first();
-            if (!empty($customer)) {
-                $customer->update([
-                    'type' => 'customer',
-                    'total_booking' => $amount_payment + $customer->total_booking - $oldamount,
-                ]);
-                $this->customers
-                ->where('id', $manuel_booking->to_customer_id ?? null)
-                ->update([
-                    'role' => 'customer'
-                ]);
-                $position = 'Customer';
-            }
-            else{
-                $customer = $this->supplier_agent
-                ->where('id', $manuel_booking->to_supplier_id ?? null)
-                ->first();
-                $position = 'Supplier';
-            }
-            $data = [];
-            $data['name'] = $customer->name;
-            $data['position'] = $position;
-            $data['amount'] = $amount_payment;
-            $data['payment_date'] = date('Y-m-d');
-            $data['agent'] = $agent_data->name;
-            Mail::to($agent_data->email)->send(new PaymentMail($data));
-            $agent_data = [];
-            if (!empty($manuel_booking->affilate_id)) {
-                $agent = $manuel_booking->affilate; 
-            }
-            else{
-                $agent = $manuel_booking->agent; 
-            }
-            $agent_data = [
-                'name' => $agent->name,
-                'email' => $agent->email,
-                'phone' => $agent->phone,
-            ];
-            //............................
-           if (isset($manuel_booking->to_supplier_id) && is_numeric($manuel_booking->to_supplier_id)) {
-               $supplier_balance = $this->supplier_balance
-               ->where('supplier_id', $manuel_booking->to_supplier_id)
-               ->where('currency_id', $manuel_booking->currency_id ?? null)
-               ->first();
-               $old_balance = $this->supplier_balance
-               ->where('supplier_id', $old_manuel_booking->to_supplier_id)
-               ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-               ->first();
-
-               if (!empty($old_balance)) {
-                    $old_balance->update([
-                        'balance' => $old_balance->balance + $old_manuel_booking->total_price
-                    ]);
-               }
-               if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'balance' => -$manuel_booking->total_price,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-               }
-               else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance - $manuel_booking->total_price
-                    ]);
-               }
-           }
-           if (isset($manuel_booking->from_supplier_id) && is_numeric($manuel_booking->from_supplier_id)) {
-                $supplier_balance = $this->supplier_balance
-                ->where('supplier_id', $manuel_booking->from_supplier_id)
-                ->where('currency_id', $manuel_booking->currency_id ?? null)
-                ->first();
-                //old_manuel_booking
-                $old_balance = $this->supplier_balance
-                ->where('supplier_id', $old_manuel_booking->from_supplier_id)
-                ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-                ->first();
-                if (!empty($old_balance)) {
-                     $old_balance->update([
-                         'balance' => $old_balance->balance - $old_manuel_booking->cost
-                     ]);
-                }
-                if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->from_supplier_id,
-                        'balance' => $manuel_booking->cost,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-                }
-                else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance + $manuel_booking->cost
-                    ]);
-                }
-           }
            // __________________________________________________________________________
             return response()->json([
                 'success' => 'You update data success',
@@ -1573,250 +692,30 @@ class BookingUpdateController extends Controller
                     ]);
                 }
             }
-            if ($request->adults_data) {
-                $validation = Validator::make($request->all(), [
-                    'adults_data' => 'array',
-                    'adults_data.*.title' => 'required',
-                    'adults_data.*.first_name' => 'required',
-                    'adults_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->adults_data as $item) {
+            if ($request->adults_data) { 
+                $adults_data = is_string($request->adults_data) ? json_decode($request->adults_data) : $request->adults_data; 
+                foreach ($adults_data as $item) {
                     $this->adults
                     ->create([
-                        'manuel_booking_id' => $id,
-                        'title' => $item['title'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'manuel_booking_id' => $id, 
+                        'title' => $item->title ?? $item['title'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
             if ($request->children_data) {
-                $validation = Validator::make($request->all(), [
-                    'children_data' => 'array',
-                    'children_data.*.age' => 'required|numeric',
-                    'children_data.*.first_name' => 'required',
-                    'children_data.*.last_name' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                foreach ($request->children_data as $item) {
+                $children_data = is_string($request->children_data) ? json_decode($request->children_data) : $request->children_data; 
+                foreach ($children_data as $item) {
                     $this->children
                     ->create([
                         'manuel_booking_id' => $id,
-                        'age' => $item['age'],
-                        'first_name' => $item['first_name'],
-                        'last_name' => $item['last_name'],
+                        'age' => $item->age ?? $item['age'],
+                        'first_name' => $item->first_name ?? $item['first_name'],
+                        'last_name' => $item->last_name ?? $item['last_name'],
                     ]);
                 }
             }
-            // Cart
-            $amount_payment = 0;
-            $oldamount = 0;
-            $booking_payments = $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->get();
-            foreach ($booking_payments as $item) {
-                $financial_accounting = $this->financial_accounting
-                ->where('id', $item->financial_id)
-                ->where($role, $agent_id)
-                ->first();
-                $oldamount += $item->amount;
-                $financial_accounting->balance -= $item->amount;
-                $financial_accounting->save();
-            }
-            $this->booking_payment
-            ->where('manuel_booking_id', $manuel_booking->id)
-            ->where('first_time', 1)
-            ->delete();
-            if ($cart_request->payment_methods) {
-                $payment_methods = is_string($cart_request->payment_methods) ? 
-                json_decode($cart_request->payment_methods) : $cart_request->payment_methods;
-                foreach ($payment_methods as $item) {
-                    $amount_payment += $item->amount ?? $item['amount'];
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                    while (!empty($booking_payment_item)) {
-                        $code = Str::random(8);
-                        $booking_payment_item = $this->booking_payment
-                        ->where('code', $code)
-                        ->first();
-                    }
-                    $this->booking_payment
-                    ->create([
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'date' => date('Y-m-d'),
-                        'amount' => $item->amount ?? $item['amount'],
-                        'financial_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                        'code' => $code,
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id ,
-                        'first_time' => 1,
-                    ]);
-                    $cartRequest = [
-                        'total' => $cart_request->total_cart,
-                        'payment' => $item->amount ?? $item['amount'],
-                        'payment_method_id' => $item->payment_method_id ?? $item['payment_method_id'],
-                    ];
-                    $manuel_cart = $this->manuel_cart
-                    ->where('manuel_booking_id', $manuel_booking->id)
-                    ->update($cartRequest);
-                    $financial_accounting = $this->financial_accounting
-                    ->where('id', $item->payment_method_id ?? $item['payment_method_id'])
-                    ->where($role, $agent_id)
-                    ->first();
-                    $financial_accounting->balance = $financial_accounting->balance + ($item->amount?? $item['amount']);
-                }
-            }
-            else {
-                $code = Str::random(8);
-                $booking_payment_item = $this->booking_payment
-                ->where('code', $code)
-                ->first();
-                while (!empty($booking_payment_item)) {
-                    $code = Str::random(8);
-                    $booking_payment_item = $this->booking_payment
-                    ->where('code', $code)
-                    ->first();
-                }
-                $this->booking_payment
-                ->create([
-                    'manuel_booking_id' => $manuel_booking->id,
-                    'date' => date('Y-m-d'),
-                    'amount' => 0,
-                    'code' => $code,
-                    $role => $agent_id,
-                    'supplier_id' => $manuel_booking->to_supplier_id ,
-                    'first_time' => 1,
-                ]);
-            }
-            if ($cart_request->payment_type == 'partial' || $cart_request->payment_type == 'later') {
-                $validation = Validator::make($cart_request->all(), [
-                    'payments' => 'required',
-                ]);
-                if($validation->fails()){
-                    return response()->json(['errors'=>$validation->errors()], 401);
-                }
-                $payments = is_string($cart_request->payments) ? json_decode($cart_request->payments)
-                : $cart_request->payments;
-                foreach ($payments as $item) {
-                    $this->payments_cart
-                    ->create([
-                        $role => $agent_id,
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'manuel_booking_id' => $manuel_booking->id,
-                        'amount' => $item->amount ?? $item['amount'],
-                        'date' => $item->date ?? $item['date'],
-                    ]);
-                }
-            }
-            $customer = $this->customer_data
-            ->whereIn('status', ['active', 'inactive'])
-            ->where('customer_id', $manuel_booking->to_customer_id ?? null)
-            ->where($role, $agent_id)
-            ->first();
-            if (!empty($customer)) {
-                $customer->update([
-                    'type' => 'customer',
-                    'total_booking' => $amount_payment + $customer->total_booking - $oldamount,
-                ]);
-                $this->customers
-                ->where('id', $manuel_booking->to_customer_id ?? null)
-                ->update([
-                    'role' => 'customer'
-                ]);
-                $position = 'Customer';
-            }
-            else{
-                $customer = $this->supplier_agent
-                ->where('id', $manuel_booking->to_supplier_id ?? null)
-                ->first();
-                $position = 'Supplier';
-            }
-            $data = [];
-            $data['name'] = $customer->name;
-            $data['position'] = $position;
-            $data['amount'] = $amount_payment;
-            $data['payment_date'] = date('Y-m-d');
-            $data['agent'] = $agent_data->name;
-            Mail::to($agent_data->email)->send(new PaymentMail($data));
-            $agent_data = [];
-            if (!empty($manuel_booking->affilate_id)) {
-                $agent = $manuel_booking->affilate; 
-            }
-            else{
-                $agent = $manuel_booking->agent; 
-            }
-            $agent_data = [
-                'name' => $agent->name,
-                'email' => $agent->email,
-                'phone' => $agent->phone,
-            ];
-            //............................
-           if (isset($manuel_booking->to_supplier_id) && is_numeric($manuel_booking->to_supplier_id)) {
-               $supplier_balance = $this->supplier_balance
-               ->where('supplier_id', $manuel_booking->to_supplier_id)
-               ->where('currency_id', $manuel_booking->currency_id ?? null)
-               ->first();
-               $old_balance = $this->supplier_balance
-               ->where('supplier_id', $old_manuel_booking->to_supplier_id)
-               ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-               ->first();
-
-               if (!empty($old_balance)) {
-                    $old_balance->update([
-                        'balance' => $old_balance->balance + $old_manuel_booking->total_price
-                    ]);
-               }
-               if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->to_supplier_id,
-                        'balance' => -$manuel_booking->total_price,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-               }
-               else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance - $manuel_booking->total_price
-                    ]);
-               }
-           }
-           if (isset($manuel_booking->from_supplier_id) && is_numeric($manuel_booking->from_supplier_id)) {
-                $supplier_balance = $this->supplier_balance
-                ->where('supplier_id', $manuel_booking->from_supplier_id)
-                ->where('currency_id', $manuel_booking->currency_id ?? null)
-                ->first();
-                //old_manuel_booking
-                $old_balance = $this->supplier_balance
-                ->where('supplier_id', $old_manuel_booking->from_supplier_id)
-                ->where('currency_id', $old_manuel_booking->currency_id ?? null)
-                ->first();
-                if (!empty($old_balance)) {
-                     $old_balance->update([
-                         'balance' => $old_balance->balance - $old_manuel_booking->cost
-                     ]);
-                }
-                if (empty($supplier_balance)) {
-                    $this->supplier_balance
-                    ->create([
-                        'supplier_id' => $manuel_booking->from_supplier_id,
-                        'balance' => $manuel_booking->cost,
-                        'currency_id' => $manuel_booking->currency_id ?? null,
-                    ]); 
-                }
-                else{
-                    $supplier_balance->update([
-                        'balance' => $supplier_balance->balance + $manuel_booking->cost
-                    ]);
-                }
-           }
            // __________________________________________________________________________
             return response()->json([
                 'success' => 'You update data success',
