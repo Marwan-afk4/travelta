@@ -24,4 +24,17 @@ class RequestFlight extends Model
         'request_booking_id',
         'notes',
     ];
+
+    public function getfromToAttribute($data){
+        try {
+            if (is_string($data)) {
+                return json_decode($data);
+            }
+            else{
+                return $data;
+            }
+        } catch (\Throwable $th) {
+            return $data;
+        }
+    }
 }
