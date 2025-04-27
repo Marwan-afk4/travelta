@@ -97,12 +97,10 @@ class CustomerProfileController extends Controller
                 $item->check_out = null;
             }
             $item->supplier_from_name = $this->from_supplier->agent ?? null;
-            $item->supplier_from_email = is_string($item->from_supplier->emails) ? 
-            json_decode($item->from_supplier->emails)[0] ?? $item->from_supplier->emails 
-            : $item->from_supplier->emails[0];
-            $item->supplier_from_phone = is_string($item->from_supplier->emails) ? 
-            json_decode($item->from_supplier->phones)[0] ?? $item->from_supplier->phones
-            : $item->from_supplier->phones[0];
+            $item->supplier_from_email = is_array($item?->from_supplier?->emails ?? null) ? 
+            $item->from_supplier->emails[0] : $item->from_supplier->emails;
+            $item->supplier_from_phone = is_array($item->from_supplier->phones) ? 
+            $item->from_supplier->phones[0] : $item->from_supplier->phones;
             $item->country = $item->country->name ?? null;
             $item->total_price = number_format($item->total_price, 2, '.', '');
             $item->to_name = $item->to_client->name ?? null;
