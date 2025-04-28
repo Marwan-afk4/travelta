@@ -401,7 +401,7 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/tour_engine/{id}', 'engine_tour_tasks')->middleware('can:view_bookings');
             Route::get('/item/{id}', 'task')->middleware('can:view_bookings');
             Route::post('/add', 'create')->middleware('can:view_bookings');
-            Route::put('/update/{id}', 'modify')->middleware('can:view_bookings');
+            Route::post('/update/{id}', 'modify')->middleware('can:view_bookings');
             Route::delete('/delete/{id}', 'delete')->middleware('can:view_bookings');
         });
     });

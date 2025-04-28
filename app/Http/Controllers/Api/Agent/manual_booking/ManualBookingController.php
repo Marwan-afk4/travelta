@@ -949,7 +949,8 @@ class ManualBookingController extends Controller
                     'check_out' => $manuel_data_cart['check_out'] ?? null,
                     'nights' => $manuel_data_cart['nights'] ?? null,
                     'hotel_name' => $manuel_data_cart['hotel_name'] ?? null,
-                    'room_type' => json_encode($manuel_data_cart['room_type']) ?? null,
+                    'room_type' => is_string($manuel_data_cart['room_type']) ? $manuel_data_cart['room_type'] : 
+                    json_encode($manuel_data_cart['room_type']) ?? null,
                     'room_quantity' => $manuel_data_cart['room_quantity'] ?? null,
                     'adults' => $manuel_data_cart['adults'] ?? null,
                     'childreen' => $manuel_data_cart['childreen'] ?? null,
