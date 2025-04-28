@@ -126,7 +126,7 @@ class RevenueController extends Controller
     public function create(RevenueRequest $request){
         // agent/accounting/revenue/add
         // Keys
-        // category_id, financial_id, currency_id
+        // category_id, financiale_id, currency_id
         // title, date, amount, description
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
@@ -157,7 +157,7 @@ class RevenueController extends Controller
     public function modify(RevenueRequest $request, $id){
         // agent/accounting/revenue/update/{id}
         // Keys
-        // category_id, financial_id, currency_id
+        // category_id, financiale_id, currency_id
         // title, date, amount, description
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
