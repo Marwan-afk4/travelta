@@ -348,10 +348,7 @@ class BookingController extends Controller
             ]);
         }, 'taxes', 'from_supplier', 'hotel', 'bus', 'visa', 'flight'])
         ->where($agent_type, $agent_id)
-        ->whereHas('tour.hotel')
-        ->whereDoesntHave('tour.hotel', function($query){
-            $query->where('check_out', '>=', date('Y-m-d'));
-        })
+        ->where('id', $id)
         ->get();
         $hotel = null;
         $bus = null;
