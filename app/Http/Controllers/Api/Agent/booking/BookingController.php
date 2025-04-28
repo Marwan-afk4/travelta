@@ -461,17 +461,18 @@ class BookingController extends Controller
             'email' => $agent->email,
             'phone' => $agent->phone,
         ];
-        $booking_engine = $this->booking_engine
+        $engine_hotel = $this->booking_engine
         ->where($agent_type, $agent_id)
         ->where('id', $id)
         ->get();
-        $engine_hotel = EngineHotelResource::collection($booking_engine);
+        $engine_hotel = EngineHotelResource::collection($engine_hotel);
         return response()->json([
             'traveler' => $traveler,
           //  'payments' => $payments,
             'actions' => $actions,
             'agent_data' => $agent_data,
             'confirmation_tasks' => $confirmation_tasks,
+            'engine_hotel' => $engine_hotel[0]
         ]);
     }
 
@@ -544,12 +545,18 @@ class BookingController extends Controller
             'email' => $agent->email,
             'phone' => $agent->phone,
         ];
+        $booing_tour_engine = $this->booing_tour_engine
+        ->where($agent_type, $agent_id)
+        ->where('id', $id)
+        ->get();
+        $booing_tour_engine = EngineTourResource::collection($booing_tour_engine)->toArray(request());
         return response()->json([
             'traveler' => $traveler,
           //  'payments' => $payments,
             'actions' => $actions,
             'agent_data' => $agent_data,
             'confirmation_tasks' => $confirmation_tasks,
+            'booing_tour_engine' => $booing_tour_engine[0],
         ]);
     }
     // _____________________________ End Details ___________________________________________
