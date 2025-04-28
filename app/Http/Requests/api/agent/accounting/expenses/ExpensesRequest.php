@@ -25,7 +25,7 @@ class ExpensesRequest extends FormRequest
     {
         return [ 
             'category_id' => ['required', 'exists:expenses_categories,id'],
-            'financial_id' => ['required', 'exists:finantiol_acountings,id'],
+            'financiale_id' => ['required', 'exists:finantiol_acountings,id'],
             'currency_id' => ['required', 'exists:currency_agents,id'],
             'title' => ['required'],
             'date' => ['required', 'date'],
