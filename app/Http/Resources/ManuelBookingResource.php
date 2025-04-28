@@ -16,10 +16,10 @@ class ManuelBookingResource extends JsonResource
     {
         return [
             'supplier_from_name' => $this->from_supplier->agent ?? null,
-            'supplier_from_email' => is_string($this->from_supplier->emails) ? 
-            $this->from_supplier->emails : $this->from_supplier->emails[0],
-            'supplier_from_phone' => is_string($this->from_supplier->emails) ? 
-            $this->from_supplier->phones : $this->from_supplier->phones[0],
+            'supplier_from_email' => is_string($this?->from_supplier?->emails ?? null) ? 
+            $this?->from_supplier?->emails ?? null : $this->from_supplier->emails[0],
+            'supplier_from_phone' => is_string($this?->from_supplier?->emails ?? null) ? 
+            $this?->from_supplier?->phones ?? null : $this->from_supplier->phones[0],
             'country' => $this->country->name ?? null,
             'total_price' => number_format($this->total_price, 2, '.', ''),
             'to_name' => $this->to_client->name ?? null,
