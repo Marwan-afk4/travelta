@@ -341,6 +341,46 @@ class BookingController extends Controller
             'email' => $agent->email,
             'phone' => $agent->phone,
         ];
+        $manuel_booking_data = $this->manuel_booking
+        ->with(['tour' => function($query){
+            $query->with([
+                'hotel', 'bus'
+            ]);
+        }, 'taxes', 'from_supplier', 'hotel', 'bus', 'visa', 'flight'])
+        ->where($agent_type, $agent_id)
+        ->whereHas('tour.hotel')
+        ->whereDoesntHave('tour.hotel', function($query){
+            $query->where('check_out', '>=', date('Y-m-d'));
+        })
+        ->get();
+        $hotel = null;
+        $bus = null;
+        $visa = null;
+        $tour = null;
+        $flight = null;
+        if (!empty($manuel_booking_data->hotel)) {
+            $hotel = ManuelHotelResource::collection($manuel_booking_data)[0];
+        }
+        elseif (!empty($manuel_booking_data->bus)) {
+            $bus = ManuelBusResource::collection($manuel_booking_data)[0];
+        }
+        elseif (!empty($manuel_booking_data->visa)) {
+            $visa = ManuelVisaResource::collection($manuel_booking_data)[0];
+        }
+        elseif (!empty($manuel_booking_data->flight)) {
+            $flight = ManuelFlightResource::collection($manuel_booking_data)[0];
+        }
+        elseif (!empty($manuel_booking_data->tour)) {
+            $tour = ManuelTourResource::collection($manuel_booking_data)[0];
+        }
+        $manuel_booking_data = [
+            'hotel' => $hotel,
+            'bus' => $bus,
+            'visa' => $visa,
+            'flight' => $flight,
+            'tour' => $tour,
+        ];
+
         return response()->json([
             'traveler' => $traveler,
             'travelers' => $travelers,
@@ -351,6 +391,7 @@ class BookingController extends Controller
             'agent_data' => $agent_data,
             'confirmation_tasks' => $confirmation_tasks,
             'voucher' => $manuel_booking->manuel_booking_link,
+            'manuel_booking' => $manuel_booking_data
         ]);
     }
 
