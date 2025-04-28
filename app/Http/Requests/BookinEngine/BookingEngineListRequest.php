@@ -25,9 +25,9 @@ class BookingEngineListRequest extends FormRequest
     {
         return [
             'room_id' => ['required', 'exists:rooms,id'],
-            'from_supplier_id' => ['required', 'exists:agents,id'],
-            'country_id' => ['required', 'exists:countries,id'],
-            'city_id' => ['required', 'exists:cities,id'],
+            'from_supplier_id' => ['nullable', 'exists:agents,id'],
+            'country_id' => ['nullable', 'exists:countries,id'],
+            'city_id' => ['nullable', 'exists:cities,id'],
             'hotel_id' => ['required', 'exists:hotels,id'],
             'to_agent_id' => ['nullable', 'exists:agents,id'],
             'to_customer_id' => ['nullable', 'exists:customers,id'],
