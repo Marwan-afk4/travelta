@@ -355,19 +355,19 @@ class BookingController extends Controller
         $visa = null;
         $tour = null;
         $flight = null;
-        if (!empty($manuel_booking_data->hotel)) {
+        if (!empty($manuel_booking_data[0]->hotel)) {
             $hotel = ManuelHotelResource::collection($manuel_booking_data)[0];
         }
-        elseif (!empty($manuel_booking_data->bus)) {
+        elseif (!empty($manuel_booking_data[0]->bus)) {
             $bus = ManuelBusResource::collection($manuel_booking_data)[0];
         }
-        elseif (!empty($manuel_booking_data->visa)) {
+        elseif (!empty($manuel_booking_data[0]->visa)) {
             $visa = ManuelVisaResource::collection($manuel_booking_data)[0];
         }
-        elseif (!empty($manuel_booking_data->flight)) {
+        elseif (!empty($manuel_booking_data[0]->flight)) {
             $flight = ManuelFlightResource::collection($manuel_booking_data)[0];
         }
-        elseif (!empty($manuel_booking_data->tour)) {
+        elseif (!empty($manuel_booking_data[0]->tour)) {
             $tour = ManuelTourResource::collection($manuel_booking_data)[0];
         }
         $manuel_booking_data = [
@@ -461,6 +461,11 @@ class BookingController extends Controller
             'email' => $agent->email,
             'phone' => $agent->phone,
         ];
+        $booking_engine = $this->booking_engine
+        ->where($agent_type, $agent_id)
+        ->where('id', $id)
+        ->get();
+        $engine_hotel = EngineHotelResource::collection($booking_engine);
         return response()->json([
             'traveler' => $traveler,
           //  'payments' => $payments,
