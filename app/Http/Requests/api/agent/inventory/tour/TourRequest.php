@@ -46,6 +46,7 @@ class TourRequest extends FormRequest
             'cancelation' => ['required','boolean'],
             'price' => ['nullable', 'numeric'],
             'currency_id' => ['nullable', 'exists:currency_agents,id'],
+            'payments_options' => ['required'],
 // ________________________________________________________________
             'enable_person_type' => ['required','boolean'],
             'with_accomodation' => ['required','boolean'],
