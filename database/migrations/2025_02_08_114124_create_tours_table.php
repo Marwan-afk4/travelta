@@ -32,10 +32,10 @@ return new class extends Migration
             $table->foreignId(column: 'pick_up_city_id')->nullable()->constrained('cities')->onUpdate('cascade')->onDelete('cascade');
             $table->string('pick_up_map');
             $table->enum('destination_type', ['single', 'multiple']);
-            $table->string('tour_email');
-            $table->string('tour_website');
-            $table->string('tour_phone');
-            $table->string('tour_address');
+            $table->string('tour_email')->nullable();
+            $table->string('tour_website')->nullable();
+            $table->string('tour_phone')->nullable();
+            $table->string('tour_address')->nullable();
             $table->string('payments_options');
             $table->text('policy');
             $table->boolean('cancelation');
