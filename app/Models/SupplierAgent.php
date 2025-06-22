@@ -24,7 +24,8 @@ class SupplierAgent extends Model
     }
 
     public function services(){
-        return $this->belongsToMany(Service::class, 'supplier_agent_service', 'supplier_agent_id', 'service_id');
+        return $this->belongsToMany(Service::class, 'supplier_agent_service', 'supplier_agent_id', 'service_id')
+        ->withPivot('description');
     }
     
     public function legal_papers(){
