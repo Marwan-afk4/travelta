@@ -41,28 +41,6 @@ class MealPlanController extends Controller
         ]);
     }
 
-    public function status(Request $request, $id){ 
-        // /api/super/meal_plan/status/{id}
-        // Key
-        // status
-        $validation = Validator::make($request->all(), [
-            'status' => 'required|boolean',
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
-        }
-        $hotel_meal_plan = $this->hotel_meal
-        ->where('id', $id)
-        ->with('hotel:id,hotel_name')
-        ->update([
-            'status' => $request->status
-        ]);
-
-        return response()->json([
-            'hotel_meal_plan' => $hotel_meal_plan
-        ]);
-    }
-
     public function create(Request $request){ 
         // /api/super/meal_plan/add
         // Keys
@@ -83,7 +61,7 @@ class MealPlanController extends Controller
         ]);
     }
 
-    public function modify(AdminRequest $request, $id){ 
+    public function modify(Request $request, $id){ 
         // /api/super/meal_plan/update/{id}
         // Keys
         // hotel_id, meal_name
