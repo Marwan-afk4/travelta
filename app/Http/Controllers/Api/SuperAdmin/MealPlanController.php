@@ -14,7 +14,7 @@ class MealPlanController extends Controller
     private Hotel $hotels){}
 
     public function view(Request $request){
-        // /meal_plan
+        // api/super/meal_plan
 
         $hotel_meal_planss = $this->hotel_meal
         ->with('hotel:id,hotel_name')
@@ -29,8 +29,8 @@ class MealPlanController extends Controller
     }
 
     public function meal(Request $request, $id){
-        // /agent/admin/item/{id}
-        $hotel_meal_planss = $this->hotel_meal
+        // /api/super/meal_plan/item/{id}
+        $hotel_meal_plans = $this->hotel_meal
         ->where('id', $id)
         ->with('hotel:id,hotel_name')
         ->first();
@@ -41,7 +41,7 @@ class MealPlanController extends Controller
     }
 
     public function status(Request $request, $id){ 
-        // /agent/admin/status/{id}
+        // /api/super/meal_plan/status/{id}
         // Key
         // status
         $validation = Validator::make($request->all(), [
@@ -63,7 +63,7 @@ class MealPlanController extends Controller
     }
 
     public function create(Request $request){ 
-        // /agent/admin/add
+        // /api/super/meal_plan/add
         // Keys
         // hotel_id, meal_name
         $validation = Validator::make($request->all(), [
@@ -83,7 +83,7 @@ class MealPlanController extends Controller
     }
 
     public function modify(AdminRequest $request, $id){ 
-        // /agent/admin/update/{id}
+        // /api/super/meal_plan/update/{id}
         // Keys
         // hotel_id, meal_name
         $validation = Validator::make($request->all(), [
@@ -105,7 +105,7 @@ class MealPlanController extends Controller
     }
 
     public function delete(Request $request, $id){ 
-        // /agent/admin/delete/{id}
+        // /api/super/meal_plan/delete/{id}
         $this->hotel_meal
         ->where('id', $id)
         ->delete();
