@@ -23,7 +23,7 @@ class MealPlanController extends Controller
         ->get();
 
         return response()->json([
-            'hotel_meals' => $hotel_meals,
+            'hotel_meal_planss' => $hotel_meal_planss,
             'hotels' => $hotels,
         ]);
     }
@@ -36,7 +36,7 @@ class MealPlanController extends Controller
         ->first();
 
         return response()->json([
-            'hotel_meal_plans' => $hotel_meal_plans, 
+            'hotel_meal_plan' => $hotel_meal_plans, 
         ]);
     }
 
