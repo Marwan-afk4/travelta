@@ -10,4 +10,8 @@ class HotelMeal extends Model
         'hotel_id',
         'meal_name',
     ];
+
+    public function hotel(){
+        return $this->belongsTo(Hotel::class, 'hotel_id');
+    }
 }

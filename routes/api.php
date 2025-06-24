@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\SuperAdmin\UserController;
 use App\Http\Controllers\Api\SuperAdmin\ZoneController;
 use App\Http\Controllers\Api\SuperAdmin\settings\AllowTimeController;
 use App\Http\Controllers\Api\SuperAdmin\TourTypeController;
+use App\Http\Controllers\Api\SuperAdmin\MealPlanController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -50,6 +51,20 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
         Route::post('/super/user/add',[UserController::class,'adduser']);
 
         Route::delete('/super/user/delete/{id}',[UserController::class,'deleteuser']);
+
+///////////////////////////////////////// Plans //////////////////////////////////////////////////
+
+        Route::get('/super/meal_plan',[MealPlanController::class,'view']);
+        
+        Route::get('/super/meal_plan',[MealPlanController::class,'meal']);
+
+        Route::get('/super/meal_plan',[MealPlanController::class,'status']);
+
+        Route::post('/super/meal_plan/add',[MealPlanController::class,'create']);
+
+        Route::put('/super/meal_plan/update/{id}',[MealPlanController::class,'modify']);
+
+        Route::delete('/super/meal_plan/delete/{id}',[MealPlanController::class,'delete']);
 
 ///////////////////////////////////////// Booking //////////////////////////////////////////////////
 
