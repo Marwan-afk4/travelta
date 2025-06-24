@@ -58,7 +58,7 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
         
         Route::get('/super/meal_plan/item/{id}',[MealPlanController::class,'meal']);
 
-        Route::get('/super/meal_plan/status/{id}',[MealPlanController::class,'status']);
+        Route::put('/super/meal_plan/status/{id}',[MealPlanController::class,'status']);
 
         Route::post('/super/meal_plan/add',[MealPlanController::class,'create']);
 
