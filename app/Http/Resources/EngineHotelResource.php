@@ -20,6 +20,7 @@ class EngineHotelResource extends JsonResource
             'supplier_from_email' => $this->from_supplier->email ?? null,
             'supplier_from_phone' => $this->from_supplier->phone ?? null,
             'country' => $this->country->name ?? null,
+            'amount' => $this->amount ?? null,
             'total_price' => number_format($this->total_price, 2, '.', ''),
             'to_name' => $this->to_client->name ?? null,
             'to_role' => !empty($this->to_agent_id) ? 'Agent' : 'Customer',

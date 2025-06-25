@@ -330,10 +330,15 @@ class BookingEngine extends Controller
         if ($userRoleColumn) {
             $validatedData[$userRoleColumn] = $user->id;
         }
-
         // Generate booking code
         $validatedData['code'] = 'E' . rand(10000, 99999) . strtolower(Str::random(1));
         $validatedData['count'] = $request->quantity;
+        if(!empty($request->hotel_id)){
+            $hotel = Hotel::where('id', $request->hotel_id)
+            ->first();
+            $validatedData['country_id'] = $hotel?->country_id ?? null;
+            $validatedData['city_id'] = $hotel?->city_id ?? null;
+        }
 
         // Create BookingengineList
         $bookingList = BookingengineList::create($validatedData);
