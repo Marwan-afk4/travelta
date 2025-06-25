@@ -21,6 +21,21 @@ class TourController extends Controller
 
     public function view(Request $request){
         // /agent/tour
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
+        }
+        else{
+            $agent_type = 'agent_id';
+        }
         $tour_types = $this->tour_types
         ->get();
         $countries = $this->countries
@@ -28,6 +43,7 @@ class TourController extends Controller
         $cities = $this->cities
         ->get();
         $tour = $this->tour
+        ->where($agent_type, $agent_id)
         ->with(['destinations' => function($query){
             $query->with('city', 'country');
         }, 'availability', 'cancelation_items',
@@ -45,6 +61,21 @@ class TourController extends Controller
 
     public function tour($id){ 
         // /agent/tour/item/{id}
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $agent_type = 'affilate_id';
+        }
+        else{
+            $agent_type = 'agent_id';
+        }
         $tour = $this->tour
         ->with(['destinations' => function($query){
             $query->with('city', 'country');
