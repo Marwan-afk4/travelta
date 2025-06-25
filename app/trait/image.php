@@ -62,7 +62,12 @@ trait image
     public function deleteImage($imagePath){
         // Check if the file exists
         if ($imagePath && Storage::disk('public')->exists($imagePath)) {
-            Storage::disk('public')->delete($imagePath);
+            try {
+                Storage::disk('public')->delete($imagePath);
+            } 
+            catch (\Throwable $th) {
+                //throw $th;
+            }
         }
     }
 
