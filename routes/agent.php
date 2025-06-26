@@ -114,9 +114,8 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
     });
 
     Route::controller(ProfileController::class)->group(function(){
-        Route::get('/my_profile_agent', 'my_profile_agent');
-        Route::get('/my_profile_affilate', 'my_profile_affilate');
-        Route::post('/update_profile/{id}', 'update_profile');
+        Route::get('/my_profile', 'my_profile');
+        Route::post('/update_profile', 'update_profile');
     });
 
     Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom'])->middleware('can:view_booking_engine');

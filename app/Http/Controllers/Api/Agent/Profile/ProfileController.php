@@ -7,60 +7,89 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
+use App\Models\AdminAgent;
 use App\Models\AffilateAgent;
 use App\Models\Agent;
 
 class ProfileController extends Controller
 { 
     
-    public function __construct(private AffilateAgent $affilate_agent, private Agent $agent){}
+    public function __construct(private AffilateAgent $affilate_agent, private Agent $agent,
+    private AdminAgent $admin_agent){}
 
-    public function my_profile_agent(Request $request){
-        $user = $this->affilate_agent
-        ->select('name', 'phone', 'email')
-        ->where('id', $request->user()->id)
-        ->first();
+    public function my_profile(Request $request){
+        $name = null;
+        $phone = null;
+        $email = null;
+        $role = null;
+        if (!empty($request->user()->admin_agents)) {
+            $user = $this->admin_agent 
+            ->where('id', $request->user()->id)
+            ->first();
+            $name = $user->name;
+            $phone = $user->phone;
+            $email = $user->email;
+            $role = empty($user->affilate_id) ? 'agent_admin' : 'affilate_admin';
+        }
+        else{
+            if($request->user()->role == 'affilate' || $request->user()->role == 'freelancer'){
+                $user = $this->affilate_agent 
+                ->where('id', $request->user()->id)
+                ->first();
+                $name = $user->f_name . ' ' . $user->l_name;
+                $phone = $user->phone;
+                $email = $user->email;
+                $role = 'affilate';
+            }
+            else{
+                $user = $this->agent 
+                ->where('id', $request->user()->id)
+                ->first();
+                $name = $user->name;
+                $phone = $user->phone;
+                $email = $user->email;
+                $role = 'agent';
+            }
+        }
 
         return response()->json([
-            'data' => $user,
+            'name' => $name,
+            'phone' => $phone,
+            'email' => $email,
+            'role' => $role,
         ]);
     }
 
-    public function my_profile_affilate(Request $request){
-        $user = $this->affilate_agent
-        ->select('f_name', 'l_name', 'phone', 'email')
-        ->where('id', $request->user()->id)
-        ->first();
-
-        return response()->json([
-            'data' => $user,
-        ]);
-    }
-
-    public function update_profile(Request $request, $id){
+    public function update_profile(Request $request){
         // role => [affilate, agent]
         // if affilate => f_name, l_name, email, phone, password
         // if agent => name, email, phone, password
-        $validation = Validator::make($request->all(), [
-            'role' => 'required|in:affilate,agent',
-        ]);
-        if($validation->fails()){
-            return response()->json(['errors'=>$validation->errors()], 401);
+
+        $role = null;
+        if(!empty($request->user()->admin_agents)){
+            $role = empty($request->user()->affilate_id) ? 'agent_admin' : 'affilate_admin';
+        }
+        else{
+            if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+                $role = 'affilate';
+            }
+            else{
+                $role = 'agent';
+            }
         }
  
-        if ($request->role == 'affilate') {
+        if ($role == 'affilate') {
             $validation = Validator::make($request->all(), [
-                'f_name' => 'required',
-                'l_name' => 'required',
-                'email' => [Rule::unique('affilate_agents')->ignore($id)],
-                'phone' => [Rule::unique('affilate_agents')->ignore($id)],
+                'name' => 'required',
+                'email' => [Rule::unique('affilate_agents')->ignore($request->user()->id)],
+                'phone' => [Rule::unique('affilate_agents')->ignore($request->user()->id)],
             ]);
             if($validation->fails()){
                 return response()->json(['errors'=>$validation->errors()], 401);
-            }
+            } 
             $data = [
-                'f_name' => $request->f_name,
-                'l_name' => $request->l_name,
+                'f_name' => $request->name,
+                'l_name' => ' ',
                 'email' => $request->email,
                 'phone' => $request->phone,
             ];
@@ -68,18 +97,18 @@ class ProfileController extends Controller
                 $data['password'] = Hash::make($request->password);
             }
             $this->affilate_agent
-            ->where('id', $id)
+            ->where('id', $request->user()->id)
             ->update($data);
         }
-        else{ 
+        elseif($role == 'agent'){ 
             $validation = Validator::make($request->all(), [
                 'name' => 'required',
-                'email' => [Rule::unique('agents')->ignore($id)],
-                'phone' => [Rule::unique('agents')->ignore($id)],
+                'email' => [Rule::unique('agents')->ignore($request->user()->id)],
+                'phone' => [Rule::unique('agents')->ignore($request->user()->id)],
             ]);
             if($validation->fails()){
                 return response()->json(['errors'=>$validation->errors()], 401);
-            }
+            } 
             $data = [
                 'name' => $request->name, 
                 'email' => $request->email,
@@ -89,8 +118,33 @@ class ProfileController extends Controller
                 $data['password'] = Hash::make($request->password);
             }
             $this->agent
-            ->where('id', $id)
+            ->where('id', $request->user()->id)
             ->update($data);
         }
+        else{ 
+            $validation = Validator::make($request->all(), [
+                'name' => 'required',
+                'email' => [Rule::unique('admin_agents')->ignore($request->user()->id)],
+                'phone' => [Rule::unique('admin_agents')->ignore($request->user()->id)],
+            ]);
+            if($validation->fails()){
+                return response()->json(['errors'=>$validation->errors()], 401);
+            } 
+            $data = [
+                'name' => $request->name, 
+                'email' => $request->email,
+                'phone' => $request->phone,
+            ];
+            if(!empty($request->password)){
+                $data['password'] = Hash::make($request->password);
+            }
+            $this->admin_agent
+            ->where('id', $request->user()->id)
+            ->update($data);
+        }
+
+        return response()->json([
+            'success' => 'You update profile success'
+        ]);
     }
 }
