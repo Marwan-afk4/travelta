@@ -64,6 +64,8 @@ use App\Http\Controllers\Api\Agent\inventory\tour\tour\TourGalleryController;
 
 use App\Http\Controllers\Api\Agent\invoice\InvoiceController;
 
+use App\Http\Controllers\Api\Agent\Profile\ProfileController;
+
 use App\Http\Controllers\Api\Agent\settings\TaxController;
 use App\Http\Controllers\Api\Agent\settings\CurrencyController;
 use App\Http\Controllers\Api\Agent\settings\GroupController;
@@ -110,6 +112,13 @@ Route::middleware(['auth:sanctum','IsAgent'])->group(function () {
             Route::get('/profile/{id}', 'profile')->middleware('can:update_lead');
         });
     });
+
+    Route::controller(ProfileController::class)->group(function(){
+        Route::get('/my_profile_agent', 'my_profile_agent');
+        Route::get('/my_profile_affilate', 'my_profile_affilate');
+        Route::post('/update_profile/{id}', 'update_profile');
+    });
+
     Route::post('/agent/bookingEngine', [BookingEngine::class, 'bookRoom'])->middleware('can:view_booking_engine');
 
     Route::post('/agent/avalibleRooms', [BookingEngine::class, 'getAvailableRooms'])->middleware('can:view_booking_engine');
