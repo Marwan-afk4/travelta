@@ -43,6 +43,10 @@ Route::get('/logout', [Authcontroller::class, 'logout'])->middleware('auth:sanct
         // Route::post('/super/avalibleRooms', [BookingEngine::class, 'getAvailableRooms']);
 
 
+        
+Route::get('/my_profile', [Authcontroller::class, 'my_profile']);
+Route::post('/update_my_profile', [Authcontroller::class, 'update_my_profile']);
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {

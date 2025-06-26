@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
 class Authcontroller extends Controller
@@ -76,5 +77,42 @@ class Authcontroller extends Controller
                 'faild' => 'You faild to logout'
             ], 400);
         }
+    }
+
+    public function my_profile(Request $request){
+        $user = User::
+        select('name', 'email ', 'phone ')
+        ->where('id', $request->user()->id)
+        ->first();
+
+        return response()->json([
+            'user' => $user
+        ]);
+    }
+
+    public function update_my_profile(Request $request){
+    
+        $validation = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => ['required', Rule::unique('users')->ignore($request->user()->id)],
+            'phone' => ['required', Rule::unique('users')->ignore($request->user()->id)],
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        $data = [
+            'name' => $request->name, 
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ];
+        if(!empty($request->password)){
+            $data['password'] = Hash::make($request->password);
+        }
+        User::where('id', $request->user()->id)
+        ->update($data);
+
+        return response()->json([
+            'success' => 'You update data success'
+        ]);
     }
 }
