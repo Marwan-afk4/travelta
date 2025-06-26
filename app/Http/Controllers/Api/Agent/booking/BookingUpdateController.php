@@ -356,6 +356,7 @@ class BookingUpdateController extends Controller
             if ($request->adults_data) { 
                 $adults_data = is_string($request->adults_data) ? json_decode($request->adults_data) : $request->adults_data; 
                 foreach ($adults_data as $item) {
+                    $item = $item->toArray();
                     $this->adults
                     ->create([
                         'manuel_booking_id' => $id, 
@@ -368,6 +369,7 @@ class BookingUpdateController extends Controller
             if ($request->children_data) {
                 $children_data = is_string($request->children_data) ? json_decode($request->children_data) : $request->children_data; 
                 foreach ($children_data as $item) {
+                    $item = $item->toArray();
                     $this->children
                     ->create([
                         'manuel_booking_id' => $id,
