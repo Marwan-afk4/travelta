@@ -49,7 +49,20 @@ class TourController extends Controller
         }, 'availability', 'cancelation_items',
         'excludes', 'includes', 'itinerary', 'tour_types', 'pick_up_country',
         'pick_up_city'])
-        ->get();
+        ->get()
+        ->map(function($item){
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'arrival' => $item->arrival,
+                'excludes' => $item->excludes,
+                'includes' => $item->includes,
+                'pick_up_country' => $item->pick_up_country,
+                'pick_up_city' => $item->pick_up_city,
+                'to_countries' => optional($item->destinations)->pluck('country'),
+                'to_cities' => optional($item->destinations)->pluck('city'),
+            ];
+        });
 
         return response()->json([
             'tour_types' => $tour_types,
