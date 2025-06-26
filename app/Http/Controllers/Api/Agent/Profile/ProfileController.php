@@ -16,7 +16,10 @@ class ProfileController extends Controller
     public function __construct(private AffilateAgent $affilate_agent, private Agent $agent){}
 
     public function my_profile_agent(Request $request){
-        $user = $request->user()->select('name', 'phone', 'email');
+        $user = $this->affilate_agent
+        ->select('name', 'phone', 'email')
+            ->where('id', $id)
+            ->update($data);
 
         return response()->json([
             'data' => $user,
@@ -24,7 +27,10 @@ class ProfileController extends Controller
     }
 
     public function my_profile_affilate(Request $request){
-        $user = $request->user()->select('f_name', 'l_name', 'phone', 'email');
+        $user = $this->affilate_agent
+        ->select('f_name', 'l_name', 'phone', 'email')
+        ->where('id', $id)
+        ->first();
 
         return response()->json([
             'data' => $user,
