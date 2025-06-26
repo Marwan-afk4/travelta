@@ -81,8 +81,8 @@ class ProfileController extends Controller
         if ($role == 'affilate') {
             $validation = Validator::make($request->all(), [
                 'name' => 'required',
-                'email' => [Rule::unique('affilate_agents')->ignore($request->user()->id)],
-                'phone' => [Rule::unique('affilate_agents')->ignore($request->user()->id)],
+                'email' => ['required', Rule::unique('affilate_agents')->ignore($request->user()->id)],
+                'phone' => ['required', Rule::unique('affilate_agents')->ignore($request->user()->id)],
             ]);
             if($validation->fails()){
                 return response()->json(['errors'=>$validation->errors()], 401);
@@ -103,8 +103,8 @@ class ProfileController extends Controller
         elseif($role == 'agent'){ 
             $validation = Validator::make($request->all(), [
                 'name' => 'required',
-                'email' => [Rule::unique('agents')->ignore($request->user()->id)],
-                'phone' => [Rule::unique('agents')->ignore($request->user()->id)],
+                'email' => ['required', Rule::unique('agents')->ignore($request->user()->id)],
+                'phone' => ['required', Rule::unique('agents')->ignore($request->user()->id)],
             ]);
             if($validation->fails()){
                 return response()->json(['errors'=>$validation->errors()], 401);
@@ -124,8 +124,8 @@ class ProfileController extends Controller
         else{ 
             $validation = Validator::make($request->all(), [
                 'name' => 'required',
-                'email' => [Rule::unique('admin_agents')->ignore($request->user()->id)],
-                'phone' => [Rule::unique('admin_agents')->ignore($request->user()->id)],
+                'email' => ['required', Rule::unique('admin_agents')->ignore($request->user()->id)],
+                'phone' => ['required', Rule::unique('admin_agents')->ignore($request->user()->id)],
             ]);
             if($validation->fails()){
                 return response()->json(['errors'=>$validation->errors()], 401);
