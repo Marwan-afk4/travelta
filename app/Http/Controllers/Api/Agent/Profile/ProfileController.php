@@ -18,8 +18,8 @@ class ProfileController extends Controller
     public function my_profile_agent(Request $request){
         $user = $this->affilate_agent
         ->select('name', 'phone', 'email')
-            ->where('id', $request->user()->id)
-            ->update($data);
+        ->where('id', $request->user()->id)
+        ->first();
 
         return response()->json([
             'data' => $user,
