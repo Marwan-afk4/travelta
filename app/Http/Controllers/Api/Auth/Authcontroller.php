@@ -81,7 +81,7 @@ class Authcontroller extends Controller
 
     public function my_profile(Request $request){
         $user = User::
-        select('name', 'email ', 'phone ')
+        select('name', 'email', 'phone')
         ->where('id', $request->user()->id)
         ->first();
 
