@@ -46,7 +46,7 @@ use App\Models\AffilateAgent;
 use App\Models\AgentPayable;
 use App\Models\HrmEmployee;
 use App\Models\CustomerSource;
-use App\Models\Nationality;
+use App\Models\Nationality; 
 use App\trait\image;
 
 class ManualBookingController extends Controller
@@ -322,10 +322,14 @@ class ManualBookingController extends Controller
             ->get();
         }
         $customers = $customers->pluck('customer')->select('id', 'name', 'phone');
+        $supplier_booking_engine = $this->agent
+        ->where('role', 'supplier')
+        ->get();
 
         return response()->json([
             'customers' => $customers,
             'suppliers' => $suppliers,
+            'supplier_booking_engine' => $supplier_booking_engine,
         ]);
     }
 
