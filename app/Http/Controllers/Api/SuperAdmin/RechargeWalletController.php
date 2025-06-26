@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ChargeWallet;
+use App\Models\Agent;
+use App\Models\AffilateAgent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -24,6 +26,19 @@ class RechargeWalletController extends Controller
 
     public function approveRechargeWallet($id){
         $rechargeWallet = ChargeWallet::find($id);
+        if (empty($rechargeWallet)) {
+            return response()->json([
+                'errors' => 'wallet wrong'
+            ], 400);
+        }
+        if (!empty($rechargeWallet->agent_id)) {
+            $agent = Agent::where('id', $rechargeWallet->agent_id)
+            ->first();
+            $agent->save();
+        }
+        elseif (!empty($rechargeWallet->affilate_id )) {
+            # code...
+        }
         $rechargeWallet->update([
             'status' => 'approve'
         ]);
