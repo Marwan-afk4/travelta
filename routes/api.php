@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [Authcontroller::class, 'register']);
 Route::post('/login', [Authcontroller::class, 'login']);
+Route::get('/logout', [Authcontroller::class, 'logout'])->middleware('auth:sanctum');
 
 ////////////////////////////////////////// Bookings Engine //////////////////////////////////////////////////
 
