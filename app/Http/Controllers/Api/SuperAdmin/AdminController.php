@@ -17,6 +17,7 @@ class AdminController extends Controller
         $admin = $this->admin
         ->select('name', 'email', 'phone', 'id')
         ->where('role', 'SuperAdmin')
+        ->where('id', '!=', $request->user()->id)
         ->get();
 
         return response()->json([
