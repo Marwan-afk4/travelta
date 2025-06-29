@@ -62,7 +62,7 @@ class FeaturesController extends Controller
             $this->deleteImage($feature->image);
         }
         
-        $feature->update();
+        $feature->update($featureRequest);
         return response()->json([
             'message' => 'Feature updated successfully',
         ]);
