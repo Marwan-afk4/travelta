@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\SuperAdmin\ZoneController;
 use App\Http\Controllers\Api\SuperAdmin\settings\AllowTimeController;
 use App\Http\Controllers\Api\SuperAdmin\TourTypeController;
 use App\Http\Controllers\Api\SuperAdmin\MealPlanController;
+use App\Http\Controllers\Api\SuperAdmin\AdminController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -51,6 +52,14 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
         Route::get('/my_profile', [Authcontroller::class, 'my_profile']);
         Route::post('/update_my_profile', [Authcontroller::class, 'update_my_profile']);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        Route::get('/super/admin',[AdminController::class,'view']);
+        Route::get('/super/admin/item/{id}',[AdminController::class,'admin']);
+        Route::post('/super/admin/add',[AdminController::class,'create']);
+        Route::post('/super/admin/update/{id}',[AdminController::class,'modify']);
+        Route::delete('/super/admin/delete/{id}',[AdminController::class,'delete']);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Route::get('/super/users',[UserController::class,'users']);
