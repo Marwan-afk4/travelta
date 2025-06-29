@@ -57,8 +57,9 @@ class FeaturesController extends Controller
     public function updateFeature(Request $request,$id){
         $feature = Feature::find($id);
         $featureRequest = $request->only($this->UpdateFeature);
-        if (!empty($request->image) && !is_string($request->image)) {
-            $featureRequest['image'] = $this->update_image($request, $feature->image, 'image', 'admin/feature/image');
+        if (!empty($request->image)) {
+            $featureRequest['image'] = $this->storeBase64Image($request->image, 'admin/feature/image');
+            $this->deleteImage($feature->image);
         }
         
         $feature->update();
