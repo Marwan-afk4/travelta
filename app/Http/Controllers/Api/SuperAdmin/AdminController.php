@@ -59,8 +59,7 @@ class AdminController extends Controller
 
     public function modify(Request $request, $id){
         $validation = Validator::make($request->all(), [
-            'name'=>'required',
-            'password'=>'required',
+            'name'=>'required', 
             'email'=> ['required', 'email', Rule::unique('users')->ignore($id)],
             'phone'=> ['required', Rule::unique('users')->ignore($id)],
             ''=>'required|unique:users,id',
@@ -69,7 +68,9 @@ class AdminController extends Controller
             return response()->json(['errors' => $validation->errors()], 401);
         }
         $adminRequest = $validation->validated();
-        $adminRequest['password'] = Hash::make($request->password);
+        if (!empty($request->password)) {
+            $adminRequest['password'] = Hash::make($request->password);
+        }
         $this->admin
         ->where('id', $id)
         ->update($adminRequest);
