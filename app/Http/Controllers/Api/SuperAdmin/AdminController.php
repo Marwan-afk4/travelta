@@ -48,6 +48,7 @@ class AdminController extends Controller
             return response()->json(['errors' => $validation->errors()], 401);
         }
         $adminRequest = $validation->validated();
+        $adminRequest['role'] = 'SuperAdmin';
         $admin = $this->admin
         ->create($adminRequest);
 
