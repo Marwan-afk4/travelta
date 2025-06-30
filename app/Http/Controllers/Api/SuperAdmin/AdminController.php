@@ -62,7 +62,6 @@ class AdminController extends Controller
             'name'=>'required', 
             'email'=> ['required', 'email', Rule::unique('users')->ignore($id)],
             'phone'=> ['required', Rule::unique('users')->ignore($id)],
-            ''=>'required|unique:users,id',
         ]);
         if($validation->fails()){
             return response()->json(['errors' => $validation->errors()], 401);
