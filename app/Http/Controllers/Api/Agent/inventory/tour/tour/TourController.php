@@ -72,7 +72,7 @@ class TourController extends Controller
         ]);
     }
 
-    public function tour($id){ 
+    public function tour(Request $request, $id){ 
         // /agent/tour/item/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
             $agent_id = $request->user()->affilate_id;
