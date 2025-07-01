@@ -80,6 +80,8 @@ class TourRequest extends FormRequest
             'tour_room.*.children_double' => ['required', 'numeric'],
             'tour_room.*.children_triple' => ['required', 'numeric'],
             'tour_room.*.children_quadruple' => ['required', 'numeric'],
+
+            'policy' => ['required'],
 // ________________________________________________________________
             'destinations' => ['required', 'array'],
             'destinations.*.country_id' => ['required', 'exists:countries,id'],
