@@ -98,7 +98,7 @@ class TourController extends Controller
         }, 'availability', 'cancelation_items',
         'excludes', 'includes', 'itinerary', 'tour_types', 'pick_up_country',
         'pick_up_city', 'tour_images', 'tour_hotels', 'tour_extras', 'tour_discounts',
-        'tour_pricings.tour_pricing_items'])
+        'tour_pricings.tour_pricing_items', 'tour_room'])
         ->where('id', $id)
         ->first();
         $pricing_item = $this->pricing_item
