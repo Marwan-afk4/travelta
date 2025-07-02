@@ -14,9 +14,9 @@ use App\Models\Agent;
 
 class ProfileController extends Controller
 { 
-    
     public function __construct(private AffilateAgent $affilate_agent, private Agent $agent,
     private AdminAgent $admin_agent){}
+    use image;
 
     public function my_profile(Request $request){
         $name = null;
