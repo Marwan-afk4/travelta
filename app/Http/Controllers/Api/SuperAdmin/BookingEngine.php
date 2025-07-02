@@ -449,17 +449,6 @@ class BookingEngine extends Controller
                 'tour_extras.currency:id,name',
                 // 'currency:id,name' // Add this line
             ])
-
-            ->with('itinerary')
-            ->with('includes')
-            ->with('excludes')
-            ->with('cancelation_items')
-            ->with('tour_images')
-            ->with('tour_hotels')
-            ->with('tour_discounts')
-            ->with('tour_pricings')
-            ->with('tour_pricing_items')
-            ->with('tour_extras')
             ->get();
 
         return response()->json([
