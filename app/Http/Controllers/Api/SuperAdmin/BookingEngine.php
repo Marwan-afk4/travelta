@@ -445,7 +445,7 @@ class BookingEngine extends Controller
                 'tour_images',
                 'tour_hotels',
                 'tour_discounts',
-                'tour_pricings.tour_pricing_items',
+                'tour_pricings.tour_pricing_items.currency',
                 'tour_extras.currency:id,name',
                 // 'currency:id,name' // Add this line
             ])
