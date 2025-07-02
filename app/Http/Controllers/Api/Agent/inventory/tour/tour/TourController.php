@@ -48,12 +48,14 @@ class TourController extends Controller
             $query->with('city', 'country');
         }, 'availability', 'cancelation_items',
         'excludes', 'includes', 'itinerary', 'tour_types', 'pick_up_country',
-        'pick_up_city'])
+        'pick_up_city', 'tour_room'])
         ->get()
         ->map(function($item){
             return [
                 'id' => $item->id,
                 'name' => $item->name,
+                'status' => $item->status,
+                'status' => $item->status,
                 'arrival' => $item->arrival,
                 'excludes' => $item->excludes,
                 'includes' => $item->includes,

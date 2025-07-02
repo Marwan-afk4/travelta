@@ -109,13 +109,16 @@ class Tour extends Model
         return $this->hasMany(TourPricingItems::class, 'tour_id');
     }
 
-    public function currency()
-{
-    return $this->belongsTo(CurrencyAgent::class, 'currency_id');
-}
+    public function currency(){
+        return $this->belongsTo(CurrencyAgent::class, 'currency_id');
+    }
 
     public function agent(){
         return $this->belongsTo(Agent::class, 'agent_id');
+    }
+
+    public function tour_room(){
+        return $this->hasMany(TourRoom::class, 'tour_id');
     }
 
 }
