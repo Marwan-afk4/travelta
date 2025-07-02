@@ -24,8 +24,9 @@ class AffilateAgent extends Model
         'start_date',
         'end_date',
         'price_cycle',
+        'image',
     ];
-    protected $appends = ['name'];
+    protected $appends = ['name', 'image_link'];
 
     protected $hidden = [
         'password',
@@ -36,6 +37,13 @@ class AffilateAgent extends Model
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function getImageLinkAttribute(){
+        if(!empty($this->image)){
+            return url('storage/' . $this->image);
+        }
+        return null;
     }
 
     public function getNameAttribute(){

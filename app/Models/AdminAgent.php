@@ -22,7 +22,9 @@ class AdminAgent extends Model
         'phone',
         'password',
         'status',
+        'image',
     ];
+    protected $appends = ['image_link'];
 
     protected $hidden = [
         'password',
@@ -33,6 +35,13 @@ class AdminAgent extends Model
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function getImageLinkAttribute(){
+        if(!empty($this->image)){
+            return url('storage/' . $this->image);
+        }
+        return null;
     }
 
     public function agent(){

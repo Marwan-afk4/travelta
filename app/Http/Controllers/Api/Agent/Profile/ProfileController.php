@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use App\trait\image;
 
 use App\Models\AdminAgent;
 use App\Models\AffilateAgent;
@@ -22,6 +23,7 @@ class ProfileController extends Controller
         $phone = null;
         $email = null;
         $role = null;
+        $image = null;
         if (!empty($request->user()->admin_agents)) {
             $user = $this->admin_agent 
             ->where('id', $request->user()->id)
@@ -51,12 +53,14 @@ class ProfileController extends Controller
                 $role = 'agent';
             }
         }
+        $image = $user->image_link;
 
         return response()->json([
             'name' => $name,
             'phone' => $phone,
             'email' => $email,
             'role' => $role,
+            'image' => $image,
         ]);
     }
 
@@ -64,7 +68,6 @@ class ProfileController extends Controller
         // role => [affilate, agent]
         // if affilate => f_name, l_name, email, phone, password
         // if agent => name, email, phone, password
-
         $role = null;
         if(!empty($request->user()->admin_agents)){
             $role = empty($request->user()->affilate_id) ? 'agent_admin' : 'affilate_admin';
@@ -86,13 +89,17 @@ class ProfileController extends Controller
             ]);
             if($validation->fails()){
                 return response()->json(['errors'=>$validation->errors()], 401);
-            } 
+            }
             $data = [
                 'f_name' => $request->name,
                 'l_name' => ' ',
                 'email' => $request->email,
                 'phone' => $request->phone,
             ];
+            if (!empty($request->image)) {
+                $image_path = $this->upload($request, 'image', '/agent/profile');
+                $data['image'] = $image_path;
+            }
             if(!empty($request->password)){
                 $data['password'] = Hash::make($request->password);
             }
@@ -114,6 +121,10 @@ class ProfileController extends Controller
                 'email' => $request->email,
                 'phone' => $request->phone,
             ];
+            if (!empty($request->image)) {
+                $image_path = $this->upload($request, 'image', '/agent/profile');
+                $data['image'] = $image_path;
+            }
             if(!empty($request->password)){
                 $data['password'] = Hash::make($request->password);
             }
@@ -135,6 +146,10 @@ class ProfileController extends Controller
                 'email' => $request->email,
                 'phone' => $request->phone,
             ];
+            if (!empty($request->image)) {
+                $image_path = $this->upload($request, 'image', '/agent/profile');
+                $data['image'] = $image_path;
+            }
             if(!empty($request->password)){
                 $data['password'] = Hash::make($request->password);
             }
