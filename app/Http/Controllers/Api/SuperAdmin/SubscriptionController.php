@@ -57,7 +57,7 @@ class SubscriptionController extends Controller
 
     public function create(Request $request){
         $validation = Validator::make($request->all(), [
-            'user_id' => ['required','exists:users,id'],
+            'user_id' => ['required'],
             'plan_id' => ['required','exists:users,id'],
             'role' => ['required', 'in:affilate,freelancer,agent,supplier']
         ]);
@@ -96,7 +96,7 @@ class SubscriptionController extends Controller
 
     public function modify(Request $request){
         $validation = Validator::make($request->all(), [
-            'user_id' => ['required','exists:users,id'],
+            'user_id' => ['required'],
             'plan_id' => ['required','exists:users,id'],
             'role' => ['required', 'in:affilate,freelancer,agent,supplier']
         ]);
