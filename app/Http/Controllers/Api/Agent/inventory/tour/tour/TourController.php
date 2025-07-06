@@ -62,8 +62,7 @@ class TourController extends Controller
                 'includes' => $item->includes,
                 'pick_up_country' => $item->pick_up_country,
                 'pick_up_city' => $item->pick_up_city,
-                'to_countries' => optional($item->destinations)->pluck('country'),
-                'to_cities' => optional($item->destinations)->pluck('city'),
+                'to_cities' => $item?->destinations?->city?->country,
             ];
         });
 
