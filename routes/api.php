@@ -86,7 +86,10 @@ Route::middleware(['auth:sanctum','IsSuperAdmin'])->group(function () {
 
 /////////////////////////////////////// Subscription ////////////////////////////////////////////////
 
-Route::get('/super/subscribers',[SubscriptionController::class,'subscribers']);
+        Route::get('/super/subscribers',[SubscriptionController::class,'view']); 
+        Route::post('/super/subscribers/add',[SubscriptionController::class,'create']);
+        Route::post('/super/subscribers/update',[SubscriptionController::class,'modify']);
+        Route::delete('/super/subscribers/delete/{id}',[SubscriptionController::class,'delete']);
 
 ///////////////////////////////////// Settings => Allow Time //////////////////////////////////////////////
 
