@@ -45,7 +45,7 @@ class TourController extends Controller
         $tour = $this->tour
         ->where($agent_type, $agent_id)
         ->with(['destinations' => function($query){
-            $query->with('city', 'country');
+            $query->with('city.country');
         }, 'availability', 'cancelation_items',
         'excludes', 'includes', 'itinerary', 'tour_types', 'pick_up_country',
         'pick_up_city', 'tour_room'])
@@ -62,7 +62,7 @@ class TourController extends Controller
                 'includes' => $item->includes,
                 'pick_up_country' => $item->pick_up_country,
                 'pick_up_city' => $item->pick_up_city,
-                'to_cities' => $item?->destinations?->city?->country,
+                'to_cities' => $item?->destinations?->city,
             ];
         });
 
