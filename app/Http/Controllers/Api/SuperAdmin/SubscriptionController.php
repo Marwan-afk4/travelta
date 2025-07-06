@@ -128,16 +128,36 @@ class SubscriptionController extends Controller
         ]);
 
         return response()->json([
-            'success' => 'You add data success'
+            'success' => 'You update data success'
         ]);
     }
 
     public function delete(Request $request, $id){
-        $user = $this->agents
-        ->where('id', $id)
-        ->update([
+        $validation = Validator::make($request->all(), [
+            'role' => ['required', 'in:affilate,freelancer,agent,supplier']
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
+        
+        if ($request->role == 'affilate' || $request->role == 'freelancer') {
+            $user = $this->affilates
+            ->where('id', $id)
+            ->first();
+      
+        }
+        else{
+            $user = $this->agents
+            ->where('id', $id)
+            ->first();
+        }
+        $user->update([
             'start_date' => null,
             'end_date' => null,
+        ]);
+
+        return response()->json([
+            'success' => 'You delete package success'
         ]);
     }
 }
