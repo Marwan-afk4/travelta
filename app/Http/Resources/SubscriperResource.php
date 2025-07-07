@@ -23,6 +23,7 @@ class SubscriperResource extends JsonResource
             'endDate' => $this->end_date,
             'role' => $this->role,
             'plan' => $this->plan->name ?? null,
+            'plan_id' => $this->plan_id ?? null,
             'price' => $this->plan->price ?? null,
         ];
     }
