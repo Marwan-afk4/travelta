@@ -17,8 +17,14 @@ class BookingPayment extends Model
         'supplier_id',
         'agent_id',
         'affilate_id',
+        'to_customer_id',
     ];
     protected $appends = ['invoice_link'];
+
+    public function booking_engine()
+    {
+       return $this->morphTo();
+    }
 
     public function getInvoiceLinkAttribute(){
         return url('storage/' . $this->invoice);

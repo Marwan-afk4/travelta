@@ -16,8 +16,14 @@ class PaymentsCart extends Model
         'payment',
         'image',
         'status',
+        'to_customer_id', 
     ];
     protected $appends = ['due_payment'];
+
+    public function booking_engine()
+    {
+       return $this->morphTo();
+    }
 
     public function getDuePaymentAttribute(){
         return $this->attributes['amount'] - $this->attributes['payment'];

@@ -30,9 +30,35 @@ class BookingengineList extends Model
         'special_request',
         'currancy_id',
         'request_status',
+        'cart_status',
         'count',
     ];
     protected $appends = ['to_client'];
+
+    public function children()
+    {
+        return $this->morphMany(ChildrenEngine::class, 'booking_engine');
+    }
+
+    public function adult()
+    {
+        return $this->morphMany(AdultEngine::class, 'booking_engine');
+    }
+
+    public function payment_carts()
+    {
+        return $this->morphMany(ManuelCart::class, 'booking_engine');
+    }
+
+    public function upcoming_payment_carts()
+    {
+        return $this->morphMany(PaymentsCart::class, 'booking_engine');
+    }
+
+    public function booking_payment()
+    {
+        return $this->morphMany(BookingPayment::class, 'booking_engine');
+    }
 
     public function tasks(){
         return $this->hasMany(BookingTask::class, 'booking_engine_id');

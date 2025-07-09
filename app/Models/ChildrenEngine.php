@@ -4,15 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ManuelCart extends Model
+class ChildrenEngine extends Model
 {
     protected $fillable = [
-        'manuel_booking_id',
-        'total',
-        'payment',
-        'payment_method_id',
-        'image',
-        'status',
+        'age',
+        'first_name',
+        'last_name', 
     ];
 
     public function booking_engine()

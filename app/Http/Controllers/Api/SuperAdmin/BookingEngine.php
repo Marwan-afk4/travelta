@@ -23,6 +23,8 @@ use App\Models\RoomAvailability;
 use App\Models\Tour;
 use App\Models\TourAvailability;
 use App\Models\TourType;
+use App\Models\Wallet;
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,12 +32,36 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentMail;
+
+use App\Models\CustomerData; 
+use App\Models\SupplierAgent;
+use App\Models\Adult;
+use App\Models\Child;
+use App\Models\ManuelCart;
+use App\Models\PaymentsCart;
+use App\Models\ManuelDataCart;
+use App\Models\BookingPayment; 
+use App\Models\FinantiolAcounting; 
+use App\trait\image;
+
 class BookingEngine extends Controller
 {
 
+    use image;
     public function __construct(
-        private RoomAvailability $room_availability,
-        private ModelsBookingEngine $booking_engine
+     private SupplierAgent $supplier_agent,
+    private Customer $customers,
+    private CustomerData $customer_data,
+    private PaymentsCart $payments_cart,
+    private FinantiolAcounting $financial_accounting,
+    private ManuelCart $manuel_cart,
+    private BookingPayment $booking_payment,
+    private RoomAvailability $room_availability,
+    private ModelsBookingEngine $booking_engine,
+    private Room $room,
+    private Wallet $wallet
     ) {}
 
 
@@ -298,7 +324,16 @@ class BookingEngine extends Controller
         'check_in'  => 'required|date|before:check_out',
         'check_out' => 'required|date|after:check_in',
         'quantity'  => 'required|integer|min:1',
-    ]);
+        'children' => 'required|array',
+        'children.first_name' => 'required',
+        'children.last_name' => 'required',
+        'children.age' => 'sometimes',
+        'adults' => 'required|array',
+        'adults.first_name' => 'required',
+        'adults.last_name' => 'required',
+        'adults.phone' => 'sometimes',
+        'adults.title' => 'sometimes',
+    ]); 
 
     if ($validator->fails()) {
         return response()->json(['errors' => $validator->errors()], 400);
@@ -339,16 +374,23 @@ class BookingEngine extends Controller
             $validatedData['country_id'] = $hotel?->country_id ?? null;
             $validatedData['city_id'] = $hotel?->city_id ?? null;
         }
+        $room = $this->room
+        ->where('id', $request->room_id)
+        ->first();
+        $validatedData['from_supplier_id'] = $room->agent_id;
+        $validatedData['to_customer_id'] = $request->user()->agent_id ?? $request->user()->id;
 
         // Create BookingengineList
         $bookingList = BookingengineList::create($validatedData);
+        $bookingList->adult()->createMany($request->adults->toArray());
+        $bookingList->children()->createMany($request->children->toArray());
 
         DB::commit();
 
         return response()->json([
             'message' => 'Room booked successfully',
             'booking' => $booking,
-            'booking_list' => $bookingList
+            'booking_list_id' => $bookingList->id
         ], 201);
 
     } catch (\Exception $e) {
@@ -385,6 +427,217 @@ class BookingEngine extends Controller
         //         if ($remainingQuantity < $request->quantity) {
         //             return response()->json(['message' => 'No rooms available for the specified dates.'], 400);
         //         }
+    }
+
+    public function engine_payment(Request $request){
+        $validation = Validator::make($request->all(), [
+            'booking_engine_id' => ['required'],
+            'type' => ['required', 'in:room,tour'],
+            'payment_type' => ['required', 'in:full,partial,later'],
+            'total_cart' => ['required','numeric'],
+            'payment_methods' => ['required'],
+            'payment_methods.*.amount' => ['required', 'numeric'],
+            'payment_methods.*.payment_method_id' => ['required', 'exists:payment_methods,id'],
+            'payment_methods.*.image' => ['sometimes'],
+            'payments.*.amount' => ['required', 'numeric'],
+            'payments.*.date' => ['required', 'date'],
+        ]);
+        if ($validation->fails()) {
+            return response()->json(['errors' => $validation->errors()], 400);
+        }
+
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+            $agent_data = $this->affilate_agent
+            ->where('id', $request->user()->affilate_id)
+            ->first();
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+            $agent_data = $this->agent
+            ->where('id', $request->user()->agent_id)
+            ->first();
+        }
+        else{
+            $agent_id = $request->user()->id;
+            $agent_data = $request->user();
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $role = 'affilate_id';
+        }
+        else {
+            $role = 'agent_id';
+        }
+
+        $booking_engine = null;
+        $total = 0;
+        if($request->type == 'room'){
+            $booking_engine = BookingengineList::
+            where('id', $request->booking_engine_id)
+            ->first();
+            $total = $booking_engine->amount;
+        }
+        elseif($request->type == 'tour'){
+            $booking_engine = BookTourengine::
+            where('id', $request->booking_engine_id)
+            ->first();
+            $total = $booking_engine->total_price;
+        }
+        // ..........................................................
+        // ..........................................................
+        // ..........................................................
+        if($role = 'agent_id' && $booking_engine->to_agent_id != $agent_id) {
+           $my_wallet = $this->wallet
+           ->where('currancy_id', $booking_engine->currancy_id)
+           ->where($role, $agent_id)
+           ->first();       
+           if($my_wallet->amount < $total){
+                return response()->json([
+                    'errors' => 'You must charge your wallet'
+                ], 400);
+           }
+           $his_wallet = $this->wallet
+           ->where('currancy_id', $booking_engine->currancy_id)
+           ->where('agent_id', $booking_engine->from_supplier_id )
+           ->first();
+           $my_wallet->amount -= $total;
+           $his_wallet->amount += $total;
+        }
+        $booking_engine->cart_status = 1;
+        $booking_engine->save();
+         $amount_payment = 0;
+            if ($request->payment_methods) {
+                foreach ($payment_methods as $item) {
+                    $amount_payment += $item['amount'];
+                    $code = Str::random(8);
+                    $booking_payment_item = $this->booking_payment
+                    ->where('code', $code)
+                    ->first();
+                    while (!empty($booking_payment_item)) {
+                        $code = Str::random(8);
+                        $booking_payment_item = $this->booking_payment
+                        ->where('code', $code)
+                        ->first();
+                    }
+                    $booking_payment = $this->booking_engine
+                    ->booking_payment()
+                    ->create([
+                        $role => $agent_id,
+                        'date' => date('Y-m-d'),
+                        'amount' => $item['amount'],
+                        'financial_id' => $item['payment_method_id'],
+                        'code' => $code,
+                        'to_customer_id' => $booking_engine->to_customer_id ,
+                        'first_time' => 1,
+                    ]);
+// ___________________________________________________________________________________ \
+                    $cartRequest = [
+                        'total' => $request->total_cart,
+                        'payment' => $item['amount'],
+                        'payment_method_id' => $item['payment_method_id'],
+                    ];
+                    $manuel_cart = $booking_engine
+                    ->payment_carts()
+                    ->create($cartRequest);
+                }
+            }
+            else {
+                $code = Str::random(8);
+                $booking_payment_item = $this->booking_payment
+                ->where('code', $code)
+                ->first();
+                while (!empty($booking_payment_item)) {
+                    $code = Str::random(8);
+                    $booking_payment_item = $this->booking_payment
+                    ->where('code', $code)
+                    ->first();
+                }
+                $booking_payment = $this->booking_engine
+                ->booking_payment()
+                ->create([ 
+                    $role => $agent_id,
+                    'date' => date('Y-m-d'),
+                    'amount' => 0,
+                    'code' => $code, 
+                    'to_customer_id' => $booking_engine->to_customer_id ,
+                    'first_time' => 1,
+                ]);
+            }
+            if ($request->payment_type == 'partial' || $request->payment_type == 'later') {
+                $validation = Validator::make($request->all(), [
+                    'payments' => 'required',
+                ]);
+                if($validation->fails()){
+                    return response()->json(['errors'=>$validation->errors()], 401);
+                }
+                $payments = is_string($request->payments) ? json_decode($request->payments)
+                : $request->payments;
+                foreach ($payments as $item) {
+                    $booking_engine->upcoming_payment_carts()
+                    ->create([ 
+                        $role => $agent_id,
+                        'to_customer_id' => $booking_engine->to_customer_id, 
+                        'amount' => $item['amount'],
+                        'date' => $item['date'],
+                    ]);
+                }
+            }
+            $customer = $this->customer_data
+            ->whereIn('status', ['active', 'inactive'])
+            ->where('customer_id', $booking_engine->to_customer_id)
+            ->where($role, $agent_id)
+            ->first();
+            if (!empty($customer)) {
+                $customer->update([
+                    'type' => 'customer',
+                    'total_booking' => $amount_payment + $customer->total_booking,
+                ]);
+                $this->customers
+                ->where('id', $booking_engine->to_customer_id)
+                ->update([
+                    'role' => 'customer'
+                ]);
+                $position = 'Customer';
+            } 
+            $data = [];
+            $data['name'] = $customer->name;
+            $data['position'] = $position;
+            $data['amount'] = $amount_payment;
+            $data['payment_date'] = date('Y-m-d');
+            $data['agent'] = $agent_data->name;
+            Mail::to($agent_data->email)->send(new PaymentMail($data));
+            $agent_data = [];
+            if (!empty($manuel_booking->affilate_id)) {
+                $agent = $manuel_booking->affilate; 
+            }
+            else{
+                $agent = $manuel_booking->agent; 
+            }
+            $agent_data = [
+                'name' => $agent->name,
+                'email' => $agent->email,
+                'phone' => $agent->phone,
+            ];
+           
+           if (!empty($manuel_booking->to_supplier_id)) {
+               $client_data = $manuel_booking->to_client;
+               $client['name'] = $client_data->name;
+               $client['phone'] = $client_data->phones[0] ?? $client_data->phones;
+               $client['email'] = $client_data->emails[0] ?? $client_data->emails;
+           }
+           else{
+               $client_data = $manuel_booking->to_client;
+               $client['name'] = $client_data->name;
+               $client['phone'] = $client_data->phone;
+               $client['email'] = $client_data->email;
+           }
+            return response()->json([ 
+                'agent_data' => $agent_data,
+                'total_payment' => $amount_payment,
+                'due_payments' => $request->payments,
+                'booking_payment' => $booking_payment,
+                'client' => $client,
+            ]);
     }
 
     public function getAvailableTours(Request $request)
