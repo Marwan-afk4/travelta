@@ -632,11 +632,8 @@ class BookingEngine extends Controller
                $client['email'] = $client_data->email;
            }
             return response()->json([ 
-                'agent_data' => $agent_data,
-                'total_payment' => $amount_payment,
-                'due_payments' => $request->payments,
-                'booking_payment' => $booking_payment,
-                'client' => $client,
+                'cart_id' => $booking_engine->id,
+                'total' => $booking_engine->amount, 
             ]);
     }
 
