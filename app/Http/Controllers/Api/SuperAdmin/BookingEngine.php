@@ -317,8 +317,7 @@ class BookingEngine extends Controller
 
     public function bookRoom(Request $request, BookingEngineListRequest $booklist_request)
 {
-    $user = $request->user();
-
+    $user = $request->user(); 
     $validator = Validator::make($request->all(), [
         'room_id'   => 'required|integer|exists:rooms,id',
         'check_in'  => 'required|date|before:check_out',
@@ -727,7 +726,7 @@ class BookingEngine extends Controller
         'special_request' => 'nullable|string',
         'currency_id' => 'nullable|exists:currency_agents,id',
         'total_price' => 'required|integer|min:1',
-        'customer_id' => 'nullable|exists:customers,id',
+        'customer_id' => 'required|exists:customers,id',
         'agents_id' => 'nullable|exists:agents,id',
         'to_hotel_id' => 'nullable|exists:tour_hotels,id',
         'single_room_count' => 'nullable|integer',
@@ -737,11 +736,35 @@ class BookingEngine extends Controller
         'extras' => 'nullable|array',
         'extras.*.extra_id' => 'required|exists:tour_extras,id',
         'extras.*.count' => 'required|integer|min:1',
+        
+        'children.first_name' => 'required',
+        'children.last_name' => 'required',
+        'children.age' => 'sometimes',
+        'adults' => 'required|array',
+        'adults.first_name' => 'required',
+        'adults.last_name' => 'required',
+        'adults.phone' => 'sometimes',
+        'adults.title' => 'sometimes',
     ]);
 
     if ($validation->fails()) {
         return response()->json(['errors' => $validation->errors()], 400);
     }
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id; 
+        }
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {    
+            $role = 'affilate_id';
+        }
+        else {
+            $role = 'agent_id';
+        } 
 
     $tour = Tour::findOrFail($request->tour_id);
     $customer = Customer::find($request->customer_id);
@@ -754,7 +777,7 @@ class BookingEngine extends Controller
     // Determine Recipient
     $recipient = $customer ?? $agent;
     $toRole = $customer ? 'Customer' : 'Agent';
-
+ 
     $createBooking = BookTourengine::create([
         'tour_id' => $tour->id,
         'no_of_people' => $request->no_of_people,
@@ -766,12 +789,16 @@ class BookingEngine extends Controller
         'to_phone' => $recipient->phone,
         'to_role' => $toRole,
         'from_supplier_id' => $tour->agent_id,
+        'to_customer_id' => $request->customer_id,
+        $role => $agent_id,
         'code' => 'TE' . rand(10000, 99999) . strtolower(Str::random(1)),
         'status' => 'pending',
         'payment_status' => 'full',
         'to_hotel_id' => optional($tour->tour_hotels()->first())->id??null,
         'country_id' => null,
     ]);
+    $createBooking->adult()->createMany($request->adults->toArray());
+    $createBooking->children()->createMany($request->children->toArray());
     $updateremaining = TourAvailability::where('tour_id', $tour->id);
     $updateremaining->decrement('remaining', $request->no_of_people);
 
