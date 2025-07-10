@@ -737,14 +737,14 @@ class BookingEngine extends Controller
         'extras.*.extra_id' => 'required|exists:tour_extras,id',
         'extras.*.count' => 'required|integer|min:1',
         
-        // 'children.first_name' => 'required',
-        // 'children.last_name' => 'required',
-        // 'children.age' => 'sometimes',
-        // 'adults' => 'required|array',
-        // 'adults.first_name' => 'required',
-        // 'adults.last_name' => 'required',
-        // 'adults.phone' => 'sometimes',
-        // 'adults.title' => 'sometimes',
+        'children.first_name' => 'required',
+        'children.last_name' => 'required',
+        'children.age' => 'sometimes',
+        'adults' => 'required|array',
+        'adults.first_name' => 'required',
+        'adults.last_name' => 'required',
+        'adults.phone' => 'sometimes',
+        'adults.title' => 'sometimes',
     ]);
 
     if ($validation->fails()) {
@@ -797,8 +797,8 @@ class BookingEngine extends Controller
         'to_hotel_id' => optional($tour->tour_hotels()->first())->id??null,
         'country_id' => null,
     ]);
-    // $createBooking->adult()->createMany($request->adults->toArray());
-    // $createBooking->children()->createMany($request->children->toArray());
+    $createBooking->adult()->createMany($request->adults->toArray());
+    $createBooking->children()->createMany($request->children->toArray());
     $updateremaining = TourAvailability::where('tour_id', $tour->id);
     $updateremaining->decrement('remaining', $request->no_of_people);
 
@@ -822,8 +822,6 @@ class BookingEngine extends Controller
             'quad_room_count' => $request->quad_room_count ?? 0,
         ]);
     }
-
-
 
     return response()->json([
         'status' => 'success',

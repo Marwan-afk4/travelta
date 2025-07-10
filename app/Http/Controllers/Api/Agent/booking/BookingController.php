@@ -236,9 +236,9 @@ class BookingController extends Controller
         $booing_tour_engine = EngineTourResource::collection($booing_tour_engine)->toArray(request());
         $booing_tour_engine = collect($booing_tour_engine);
         $engine_tour_upcoming = $booing_tour_engine
-        ->where('check_in', '>', date('Y-m-d'));
+        ->where('date', '>', date('Y-m-d'));
         $engine_tour_current = $booing_tour_engine
-        ->where('check_in', '<=', date('Y-m-d'))
+        ->where('date', '<=', date('Y-m-d'))
         ->where('check_out', '>=', date('Y-m-d'));
         $engine_tour_past = $booing_tour_engine
         ->where('check_out', '<', date('Y-m-d'));
