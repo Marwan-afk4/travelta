@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('adult_engines', function (Blueprint $table) {
             $table->id();
-            $table->integer('title')->nullable();
+            $table->string('title')->nullable();
             $table->string('first_name');
             $table->string('last_name');
             $table->string('phone')->nullable();

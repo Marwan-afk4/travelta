@@ -379,8 +379,12 @@ class BookingEngine extends Controller
 
         // Create BookingengineList
         $bookingList = BookingengineList::create($validatedData);
-        $bookingList->adult()->createMany($request->adults);
-        $bookingList->children()->createMany($request->children);
+        if($request->adults && count($request->adults) > 0){
+            $bookingList->adult()->createMany($request->adults);
+        }  
+        if($request->children && count($request->children) > 0){
+            $bookingList->children()->createMany($request->children);
+        }
 
         DB::commit();
 
@@ -794,8 +798,12 @@ class BookingEngine extends Controller
         'to_hotel_id' => optional($tour->tour_hotels()->first())->id??null,
         'country_id' => null,
     ]);
-    $createBooking->adult()->createMany($request->adults);
-    $createBooking->children()->createMany($request->children);
+    if ($request->adults && count($request->adults) > 0) {
+        $createBooking->adult()->createMany($request->adults);
+    }
+    if ($request->children && count($request->children) > 0) {
+        $createBooking->children()->createMany($request->children);
+    }
     $updateremaining = TourAvailability::where('tour_id', $tour->id);
     $updateremaining->decrement('remaining', $request->no_of_people);
 
