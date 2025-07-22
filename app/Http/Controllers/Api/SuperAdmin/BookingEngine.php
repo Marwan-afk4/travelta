@@ -324,14 +324,14 @@ class BookingEngine extends Controller
         'check_out' => 'required|date|after:check_in',
         'quantity'  => 'required|integer|min:1',
         'children' => 'required|array',
-        'children.first_name' => 'required',
-        'children.last_name' => 'required',
-        'children.age' => 'sometimes',
+        'children.*.first_name' => 'required',
+        'children.*.last_name' => 'required',
+        'children.*.age' => 'sometimes',
         'adults' => 'required|array',
-        'adults.first_name' => 'required',
-        'adults.last_name' => 'required',
-        'adults.phone' => 'sometimes',
-        'adults.title' => 'sometimes',
+        'adults.*.first_name' => 'required',
+        'adults.*.last_name' => 'required',
+        'adults.*.phone' => 'sometimes',
+        'adults.*.title' => 'sometimes',
     ]); 
 
     if ($validator->fails()) {
@@ -737,14 +737,15 @@ class BookingEngine extends Controller
         'extras.*.extra_id' => 'required|exists:tour_extras,id',
         'extras.*.count' => 'required|integer|min:1',
         
-        'children.first_name' => 'required',
-        'children.last_name' => 'required',
-        'children.age' => 'sometimes',
+        'children' => 'required|array',
+        'children.*.first_name' => 'required',
+        'children.*.last_name' => 'required',
+        'children.*.age' => 'sometimes',
         'adults' => 'required|array',
-        'adults.first_name' => 'required',
-        'adults.last_name' => 'required',
-        'adults.phone' => 'sometimes',
-        'adults.title' => 'sometimes',
+        'adults.*.first_name' => 'required',
+        'adults.*.last_name' => 'required',
+        'adults.*.phone' => 'sometimes',
+        'adults.*.title' => 'sometimes',
     ]);
 
     if ($validation->fails()) {
