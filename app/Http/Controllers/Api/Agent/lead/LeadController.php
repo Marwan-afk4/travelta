@@ -14,6 +14,7 @@ use App\Imports\Leads;
 
 use App\Models\Customer;
 use App\Models\CustomerData;
+use App\Models\ChatLead;
 
 use App\Models\CustomerSource;
 use App\Models\HrmEmployee;
@@ -447,6 +448,90 @@ class LeadController extends Controller
             $customer_arr['agent_id'] = $agent_id;
             $this->customer_data
             ->create($customer_arr);
+        }
+        
+        return response()->json([
+            'success' => $customer
+        ]);
+    }
+
+
+    public function create_from_chat(Request $request){ 
+        // /leads/add
+        // Keys
+        // name, phone, email, gender
+        // image, watts, source_id, agent_sales_id, service_id,
+        // nationality_id, country_id, city_id, status
+         
+        $leadRequest = $request->only($this->leadRequest);
+        $customer = $this->customer
+        ->where('phone', $request->phone)
+        ->whereNotNull('phone')
+        ->orWhere('email', $request->email)
+        ->whereNotNull('email')
+        ->first(); 
+        if (empty($customer)) {
+            if (!empty($request->image)) {
+                $image = $this->storeBase64Image($request->image, 'agent/lead/image');
+                $leadRequest['image'] = $image;
+            }
+            $customer = $this->customer
+            ->create($leadRequest);
+        }
+        
+        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
+            $agent_id = $request->user()->affilate_id;
+        }
+        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
+            $agent_id = $request->user()->agent_id;
+        }
+        else{
+            $agent_id = $request->user()->id;
+        }
+         
+        $customer_arr = [
+            'customer_id' => $customer->id,
+            'name' => $request->name ?? null,
+            'phone' => $request->phone ?? null,
+            'email' => $request->email ?? null,
+            'gender' => $request->gender ?? null,
+            'watts' => $request->watts ?? null,
+            'source_id' => $request->source_id ?? null,
+            'agent_sales_id' => $request->agent_sales_id ?? null,
+            'service_id' => $request->service_id ?? null,
+            'nationality_id' => $request->nationality_id ?? null,
+            'country_id' => $request->country_id ?? null,
+            'city_id' => $request->city_id ?? null,
+            'status' => $request->status ?? null,
+            'image' => $customer->image ?? null,
+        ];
+        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+            $customer_arr['affilate_id'] = $agent_id;
+            $customer_data = $this->customer_data
+            ->where('customer_id', $customer->id)
+            ->where('affilate_id', $agent_id)
+            ->first();
+            if(empty($customer_data)){
+                $customer_data = $this->customer_data
+                ->create($customer_arr);
+            } 
+        } 
+        else { 
+            $customer_arr['agent_id'] = $agent_id;
+            $customer_data = $this->customer_data
+            ->where('customer_id', $customer->id)
+            ->where('agent_id', $agent_id)
+            ->first();
+            if(empty($customer_data)){
+                $customer_data = $this->customer_data
+                ->create($customer_arr);
+            } 
+        }
+        if($request->summary){
+            ChatLead::create([
+                'lead_id' => $customer_data,
+                'summary' => $request->summary,
+            ]);
         }
         
         return response()->json([

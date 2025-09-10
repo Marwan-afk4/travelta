@@ -73,6 +73,11 @@ use App\Http\Controllers\Api\SuperAdmin\BookingEngine;
 use App\Http\Controllers\Api\SuperAdmin\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\PlanController;
 
+
+Route::controller(LeadController::class)->group(function(){
+    Route::post('create_from_chat', 'create_from_chat');
+});
+
 Route::controller(AgentAuthController::class)->group(function(){
     Route::get('signupLists', 'lists');
     Route::post('signupAffilate', 'signup_affilate');
