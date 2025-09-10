@@ -125,6 +125,14 @@ class LeadController extends Controller
         ]);
     }
 
+    public function lead_chat(Request $request, $id){
+        $chats = ChatLead::
+        select('summary', 'created_at')
+        ->where('lead_id', $id)
+        ->orderByDesc('id')
+        ->get();
+    }
+
     public function lead(Request $request, $id){
         // /leads/item/{id}
         if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
