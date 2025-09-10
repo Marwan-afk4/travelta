@@ -462,7 +462,12 @@ class LeadController extends Controller
         // name, phone, email, gender
         // image, watts, source_id, agent_sales_id, service_id,
         // nationality_id, country_id, city_id, status
-         
+        $validation = Validator::make($request->all(), [
+            'name' => ['required'],
+        ]);
+        if($validation->fails()){
+            return response()->json(['errors'=>$validation->errors()], 401);
+        }
         $leadRequest = $request->only($this->leadRequest);
         $customer = $this->customer
         ->where('phone', $request->phone)
