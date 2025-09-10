@@ -531,7 +531,7 @@ class LeadController extends Controller
         }
         if($request->summary){
             ChatLead::create([
-                'lead_id' => $customer_data,
+                'lead_id' => $customer_data->id,
                 'summary' => $request->summary,
             ]);
         }
