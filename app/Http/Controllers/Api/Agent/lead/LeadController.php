@@ -484,14 +484,11 @@ class LeadController extends Controller
             ->create($leadRequest);
         }
         
-        if ($request->user()->affilate_id && !empty($request->user()->affilate_id)) {
-            $agent_id = $request->user()->affilate_id;
+        if ($request->agent_id) {
+            $agent_id = $request->agent_id;
         }
-        elseif ($request->user()->agent_id && !empty($request->user()->agent_id)) {
-            $agent_id = $request->user()->agent_id;
-        }
-        else{
-            $agent_id = $request->user()->id;
+        if ($request->affilate_id) {
+            $agent_id = $request->affilate_id;
         }
          
         $customer_arr = [
@@ -510,7 +507,7 @@ class LeadController extends Controller
             'status' => $request->status ?? null,
             'image' => $customer->image ?? null,
         ];
-        if ($request->user()->role == 'affilate' || $request->user()->role == 'freelancer') {
+        if ($request->affilate_id) {
             $customer_arr['affilate_id'] = $agent_id;
             $customer_data = $this->customer_data
             ->where('customer_id', $customer->id)
