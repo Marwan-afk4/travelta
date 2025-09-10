@@ -131,6 +131,10 @@ class LeadController extends Controller
         ->where('lead_id', $id)
         ->orderByDesc('id')
         ->get();
+
+        return response()->json([
+            'chats' => $chats,
+        ]);
     }
 
     public function lead(Request $request, $id){
