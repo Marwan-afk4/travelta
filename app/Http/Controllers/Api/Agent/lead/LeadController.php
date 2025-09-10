@@ -504,7 +504,7 @@ class LeadController extends Controller
             'nationality_id' => $request->nationality_id ?? null,
             'country_id' => $request->country_id ?? null,
             'city_id' => $request->city_id ?? null,
-            'status' => $request->status ?? null,
+            'status' => $request->status ?? 'lead',
             'image' => $customer->image ?? null,
         ];
         if ($request->affilate_id) {
